@@ -1,0 +1,20 @@
+version: "2"
+
+options:
+  verbose: true
+syncs:
+  #IMPORTANT: ensure this name is unique and does not match your other container names
+  app-mac-sync:
+    src: './app'
+    sync_strategy: 'unison'
+    sync_args:
+      - "-prefer newer"
+#      - "-ignore='Path .git'"
+#      - "-ignore='BelowPath .git'"
+    sync_userid: '33'
+  jenkins-mac-sync:
+    src: './jenkins'
+    sync_strategy: 'unison'
+    sync_args:
+      - "-prefer newer"
+    sync_userid: '1000'

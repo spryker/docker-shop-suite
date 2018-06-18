@@ -1,0 +1,96 @@
+version: "2.0"
+services:
+  app:
+#    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - GITHUB_TOKEN
+    depends_on:
+      - db
+      - elasticsearch
+      - redis
+      - rabbitmq
+      - jenkins
+    ports:
+      - "80:8080"
+      - "8081:8081"
+      - "2222:22"
+    environment:
+      APPLICATION_ENV: dockersuite
+      APPLICATION_STORE: DE
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: spryker
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DATABASE: DE_dockersuite_zed
+      ELASTICSEARCH_HOST: elasticsearch
+      ELASTICSEARCH_PORT: 9200
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PROTOCOL: redis
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_API_PORT: 15672
+      RABBITMQ_USER: spryker
+      RABBITMQ_PASSWORD: secret
+      RABBITMQ_VHOST: /dockersuite
+      YVES_HOST: www.de.demoshop.local
+      YVES_PROTOCOL: http
+      ZED_HOST: os.de.demoshop.local
+      ZED_PROTOCOL: http
+      JENKINS_HOST: jenkins
+      JENKINS_PORT: 8080
+    volumes:
+        - versions:/versions:rw
+        - static:/static:rw
+
+  db:
+#    restart: always
+    image: postgres:9.6
+    environment:
+      POSTGRES_DB: DE_dockersuite_zed
+      POSTGRES_USER: spryker
+      POSTGRES_PASSWORD: secret
+
+  elasticsearch:
+#    restart: always
+    image: elasticsearch:5.5
+    environment:
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"
+
+  redis:
+#    restart: always
+    image: redis:3.2
+
+  rabbitmq:
+#    restart: always
+    image: rabbitmq:3.7-management
+    environment:
+      RABBITMQ_DEFAULT_USER: spryker
+      RABBITMQ_DEFAULT_PASS: secret
+      RABBITMQ_DEFAULT_VHOST: /dockersuite
+    ports:
+      - "15672:15672"
+
+  jenkins:
+#    restart: always
+    build:
+      context: .
+      dockerfile: jenkins/Dockerfile
+    environment:
+      JAVA_OPTS: '-Djenkins.install.runSetupWizard=false'
+      ZED_HOST: app
+    ports:
+      - "9090:8080"
+    volumes:
+      - jenkins-mac-sync:/var/jenkins_home:rw
+
+volumes:
+  versions:
+    external: true
+  static:
+    external: true
+  jenkins-mac-sync:
+    external: true

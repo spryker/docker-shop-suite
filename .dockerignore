@@ -1,0 +1,10 @@
+#.gitignore
+.idea
+.vagrant
+.docker-sync/
+.DS_Store
+README.md
+#data/
+tests/_log/
+Dockerfile*
+docker-compose*

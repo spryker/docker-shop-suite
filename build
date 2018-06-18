@@ -1,0 +1,27 @@
+#!/bin/bash -ex
+
+
+### Install PHP libraries
+composer config --global github-protocols https
+composer config -g github-oauth.github.com ${GITHUB_TOKEN}
+composer install --no-progress --no-suggest --no-scripts --prefer-dist --no-dev --optimize-autoloader
+composer config -g github-oauth.github.com ''
+
+### Install NPM libraries
+npm install -g antelope
+npm install
+## This should be more elegant and automatically scan bundles for package.json
+for bundle in Braintree; do
+  (cd vendor/spryker/spryker/Bundles/${bundle}/assets/Yves; npm install)
+done
+
+for bundle in  Gui ProductRelation Discount NavigationGui; do
+  (cd vendor/spryker/spryker/Bundles/${bundle}/assets/Zed; npm install)
+done
+
+
+### Build frontend
+npm run yves
+npm run zed
+
+
