@@ -18,6 +18,13 @@ until curl -s "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" > /dev/null; do
 done
 echo "Elasticsearch is available now. Good."
 
+# Waiting for the RabbitMQ starting
+until curl -s "$RABBITMQ_HOST:$RABBITMQ_API_PORT" > /dev/null; do
+  echo "Waiting for RabbitMQ..."
+  sleep 3
+done
+echo "RabbitMQ is available now. Good."
+
 # Become more verbose
 set -xe
 
