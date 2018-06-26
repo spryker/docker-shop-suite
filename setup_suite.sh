@@ -14,7 +14,8 @@ sudo ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Get Spryker shop suite from the official github repo
 ##curl -H 'Authorization: token $GITHUB_TOKEN' https://github.com/spryker/suite-nonsplit.git
-git clone https://sprykerbot:$GITHUB_TOKEN@github.com/spryker/suite.git ./
+#git clone https://sprykerbot:$GITHUB_TOKEN@github.com/spryker/suite.git ./
+git clone https://github.com/spryker-shop/suite.git ./
 git checkout master
 
 # Install all modules for Spryker
