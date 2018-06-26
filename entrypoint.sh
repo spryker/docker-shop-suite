@@ -5,7 +5,7 @@ cp /etc/nginx/nginx_waiting.conf /etc/nginx/nginx.conf
 /usr/sbin/nginx -g 'daemon on;' &
 
 # Waiting for PostgreSQL database starting
-until PGPASSWORD=$POSTGRES_PASSWORD psql -h "$POSTGRES_HOST" -p "$POSTGRES_PORT" -U "$POSTGRES_USER" "$POSTGRES_DATABASE" -c '\l'; do
+until psql -h $POSTGRES_HOST -p "$POSTGRES_PORT" -U "$POSTGRES_USER" $POSTGRES_DATABASE -c '\l'; do
   echo "Waiting for PostgreSQL..."
   sleep 3
 done

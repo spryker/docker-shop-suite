@@ -24,6 +24,7 @@ services:
       POSTGRES_PORT: 5432
       POSTGRES_USER: spryker
       POSTGRES_PASSWORD: secret
+      PGPASSWORD: secret
       POSTGRES_DATABASE: DE_dockersuite_zed
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
