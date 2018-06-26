@@ -33,7 +33,7 @@ export PGPASSWORD=$POSTGRES_PASSWORD
 psql --username=$POSTGRES_USER --host=$POSTGRES_HOST $POSTGRES_DATABASE -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
 # Drop the current PostgreSQL db and create the empty one
 dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST $POSTGRES_DATABASE
-#createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST $POSTGRES_DATABASE
+createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST $POSTGRES_DATABASE
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
