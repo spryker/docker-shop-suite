@@ -159,12 +159,11 @@ RUN mkdir -p /versions
 RUN chown -R www-data:www-data /data
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
-COPY config_local.php /versions/config_local.php
-COPY store.php /versions/store.php
-COPY dockersuite.yml /versions/dockersuite.yml
-COPY setup_demoshop.sh /versions/setup_demoshop.sh
-COPY setup_suite.sh /versions/setup_suite.sh
-RUN chmod +x /versions/setup_demoshop.sh /versions/setup_suite.sh
+COPY config_local.php /config_local.php
+COPY store.php /store.php
+COPY dockersuite.yml /dockersuite.yml
+COPY setup_suite.sh /setup_suite.sh
+RUN chmod +x /setup_suite.sh
 #Create the file flag which show that the shop has not been installed yet
 RUN touch /data/initialize
 

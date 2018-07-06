@@ -87,8 +87,8 @@ $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]
     = 'de_search';
 $ELASTICA_PARAMETER__EXTRA = [
     // TODO: add here aws region and other extra config you need, for example
-    //'aws_region' => 'eu-central-1',
-    //'transport' => 'AwsAuthV4'
+    'aws_region' => 'eu-central-1',
+    'transport' => 'AwsAuthV4'
 ];
 $config[ApplicationConstants::ELASTICA_PARAMETER__EXTRA] = $ELASTICA_PARAMETER__EXTRA;
 $config[SearchConstants::ELASTICA_PARAMETER__EXTRA] = $ELASTICA_PARAMETER__EXTRA;

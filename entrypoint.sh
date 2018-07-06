@@ -37,7 +37,7 @@ echo "127.0.0.1	$ZED_HOST" >> /etc/hosts
 
 if [ -f /data/initialize ]
 then
-    /versions/setup_suite.sh
+    /setup_suite.sh
 fi
 
 # Save environment variable to the env.txt for remote Jenkins jobs

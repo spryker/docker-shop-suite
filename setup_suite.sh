@@ -42,11 +42,11 @@ redis-cli -h $REDIS_HOST flushall
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
 # Copy config_local.php config
-cp /versions/config_local.php config/Shared/config_local.php
+cp /config_local.php config/Shared/config_local.php
 #Copy store.php which fixed the multistore issue
-cp /versions/store.php config/Shared/store.php
+cp /store.php config/Shared/store.php
 #Copy store.php which fixed the multistore issue
-cp /versions/dockersuite.yml config/install/dockersuite.yml
+cp /dockersuite.yml config/install/$APPLICATION_ENV.yml
 
 # Full app install
 vendor/bin/install -vvv
