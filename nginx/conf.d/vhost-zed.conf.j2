@@ -3,7 +3,7 @@ upstream backend-zed {
 }
 
 server {
-    listen 8081 default;
+    listen 8080;
 ##    server_name ~^zed\\.de\\..+\\.local$;
     server_name {{ZED_HOST}};
     keepalive_timeout 0;
