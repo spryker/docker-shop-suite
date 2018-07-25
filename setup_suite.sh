@@ -64,4 +64,4 @@ rm /data/initialize
 echo "Spryker shop suite has been successfully installed"
 echo "You could get it with the next links:"
 echo "Frontend (Yves): http://$YVES_HOST"
-echo "Backend   (Zed): http://$ZED_HOST:8081"
+echo "Backend   (Zed): http://$ZED_HOST"
