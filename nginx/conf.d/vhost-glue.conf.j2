@@ -1,0 +1,22 @@
+upstream backend-zed {
+        server unix:/tmp/.fpm.glue.sock;
+}
+
+server {
+    # Listener for production/staging - requires external LoadBalancer directing traffic to this port
+    listen 10001;
+
+    # Listener for testing/development - one host only, doesn't require external LoadBalancer
+    listen 80;
+
+##    server_name ~^glue\\.de\\..+\\.local$;
+    server_name {{GLUE_HOST}};
+    keepalive_timeout 0;
+    access_log /dev/stdout extended;
+
+    root /data/public/Glue;
+
+    set $application_env development;
+    set $application_store DE;
+    include "spryker/zed.conf";
+}

@@ -1,7 +1,6 @@
 # docker build -t spryker/dockertestphp71 -f Dockerfile .
 
 FROM php:7.2-fpm
-LABEL authors="Marek Obuchowicz <marek@korekontrol.eu>,Vladimir Voronin <vladimir.voronin@spryker.com>"
 
 # Install tini (init handler)
 ADD https://github.com/krallin/tini/releases/download/v0.9.0/tini /tini

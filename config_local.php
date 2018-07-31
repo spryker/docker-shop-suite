@@ -15,6 +15,7 @@ use Spryker\Shared\ZedRequest\ZedRequestConstants;
 use Spryker\Shared\Log\LogConstants;
 use Monolog\Logger;
 use Spryker\Shared\RabbitMq\RabbitMqEnv;
+use Spryker\Shared\GlueApplication\GlueApplicationConstants;
 
 // ---------- Yves host
 $config[ApplicationConstants::HOST_YVES] = getenv('YVES_HOST');
@@ -37,7 +38,7 @@ $config[ApplicationConstants::YVES_TRUSTED_HOSTS] = [];
 
 // ---------- Zed host
 $config[ApplicationConstants::HOST_ZED] = getenv('ZED_HOST');
-$config[ApplicationConstants::PORT_ZED] = ':8081';
+$config[ApplicationConstants::PORT_ZED] = ':8080';
 $config[ApplicationConstants::PORT_SSL_ZED] = '';
 $config[ApplicationConstants::BASE_URL_ZED] = sprintf(
     'http://%s%s',
@@ -162,3 +163,6 @@ $config[SetupConstants::JENKINS_BASE_URL] = 'http://' . getenv('JENKINS_HOST') .
 $config[SetupConstants::JENKINS_DIRECTORY] = '/var/jenkins_home';
 
 $config[LogConstants::LOG_LEVEL] = Logger::ERROR;
+
+// ----------- Glue Application
+$config[GlueApplicationConstants::GLUE_APPLICATION_DOMAIN] = sprintf('%s', $GLUE_HOST);
