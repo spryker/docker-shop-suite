@@ -31,6 +31,7 @@ set -xe
 # Update Yves and Zed Nginx configuration files with the correct domain names
 j2 /etc/nginx/conf.d/vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
 j2 /etc/nginx/conf.d/vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
+j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
 
 # Put Zed host IP to /etc/hosts file:
 echo "127.0.0.1	$ZED_HOST" >> /etc/hosts
