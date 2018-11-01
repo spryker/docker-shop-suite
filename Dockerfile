@@ -141,7 +141,7 @@ COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
 RUN rm -f /usr/local/etc/php-fpm.d/*
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY php/pool.d/*.conf /usr/local/etc/php-fpm.d/
-RUN echo "memory_limit = 512M" >> /usr/local/etc/php/php.ini
+RUN echo "memory_limit = 2G" >> /usr/local/etc/php/php.ini
 
 # supervisord configuration
 COPY supervisord.conf /etc/supervisor/supervisord.conf
@@ -162,6 +162,7 @@ COPY config_local.php /config_local.php
 COPY store.php /store.php
 COPY dockersuite.yml /dockersuite.yml
 COPY setup_suite.sh /setup_suite.sh
+COPY vars.j2 /vars.j2
 RUN chmod +x /setup_suite.sh
 #Create the file flag which show that the shop has not been installed yet
 RUN touch /data/initialize

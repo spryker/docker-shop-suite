@@ -44,6 +44,7 @@ services:
       JENKINS_HOST: jenkins
       JENKINS_PORT: 8080
       GLUE_HOST: glue.de.demoshop.local
+      NEWRELIC_KEY: 5c2eyournewrelickey1111111111021cb198cee
     volumes:
         - versions:/versions:rw
         - static:/static:rw

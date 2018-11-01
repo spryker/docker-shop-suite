@@ -33,6 +33,18 @@ j2 /etc/nginx/conf.d/vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
 j2 /etc/nginx/conf.d/vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
 j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
 
+# Put env variables to /versions/vars file for using it in Jenkins jobs
+j2 /vars.j2 > /versions/vars
+
+# Install NewRelic php app monitoring
+echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | sudo tee /etc/apt/sources.list.d/newrelic.list
+wget -O- https://download.newrelic.com/548C16BF.gpg | sudo apt-key add -
+sudo apt-get update
+sudo apt-get install newrelic-php5 -y
+echo $NEWRELIC_KEY | sudo newrelic-install install
+supervisorctl restart php-fpm
+supervisorctl restart nginx
+
 # Put Zed host IP to /etc/hosts file:
 echo "127.0.0.1	$ZED_HOST" >> /etc/hosts
 
@@ -48,6 +60,7 @@ cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
 killall -9 nginx
 
 chown -R www-data:www-data /data
+chown jenkins /versions/
 
 # Call command...
 exec $*

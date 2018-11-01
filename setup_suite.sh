@@ -57,6 +57,7 @@ OLD_APPLICATION_VERSION=$(readlink /data)
 sudo rm -rf /data
 ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
+sudo chown jenkins /versions
 
 # Delete installation flag file
 rm /data/initialize
