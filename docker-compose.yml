@@ -45,6 +45,7 @@ services:
       JENKINS_PORT: 8080
       GLUE_HOST: glue.de.demoshop.local
       NEWRELIC_KEY: 5c2eyournewrelickey1111111111021cb198cee
+      GITHUB_TOKEN: 8888yourgithubtoken8888
     volumes:
         - versions:/versions:rw
         - static:/static:rw

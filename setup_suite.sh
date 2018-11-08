@@ -24,8 +24,8 @@ git checkout master
 ##sudo echo '{ "http-basic": {}, ' >  ~/.composer/auth.json
 ##sudo echo "\"github-oauth\": { \"github.com\": \"$GITHUB_TOKEN\"}}" >>  ~/.composer/auth.json
 composer global require hirak/prestissimo
-composer require aws/aws-sdk-php
 composer install
+composer require aws/aws-sdk-php
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL
 export PGPASSWORD=$POSTGRES_PASSWORD
