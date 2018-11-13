@@ -106,6 +106,7 @@ RUN \
         intl        \
         mbstring    \
         mysqli      \
+        opcache     \
         pdo         \
         pdo_mysql   \
         pdo_pgsql   \
@@ -142,6 +143,9 @@ RUN rm -f /usr/local/etc/php-fpm.d/*
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY php/pool.d/*.conf /usr/local/etc/php-fpm.d/
 RUN echo "memory_limit = 2G" >> /usr/local/etc/php/php.ini
+# Opcache configuration
+COPY php/ext/opcache.ini /tmp/opcache.ini
+RUN cat /tmp/opcache.ini >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
 # supervisord configuration
 COPY supervisord.conf /etc/supervisor/supervisord.conf
