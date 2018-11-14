@@ -113,6 +113,7 @@ RUN \
         pgsql       \
         readline    \
         soap        \
+        sockets     \
         xmlrpc      \
         xsl         \
         zip         \
