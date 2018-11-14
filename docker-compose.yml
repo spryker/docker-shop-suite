@@ -60,7 +60,7 @@ services:
 
   elasticsearch:
 #    restart: always
-    image: elasticsearch:5.5
+    image: elasticsearch:5.6
     environment:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
 
