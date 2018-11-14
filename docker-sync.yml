@@ -4,15 +4,25 @@ options:
   verbose: true
 syncs:
   #IMPORTANT: ensure this name is unique and does not match your other container names
-  app-mac-sync:
-    src: './app'
+  versions-sync:
+    src: './versions'
+    # sync_strategy: 'native_osx' # not needed, this is the default now
+    # sync_excludes: ['.gitignore', '.idea/*','.git/*', '*.coffee', '*.scss', '*.sass','*.log']
+    sync_userid: '33'
+    sync_args:
+      - "-prefer newer"
+#      - "-ignore='Path .git'"
+#      - "-ignore='BelowPath .git'"
+
+  static-sync:
+    src: './static'
     sync_strategy: 'unison'
     sync_args:
       - "-prefer newer"
 #      - "-ignore='Path .git'"
 #      - "-ignore='BelowPath .git'"
     sync_userid: '33'
-  jenkins-mac-sync:
+  jenkins-sync:
     src: './jenkins'
     sync_strategy: 'unison'
     sync_args:
