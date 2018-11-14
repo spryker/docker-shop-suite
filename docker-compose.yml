@@ -47,8 +47,8 @@ services:
       NEWRELIC_KEY: 5c2eyournewrelickey1111111111021cb198cee
       GITHUB_TOKEN: 8888yourgithubtoken8888
     volumes:
-        - versions:/versions:rw
-        - static:/static:rw
+        - versions-sync:/versions:rw
+        - static-sync:/static:rw
 
   db:
 #    restart: always
@@ -89,12 +89,12 @@ services:
     ports:
       - "9090:8080"
     volumes:
-      - jenkins-mac-sync:/var/jenkins_home:rw
+      - jenkins-sync:/var/jenkins_home:rw
 
 volumes:
-  versions:
+  versions-sync:
     external: true
-  static:
+  static-sync:
     external: true
-  jenkins-mac-sync:
+  jenkins-sync:
     external: true
