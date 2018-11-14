@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #Create the current build folder in the /versions
-curdate=(`date +%d.%m.%Y-%H.%M`)
+curdate=(`date +%Y-%m-%d_%H-%M`)
 APPLICATION_PATH=/versions/$curdate
 mkdir -p $APPLICATION_PATH
 cd $APPLICATION_PATH
