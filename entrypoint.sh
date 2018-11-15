@@ -55,9 +55,6 @@ then
     /setup_suite.sh
 fi
 
-# Save environment variable to the env.txt for remote Jenkins jobs
-##env > /data/deploy/docker/env.txt
-
 cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
 killall -9 nginx
 
