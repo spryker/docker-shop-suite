@@ -4,6 +4,8 @@ cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
 cp /etc/nginx/nginx_waiting.conf /etc/nginx/nginx.conf
 /usr/sbin/nginx -g 'daemon on;' &
 
+# Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
+export PGPASSWORD=$POSTGRES_PASSWORD
 # Waiting for PostgreSQL database starting
 until psql -h $POSTGRES_HOST -p "$POSTGRES_PORT" -U "$POSTGRES_USER" $POSTGRES_DATABASE -c '\l'; do
   echo "Waiting for PostgreSQL..."
