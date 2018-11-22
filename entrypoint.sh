@@ -39,10 +39,6 @@ j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
 j2 /vars.j2 > /versions/vars
 
 # Install NewRelic php app monitoring
-echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | sudo tee /etc/apt/sources.list.d/newrelic.list
-wget -O- https://download.newrelic.com/548C16BF.gpg | sudo apt-key add -
-sudo apt-get update
-sudo apt-get install newrelic-php5 -y
 echo $NEWRELIC_KEY | sudo newrelic-install install
 supervisorctl restart php-fpm
 supervisorctl restart nginx

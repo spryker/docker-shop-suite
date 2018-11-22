@@ -42,8 +42,10 @@ RUN \
   apt-get update && apt-get install -q -y --no-install-recommends wget gnupg apt-transport-https && \
 ##  echo "deb http://deb.debian.org/debian/ stretch main non-free contrib\n" > /etc/apt/sources.list.d/debian.list && \
 ##  echo "deb-src http://deb.debian.org/debian/ stretch main non-free contrib\n" >> /etc/apt/sources.list.d/debian.list && \
-  echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/node.list &&  \
-      wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+  echo 'deb https://deb.nodesource.com/node_8.x stretch main' > /etc/apt/sources.list.d/node.list && \
+      wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
+  echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' > /etc/apt/sources.list.d/newrelic.list && \
+      wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add -
 
 #Fixing the postgresql-client installation issue
 RUN mkdir -p /usr/share/man/man7/ && touch /usr/share/man/man7/ABORT.7.gz.dpkg-tmp && \
@@ -68,6 +70,7 @@ RUN \
 #    libssh2-php         \
     mc                  \
     netcat              \
+    newrelic-php5       \
     nginx               \
     nginx-extras        \
     nodejs              \

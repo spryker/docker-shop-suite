@@ -59,9 +59,6 @@ ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
 sudo chown jenkins /versions
 
-# Delete installation flag file
-rm /data/initialize
-
 echo "Spryker shop suite has been successfully installed"
 echo "You could get it with the next links:"
 echo "Frontend (Yves): http://$YVES_HOST"
