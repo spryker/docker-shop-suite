@@ -29,8 +29,9 @@ RUN mkdir -p /usr/share/jenkins/config/.ssh
 COPY jenkins/id_rsa  /usr/share/jenkins/config/.ssh/id_rsa
 COPY jenkins/org.jvnet.hudson.plugins.SSHBuildWrapper.xml  /usr/share/jenkins/config/org.jvnet.hudson.plugins.SSHBuildWrapper.xml
 COPY jenkins/credentials.xml   /usr/share/jenkins/config/credentials.xml
-RUN chown -R jenkins:jenkins  /usr/share/jenkins/config && \
-    chmod 400 /usr/share/jenkins/config/.ssh/id_rsa
+RUN chown -R jenkins:jenkins  /usr/share/jenkins/config \
+ && chmod 400 /usr/share/jenkins/config/.ssh/id_rsa \
+ && sed -i 's/ OPENSSH / RSA /g' /usr/share/jenkins/config/.ssh/id_rsa
 
 # Drop back to the regular jenkins user - good practice
 USER jenkins
