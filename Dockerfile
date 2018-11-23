@@ -42,8 +42,8 @@ RUN \
   apt-get update && apt-get install -q -y --no-install-recommends wget gnupg apt-transport-https && \
 ##  echo "deb http://deb.debian.org/debian/ stretch main non-free contrib\n" > /etc/apt/sources.list.d/debian.list && \
 ##  echo "deb-src http://deb.debian.org/debian/ stretch main non-free contrib\n" >> /etc/apt/sources.list.d/debian.list && \
-  echo 'deb https://deb.nodesource.com/node_8.x stretch main' > /etc/apt/sources.list.d/node.list && \
-      wget -O- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
+  echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/node.list &&      \
+      wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - &&           \
   echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' > /etc/apt/sources.list.d/newrelic.list && \
       wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add -
 
@@ -70,7 +70,6 @@ RUN \
 #    libssh2-php         \
     mc                  \
     netcat              \
-    newrelic-php5       \
     nginx               \
     nginx-extras        \
     nodejs              \
@@ -89,13 +88,15 @@ RUN \
     wget                \
     zip                 \
     openssh-server      \
+    newrelic-php5       \
 
-  && mkdir /var/run/sshd \
+  && mkdir /var/run/sshd  \
   && useradd -m -s /bin/bash -d /data jenkins               \
   && echo "jenkins:bigsecretpass" | chpasswd                \
   #Add user to group www-data and to sudoers file
   && usermod -a -G www-data jenkins                         \
   && echo 'jenkins ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers  \
+ 
 
 # Install PHP extensions
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
@@ -164,6 +165,8 @@ RUN install -d -o www-data -g www-data -m 0755 /data /var/www
 RUN mkdir -p /data/data/DE/logs
 RUN mkdir -p /versions
 RUN chown -R www-data:www-data /data
+
+
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
 COPY config_local.php /config_local.php
@@ -174,6 +177,15 @@ COPY vars.j2 /vars.j2
 RUN chmod +x /setup_suite.sh
 #Create the file flag which show that the shop has not been installed yet
 RUN touch /data/initialize
+
+# Add jenkins authorized_keys
+RUN mkdir -p /etc/spryker/jenkins/.ssh
+COPY jenkins/id_rsa.pub /etc/spryker/jenkins/.ssh/authorized_keys
+RUN sed -i '/^#AuthorizedKeysFile/aAuthorizedKeysFile      .ssh/authorized_keys /etc/spryker/%u/.ssh/authorized_keys' /etc/ssh/sshd_config  \
+ && chmod 400 /etc/spryker/jenkins/.ssh/authorized_keys \
+ && chown jenkins:jenkins /etc/spryker/jenkins/.ssh/authorized_keys
+RUN sed -i '/chown\ jenkins/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY" > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."' /entrypoint.sh
+
 
 #The workaround for Azure 4 min timeout
 RUN mkdir -p /etc/nginx/waiting
