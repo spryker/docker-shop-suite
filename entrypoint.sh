@@ -1,8 +1,17 @@
 #!/bin/bash -x
 
-cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
-cp /etc/nginx/nginx_waiting.conf /etc/nginx/nginx.conf
+#cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
+#cp /etc/nginx/nginx_waiting.conf /etc/nginx/nginx.conf
+
+# Update Yves and Zed Nginx configuration files with the correct domain names
+j2 /etc/nginx/conf.d/vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
+j2 /etc/nginx/conf.d/vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
+j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
+
 /usr/sbin/nginx -g 'daemon on;' &
+
+# Enable maintenance mode
+touch /maintenance_on.flag
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
 export PGPASSWORD=$POSTGRES_PASSWORD
@@ -30,11 +39,6 @@ echo "RabbitMQ is available now. Good."
 # Become more verbose
 set -xe
 
-# Update Yves and Zed Nginx configuration files with the correct domain names
-j2 /etc/nginx/conf.d/vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
-j2 /etc/nginx/conf.d/vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
-j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
-
 # Put env variables to /versions/vars file for using it in Jenkins jobs
 j2 /vars.j2 > /versions/vars
 
@@ -51,8 +55,11 @@ then
     /setup_suite.sh
 fi
 
-cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
+#cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
 killall -9 nginx
+
+# Unset maintenance flag
+test -f /maintenance_on.flag && rm /maintenance_on.flag
 
 chown -R www-data:www-data /data
 chown jenkins /versions/

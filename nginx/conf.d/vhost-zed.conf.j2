@@ -11,6 +11,9 @@ server {
 
     root /data/public/Zed;
 
+    # Maintenance mode
+    include /etc/nginx/maintenance.conf;
+
     # Timeout for ZED requests - 10 minutes
     # (longer requests should be converted to jobs and executed via jenkins)
     proxy_read_timeout 600s;
