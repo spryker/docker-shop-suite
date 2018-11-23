@@ -16,7 +16,7 @@ services:
     ports:
       - "80:8080"
       - "10001:10001"
-      - "2222:22"
+      - "222:222"
     environment:
       APPLICATION_ENV: dockersuite
       APPLICATION_STORE: DE
