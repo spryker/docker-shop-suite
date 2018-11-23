@@ -2,6 +2,9 @@
 There is Dockerfile for build Yves and Zed docker containers and additional services container configurations for run Spyrker shop suite.
 ## Quick installation
 ```
+ssh-keygen -b 2048 -t rsa -f jenkins/id_rsa -q -N ""
+
+```
 docker-compose build
 docker-compose up -d
 ```
