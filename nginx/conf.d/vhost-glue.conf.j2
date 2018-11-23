@@ -16,6 +16,9 @@ server {
 
     root /data/public/Glue;
 
+    # Maintenance mode
+    include /etc/nginx/maintenance.conf;
+
     set $application_env development;
     set $application_store DE;
 

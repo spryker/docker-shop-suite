@@ -18,6 +18,10 @@ sudo ssh-keyscan github.com >> ~/.ssh/known_hosts
 git clone https://github.com/spryker-shop/suite.git ./
 git checkout master
 
+# Copy maintenance page
+rm -rf /maintenance
+cp -r ${APPLICATION_PATH}/public/Zed/maintenance /maintenance
+
 # Install all modules for Spryker
 ##sudo mkdir -p ~/.composer
 ##sudo touch ~/.composer/auth.json
