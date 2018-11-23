@@ -11,8 +11,6 @@ j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
 /usr/sbin/nginx -g 'daemon on;' &
 
 # Enable maintenance mode
-test -d /maintenance || mkdir /maintenance
-echo "PAGE UNDER CONSTRUCTION!<br>Come back in a few minutes..." >> /maintenance/index.html
 touch /maintenance_on.flag
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set

@@ -141,6 +141,7 @@ RUN \
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/conf.d/* /etc/nginx/conf.d/
 COPY nginx/maintenance.conf /etc/nginx/maintenance.conf
+COPY nginx/maintenance.html /maintenance/index.html
 COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
 
 # PHP-FPM configuration
