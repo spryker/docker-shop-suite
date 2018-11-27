@@ -44,6 +44,7 @@ j2 /vars.j2 > /versions/vars
 
 # Install NewRelic php app monitoring
 echo $NEWRELIC_KEY | sudo newrelic-install install
+test ${PHP_CLI_RAM} -gt 256 && sed -r -i -e "/memory_limit/s/(\s*=\s*)[0-9]*[GMK]/\1${PHP_CLI_RAM}M/g" /usr/local/etc/php/php.ini
 supervisorctl restart php-fpm
 supervisorctl restart nginx
 
