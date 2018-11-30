@@ -48,6 +48,10 @@ echo $NEWRELIC_KEY | sudo newrelic-install install
 # Configure PHP
 j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini 
 
+
+# Configure SSMTP
+j2 /etc/ssmtp/ssmtp.conf.j2 > /etc/ssmtp/ssmtp.conf
+
 supervisorctl restart php-fpm
 supervisorctl restart nginx
 
