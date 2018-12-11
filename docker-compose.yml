@@ -52,7 +52,7 @@ services:
       SMTP_USER: ''
       SMTP_PASS: ''
       SMTP_TLS: 'no'
-      HTTPS_ON: 1
+      HTTPS_ON: 0
     volumes:
         - versions-sync:/versions:rw
         - static-sync:/static:rw
