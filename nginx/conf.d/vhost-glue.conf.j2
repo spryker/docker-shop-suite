@@ -19,6 +19,9 @@ server {
     # Maintenance mode
     include /etc/nginx/maintenance.conf;
 
+    # Location for Letsencrypt validation
+    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
+
     set $application_env development;
     set $application_store DE;
 

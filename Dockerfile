@@ -139,7 +139,7 @@ RUN \
 
 # Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
-COPY nginx/conf.d/* /etc/nginx/conf.d/
+COPY nginx/conf.d/ /etc/nginx/conf.d/
 COPY nginx/maintenance.conf /etc/nginx/maintenance.conf
 COPY nginx/maintenance.html /maintenance/index.html
 COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
@@ -176,15 +176,16 @@ COPY config_local.php /config_local.php
 COPY store.php /store.php
 COPY dockersuite.yml /dockersuite.yml
 COPY setup_suite.sh /setup_suite.sh
+COPY setup_ssl.sh /setup_ssl.sh
 COPY vars.j2 /vars.j2
 RUN chmod +x /setup_suite.sh
 #Create the file flag which show that the shop has not been installed yet
 RUN touch /data/initialize
 
 #The workaround for Azure 4 min timeout
-RUN mkdir -p /etc/nginx/waiting
-COPY nginx/waiting/waiting_vhost.conf /etc/nginx/waiting/waiting_vhost.conf
-COPY nginx/waiting/nginx_waiting.conf /etc/nginx/nginx_waiting.conf
+#RUN mkdir -p /etc/nginx/waiting
+#COPY nginx/waiting/waiting_vhost.conf /etc/nginx/waiting/waiting_vhost.conf
+#COPY nginx/waiting/nginx_waiting.conf /etc/nginx/nginx_waiting.conf
 #RUN chown -R www-data:www-data /etc/nginx
 
 ##RUN if [ ! -d vendor ]; then ./build; fi
