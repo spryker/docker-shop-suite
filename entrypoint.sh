@@ -59,7 +59,7 @@ then
     /setup_suite.sh
     # Disable maintenance mode to validate LetsEncrypt certificates
     test -f /maintenance_on.flag && rm /maintenance_on.flag
-    /setup_ssl.sh ${YVES_HOST//www./} $(curl http://169.254.169.254/latest/meta-data/public-ipv4 -s)
+    /setup_ssl.sh ${YVES_HOST//www./} $(curl https://api.ipify.org/ -s)
 fi
 
 #cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
