@@ -157,6 +157,7 @@ RUN cat /tmp/opcache.ini >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
 # Sending email configuration
 COPY ssmtp/ssmtp.conf.j2 /etc/ssmtp/ssmtp.conf.j2
+COPY ssmtp/swiftMailer.conf /etc/ssmtp/swiftMailer.conf
 
 # supervisord configuration
 COPY supervisord.conf /etc/supervisor/supervisord.conf

@@ -22,6 +22,31 @@ git checkout master
 rm -rf /maintenance
 cp -r ${APPLICATION_PATH}/public/Zed/maintenance /maintenance
 
+# Swift Mailer AWS configuration
+if [ $SMTP_HOST = "email-smtp.eu-west-1.amazonaws.com" ]
+     then
+        mailConfigurationFile="src/Pyz/Zed/Mail/MailDependencyProvider.php"
+        glossaryFile="data/import/glossary.csv"
+
+        if [ grep -Fq "addMailer" $mailConfigurationFile ]
+            then
+                echo "Swift configuration alredy exist"
+            else
+                echo no
+                sed -i '/ provideBusinessLayerDependencies/ {
+                r /etc/ssmtp/swiftMailer.conf
+                N
+                }' $mailConfigurationFile
+                sed -i '/Mail\\OrderShippedMailTypePlugin/a use Spryker\\Zed\\Mail\\Dependency\\Mailer\\MailToMailerBridge;\nuse Swift_Mailer;\nuse Swift_Message;\nuse Swift_SmtpTransport;\n' $mailConfigurationFile
+        fi
+        if [ -f $glossaryFile ]
+           then
+                sed -i -e 's/demoshop@spryker.com/no-replay@demo-spryker.com/g' -e 's/demoshop@spryker.de/no-replay@demo-spryker.com/g' $glossaryFile
+           else
+                echo "The glossary.csv file does not exist"
+        fi
+fi
+
 # Install all modules for Spryker
 ##sudo mkdir -p ~/.composer
 ##sudo touch ~/.composer/auth.json
