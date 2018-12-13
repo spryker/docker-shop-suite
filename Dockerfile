@@ -192,6 +192,8 @@ RUN sed -i '/^#AuthorizedKeysFile/aAuthorizedKeysFile      .ssh/authorized_keys 
  && chown jenkins:jenkins /etc/spryker/jenkins/.ssh/authorized_keys
 RUN sed -i '/chown\ jenkins/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY" > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."' /entrypoint.sh
 
+# Add SwiftMailer AWS configuration
+COPY application/app_files/MailDependencyProvider.php /etc/spryker/
 
 #The workaround for Azure 4 min timeout
 RUN mkdir -p /etc/nginx/waiting

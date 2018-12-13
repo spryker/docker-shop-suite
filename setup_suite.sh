@@ -22,6 +22,12 @@ git checkout master
 rm -rf /maintenance
 cp -r ${APPLICATION_PATH}/public/Zed/maintenance /maintenance
 
+# Swift Mailer AWS configuration
+if [ $SMTP_HOST != "127.0.0.1" ]
+     then
+        cp /etc/spryker/MailDependencyProvider.php src/Pyz/Zed/Mail/MailDependencyProvider.php
+fi
+
 # Install all modules for Spryker
 ##sudo mkdir -p ~/.composer
 ##sudo touch ~/.composer/auth.json
