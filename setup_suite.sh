@@ -23,7 +23,7 @@ rm -rf /maintenance
 cp -r ${APPLICATION_PATH}/public/Zed/maintenance /maintenance
 
 # Swift Mailer AWS configuration
-if [ $SMTP_HOST = "email-smtp.eu-west-1.amazonaws.com" ]
+if [ $SMTP_HOST != "127.0.0.1" ]
      then
         mailConfigurationFile="src/Pyz/Zed/Mail/MailDependencyProvider.php"
         glossaryFile="data/import/glossary.csv"
