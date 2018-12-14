@@ -4,18 +4,24 @@
 test -z ${HTTPS_ON} && exit 0
 test ${HTTPS_ON} -eq 0 && exit 0
 
+# Checking the first input parameter with the domain
 mainDomain=$1
-myIp=$2
-myDomains="${mainDomain} www.${mainDomain} glue.${mainDomain} os.${mainDomain}"
-
 test -z ${mainDomain} && echo "No domain specified. Exiting" && exit 1
+
+# Checking the second input parameter with the public IP
+myIp=$2
 test -z ${myIp} && echo "No IP specified. Exiting" && exit 1
+
+# Concatinating all Spryker domains
+myDomains="${mainDomain} www.${mainDomain} glue.${mainDomain} os.${mainDomain}"
 
 # Install Dig if it doesn't installed yet
 test -z "$(which dig)" && (apt-get update && apt-get install -y dnsutils)
 
+# Function which return the IP address of the domain name input as the first parameter of the function
 function resolve_domain(){
   domain=$1
+  test -z ${domain} && echo "No domain specified as the parameter of the resolve_domain function. Exiting" && exit 1
   ip=$(dig ${domain} a +short|grep -E "^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}"|head -n 1)
   echo ${ip}
 }
@@ -54,7 +60,7 @@ ${repoDir}/letsencrypt-auto certonly --webroot -w /usr/share/nginx/html -d $(ech
 ls -la /etc/letsencrypt/live/${mainDomain}/fullchain.pem
 ls -la /etc/letsencrypt/live/${mainDomain}/privkey.pem
 
-# Check if certificate and key was generated
+# Check if certificate and key was generated and put it in the vhosts configs
 if [ -L /etc/letsencrypt/live/${mainDomain}/fullchain.pem -a -L /etc/letsencrypt/live/${mainDomain}/privkey.pem ]; then
     fullchain=$(readlink -f /etc/letsencrypt/live/${mainDomain}/fullchain.pem)
     privkey=$(readlink -f /etc/letsencrypt/live/${mainDomain}/privkey.pem)
@@ -66,4 +72,3 @@ if [ -L /etc/letsencrypt/live/${mainDomain}/fullchain.pem -a -L /etc/letsencrypt
 	supervisorctl restart nginx
     fi
 fi
-
