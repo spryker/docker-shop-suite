@@ -50,7 +50,7 @@ cp /config_local.php config/Shared/config_local.php
 #Copy store.php which fixed the multistore issue
 cp /store.php config/Shared/store.php
 #Copy store.php which fixed the multistore issue
-cp /dockersuite.yml config/install/$APPLICATION_ENV.yml
+cp /dockersuite_${ENV_TYPE:-staging}.yml config/install/$APPLICATION_ENV.yml
 
 # Full app install
 vendor/bin/install -vvv

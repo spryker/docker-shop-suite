@@ -174,7 +174,9 @@ WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
 COPY config_local.php /config_local.php
 COPY store.php /store.php
-COPY dockersuite.yml /dockersuite.yml
+COPY dockersuite_development.yml /dockersuite_development.yml
+COPY dockersuite_staging.yml /dockersuite_staging.yml
+COPY dockersuite_production.yml /dockersuite_production.yml
 COPY setup_suite.sh /setup_suite.sh
 COPY setup_ssl.sh /setup_ssl.sh
 COPY vars.j2 /vars.j2
