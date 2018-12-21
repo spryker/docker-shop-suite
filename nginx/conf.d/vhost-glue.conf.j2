@@ -22,7 +22,7 @@ server {
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
 
-    set $application_env development;
+    set $application_env staging;
     set $application_store DE;
 
     # Timeout for Api requests - 10 minutes
