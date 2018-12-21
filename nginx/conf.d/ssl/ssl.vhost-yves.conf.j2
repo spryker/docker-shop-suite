@@ -1,0 +1,147 @@
+upstream backend-yves {
+        server unix:/tmp/.fpm.yves.sock;
+}
+
+server {
+    listen 8080 default;
+##    server_name ~^www\\.de\\..+\\.local$;
+    server_name {{YVES_HOST}};
+    keepalive_timeout 0;
+    access_log  /dev/stdout extended;
+
+    {% if YVES_HTTP_TO_HTTPS is defined %}{% if YVES_HTTP_TO_HTTPS == "1" %}
+    # Redirect all HTTP requests to HTTPS
+    rewrite ^(.*)$ https://{{YVES_HOST}}$1 redirect;
+    {% endif %}{% endif %}
+    root /data/public/Yves;
+
+    # Location for Letsencrypt validation
+    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
+
+    # Maintenance mode
+    include /etc/nginx/maintenance.conf;
+
+    # Static files - allow only specified here paths
+    # all other resources should be served via static host (and cached, if possible, via reverse proxy or cdn)
+    location ~ (/assets/|/maintenance.html|/favicon.ico|/crossdomain.xml) {
+        access_log        off;
+        expires           30d;
+        add_header Pragma public;
+        add_header Cache-Control "public";
+        try_files $uri $uri/ =404;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+    }
+
+    location ~ \.(jpg|gif|png|css|js|html|xml|ico|txt|csv|map)$ {
+        access_log off;
+        expires 30d;
+        add_header Pragma public;
+        add_header Cache-Control "public";
+        try_files $uri /index.php?$args;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+    }
+
+    # PHP application
+    location / {
+        ## CORS - Allow ajax requests from http to https webservices on the same domain
+        #more_set_headers "Access-Control-Allow-Origin: http://$server_name";
+        #more_set_headers "Access-Control-Allow-Credentials: true";
+        #more_set_headers "Access-Control-Allow-Headers: Authorization";
+
+        # Frontend - force browser to use new rendering engine
+        more_set_headers "X-UA-Compatible: IE=Edge,chrome=1";
+
+        # Terminate OPTIONS requests immediately. No need for calling php
+        # OPTIONS is used by Ajax from http to https as a pre-flight-request
+        # see http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+        if ($request_method = OPTIONS) {
+            return 200;
+        }
+
+        add_header X-Server $hostname;
+        fastcgi_pass backend-yves;
+        fastcgi_index index.php;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+    }
+
+}
+
+server {
+    listen 4443 default ssl http2;
+##    server_name ~^www\\.de\\..+\\.local$;
+    server_name {{YVES_HOST}};
+
+    ssl on;
+    ssl_certificate /etc/letsencrypt/live/{{ YVES_HOST }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ YVES_HOST }}/privkey.pem;
+    ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA !RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !EECDH+aRSA+RC4";
+#    ssl_dhparam /etc/dhparams.pem;
+    ssl_prefer_server_ciphers on;
+    ssl_protocols TLSv1.2;
+    ssl_session_cache builtin:1000 shared:SSL:10m;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout  10m;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_verify_depth 2;
+
+    keepalive_timeout 0;
+    access_log  /dev/stdout extended;
+
+    root /data/public/Yves;
+
+    # Location for Letsencrypt validation
+    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
+
+    # Maintenance mode
+    include /etc/nginx/maintenance.conf;
+
+    # Static files - allow only specified here paths
+    # all other resources should be served via static host (and cached, if possible, via reverse proxy or cdn)
+    location ~ (/assets/|/maintenance.html|/favicon.ico|/crossdomain.xml) {
+        access_log        off;
+        expires           30d;
+        add_header Pragma public;
+        add_header Cache-Control "public";
+        try_files $uri $uri/ =404;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+    }
+
+    location ~ \.(jpg|gif|png|css|js|html|xml|ico|txt|csv|map)$ {
+        access_log off;
+        expires 30d;
+        add_header Pragma public;
+        add_header Cache-Control "public";
+        try_files $uri /index.php?$args;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+    }
+
+    # PHP application
+    location / {
+        ## CORS - Allow ajax requests from http to https webservices on the same domain
+        #more_set_headers "Access-Control-Allow-Origin: http://$server_name";
+        #more_set_headers "Access-Control-Allow-Credentials: true";
+        #more_set_headers "Access-Control-Allow-Headers: Authorization";
+
+      	# Frontend - force browser to use new rendering engine
+      	more_set_headers "X-UA-Compatible: IE=Edge,chrome=1";
+
+        # Terminate OPTIONS requests immediately. No need for calling php
+        # OPTIONS is used by Ajax from http to https as a pre-flight-request
+        # see http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+        if ($request_method = OPTIONS) {
+            return 200;
+        }
+
+        add_header X-Server $hostname;
+        fastcgi_pass backend-yves;
+        fastcgi_index index.php;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+    }
+
+}
+

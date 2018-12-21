@@ -55,8 +55,8 @@ curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 cp /config_local.php config/Shared/config_local.php
 #Copy store.php which fixed the multistore issue
 cp /store.php config/Shared/store.php
-#Copy store.php which fixed the multistore issue
-cp /dockersuite.yml config/install/$APPLICATION_ENV.yml
+#Copy [production|staging|development].yml only if it doesn't exist
+test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
 
 # Full app install
 vendor/bin/install -vvv

@@ -48,12 +48,8 @@ echo $NEWRELIC_KEY | sudo newrelic-install install
 # Configure PHP
 j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini 
 
-
 # Configure SSMTP
 j2 /etc/ssmtp/ssmtp.conf.j2 > /etc/ssmtp/ssmtp.conf
-
-supervisorctl restart php-fpm
-supervisorctl restart nginx
 
 # Put Zed host IP to /etc/hosts file:
 echo "127.0.0.1	$ZED_HOST" >> /etc/hosts
@@ -61,10 +57,16 @@ echo "127.0.0.1	$ZED_HOST" >> /etc/hosts
 if [ -f /data/initialize ]
 then
     /setup_suite.sh
+    # Disable maintenance mode to validate LetsEncrypt certificates
+    test -f /maintenance_on.flag && rm /maintenance_on.flag
+    /setup_ssl.sh ${YVES_HOST//www./} $(curl http://checkip.amazonaws.com/ -s) &
 fi
 
 #cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
 killall -9 nginx
+
+supervisorctl restart php-fpm
+supervisorctl restart nginx
 
 # Unset maintenance flag
 test -f /maintenance_on.flag && rm /maintenance_on.flag

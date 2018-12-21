@@ -11,6 +11,9 @@ server {
 
     root /data/public/Yves;
 
+    # Location for Letsencrypt validation
+    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
+
     # Maintenance mode
     include /etc/nginx/maintenance.conf;
 
