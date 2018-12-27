@@ -88,7 +88,7 @@ if [ ${ZED_HTTPS} -eq 1 ];then
   if [ "$(checkCertificates ${mainDomain})" == "OK" ]; then
     echo j2 /etc/nginx/conf.d/ssl/ssl.vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
   else
-    echo FAIL
+    echo "Certificate for ${myDomains} was not created. Canceling HTTPS configuration"
   fi
 fi
 
@@ -103,7 +103,7 @@ if [ ${YVES_HTTPS} -eq 1 ];then
   if [ "$(checkCertificates ${mainDomain})" == "OK" ]; then
     echo j2 /etc/nginx/conf.d/ssl/ssl.vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
   else
-    echo FAIL
+    echo "Certificate for ${myDomains} was not created. Canceling HTTPS configuration"
   fi
 fi
 
@@ -120,7 +120,7 @@ if [ ${GLUE_HTTPS} -eq 1 ];then
   if [ "$(checkCertificates ${mainDomain})" == "OK" ]; then
     echo j2 /etc/nginx/conf.d/ssl/ssl.vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
   else
-    echo FAIL
+    echo "Certificate for ${myDomains} was not created. Canceling HTTPS configuration"
   fi
 fi
 
