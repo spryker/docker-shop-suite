@@ -197,6 +197,7 @@ RUN sed -i '/chown\ jenkins/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS
 
 # Add SwiftMailer AWS configuration
 COPY application/app_files/MailDependencyProvider.php /etc/spryker/
+COPY application/app_files/Mailer.patch /etc/spryker/
 
 #The workaround for Azure 4 min timeout
 #RUN mkdir -p /etc/nginx/waiting
