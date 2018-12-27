@@ -24,7 +24,7 @@
 +                 $this->getConfig()->getSmtpHost(),
 +                 $this->getConfig()->getSmtpPort()
 +             );
-+               $transport->setHost(getenv('SMTP_HOST'));
++              $transport->setHost(getenv('SMTP_HOST'));
 +              $transport->setPort(getenv('SMTP_PORT'));
 +              $transport->setUsername(getenv('SMTP_USER'));
 +              $transport->setPassword(getenv('SMTP_PASS'));
