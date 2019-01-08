@@ -18,7 +18,8 @@ services:
       - "10001:10001"
       - "222:222"
     environment:
-      APPLICATION_ENV: dockersuite
+      ENV_NAME: dockersuite
+      APPLICATION_ENV: staging
       APPLICATION_STORE: DE
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
