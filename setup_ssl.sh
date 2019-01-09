@@ -29,7 +29,7 @@ function resolveDomain(){
   echo ${ip}
 }
 
-#Checking that domain resolves with correct IP 
+#Checking that domain resolves with correct IP
 function checkDomain(){
   domain=$1
   checkDig
@@ -57,14 +57,12 @@ function getCertificates(){
       git clone https://github.com/certbot/certbot.git ${repoDir}
   fi
 
-  echo  ${repoDir}/letsencrypt-auto certonly --webroot -w /usr/share/nginx/html -d $(echo "${domains}"|sed "s/ / -d /g") -m admin@${mainDomain} --agree-tos -n --expand
+  ${repoDir}/letsencrypt-auto certonly --webroot -w /usr/share/nginx/html -d $(echo "${domains}"|sed "s/ / -d /g") -m admin@${mainDomain} --agree-tos -n --expand
 }
 
 function checkCertificates(){
   domain=$1
-  ls -la /etc/letsencrypt/live/${domain}/fullchain.pem
-  ls -la /etc/letsencrypt/live/${domain}/privkey.pem
-  
+
   # Check if certificate and key was generated and put it in the vhosts configs
   if [ -L /etc/letsencrypt/live/${domain}/fullchain.pem -a -L /etc/letsencrypt/live/${domain}/privkey.pem ]; then
       fullchain=$(readlink -f /etc/letsencrypt/live/${domain}/fullchain.pem)
@@ -75,52 +73,46 @@ function checkCertificates(){
   fi
 }
 
+
 # Processing ZED domain(s)
 if [ ${ZED_HTTPS} -eq 1 ];then
-  myDomains="os.${mainDomain}"
+  myDomain="os.${mainDomain}"
   checkDig
-  for domain in $(echo ${myDomains}); do
-    checkDomain ${domain}
-  done
+  checkDomain ${myDomain}
 
-  getCertificates "${myDomains}"
-
-  if [ "$(checkCertificates ${mainDomain})" == "OK" ]; then
-    echo j2 /etc/nginx/conf.d/ssl/ssl.vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
+  getCertificates "${myDomain}"
+  if [ "$(checkCertificates ${myDomain})" == "OK" ]; then
+    j2 /etc/nginx/conf.d/ssl/ssl.vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
   else
-    echo "Certificate for ${myDomains} was not created. Canceling HTTPS configuration"
+    echo "Cert for ${myDomain} not found"
   fi
 fi
 
 # Processing YVES domain(s)
 if [ ${YVES_HTTPS} -eq 1 ];then
-  myDomains="${mainDomain} www.${mainDomain}"
+  myDomain="www.${mainDomain}"
   checkDig
-  for domain in $(echo ${myDomains}); do
-    checkDomain ${domain}
-  done
-  getCertificates "${myDomains}"
-  if [ "$(checkCertificates ${mainDomain})" == "OK" ]; then
-    echo j2 /etc/nginx/conf.d/ssl/ssl.vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
+  checkDomain ${myDomain}
+  getCertificates "${myDomain}"
+  if [ "$(checkCertificates ${myDomain})" == "OK" ]; then
+    j2 /etc/nginx/conf.d/ssl/ssl.vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
   else
-    echo "Certificate for ${myDomains} was not created. Canceling HTTPS configuration"
+    echo "Cert for ${myDomain} not found"
   fi
 fi
 
 # Processing GLUE domain(s)
 if [ ${GLUE_HTTPS} -eq 1 ];then
-  myDomains="glue.${mainDomain}"
+  myDomain="glue.${mainDomain}"
   checkDig
-  for domain in $(echo ${myDomains}); do
-    checkDomain ${domain}
-  done
+  checkDomain ${myDomain}
 
-  getCertificates "${myDomains}"
+  getCertificates "${myDomain}"
 
-  if [ "$(checkCertificates ${mainDomain})" == "OK" ]; then
-    echo j2 /etc/nginx/conf.d/ssl/ssl.vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
+  if [ "$(checkCertificates ${myDomain})" == "OK" ]; then
+    j2 /etc/nginx/conf.d/ssl/ssl.vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
   else
-    echo "Certificate for ${myDomains} was not created. Canceling HTTPS configuration"
+    echo "Cert for ${myDomain} not found"
   fi
 fi
 
