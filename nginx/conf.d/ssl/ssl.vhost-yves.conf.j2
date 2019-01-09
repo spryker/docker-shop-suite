@@ -139,6 +139,8 @@ server {
         fastcgi_pass backend-yves;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
+        fastcgi_param X-Forwarded-For $proxy_add_x_forwarded_for;
+        fastcgi_param X-Forwarded-Proto $scheme;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
     }
