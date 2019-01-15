@@ -1,7 +1,7 @@
 ## Docker container solution for Spryker deploy
 There is Dockerfile for build Yves and Zed docker containers and additional services container configurations for run Spyrker shop suite.
 ## Quick installation
-# Create a new SSH key pair:
+### Create a new SSH key pair:
 Linux/MacOS:
 
 ```
@@ -21,17 +21,17 @@ Git Bash:
   b. ssh-keygen.exe  -b 2048 -m PEM -t rsa -f jenkins/id_rsa -q -N ""
 ```
 
-# Run buid and start docker-compose
+### Run buid and start docker-compose
 
 ```
 docker-compose build
 docker-compose up -d
 ```
 
-# NewRelic usage
+### NewRelic usage
 If you plan to use the [NewRelic](https://newrelic.com/) for monitoring please define the `NEWRELIC_KEY` as the environment variable of the application container.
 
-# Spryker cronjobs
+### Spryker cronjobs
 The [Spryker cronjobs sheduling](https://academy.spryker.com/developing_with_spryker/resources_and_developer_tools/cronjob_scheduling.html) should be correctly setup for shop suite publish and sync working.
 The jenkins container setup for this needs, but now the console command:
 ```
