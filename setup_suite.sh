@@ -72,6 +72,18 @@ ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
 sudo chown jenkins /versions
 
+#Changes which need to restore jenkins jobs for local builds
+if [ "${SMTP_HOST}" == "127.0.0.1" ]; then 
+   cd $APPLICATION_PATH
+   sed -i 's/\/hudson.tasks.Shell/\/org.jvnet.hudson.plugins.SSHBuilder/g' vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php  
+   sed -i 's/\<hudson.tasks.Shell\>/org.jvnet.hudson.plugins.SSHBuilder plugin\=\x27ssh\@2.6.1\x27\>\n     \<siteName\>jenkins\@app\:222\<\/siteName/g' vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
+   mkdir deploy
+   cp /versions/vars deploy/
+   ln -s /usr/local/bin/php /usr/bin/php
+   vendor/bin/console setup:jenkins:generate
+fi
+
+
 echo "Spryker shop suite has been successfully installed"
 echo "You could get it with the next links:"
 echo "Frontend (Yves): http://$YVES_HOST"
