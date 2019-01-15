@@ -28,6 +28,13 @@ docker-compose build
 docker-compose up -d
 ```
 
+You can start Jenkins jobs only when http://www.de.demoshop.local came UP. 
+(in the other case, you will face with "Connection refused" error):
+```
+[SSH] Exception:java.net.ConnectException: Connection refused (Connection refused)
+com.jcraft.jsch.JSchException: java.net.ConnectException: Connection refused (Connection refused)
+```
+
 ### NewRelic usage
 If you plan to use the [NewRelic](https://newrelic.com/) for monitoring please define the `NEWRELIC_KEY` as the environment variable of the application container.
 
