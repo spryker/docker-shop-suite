@@ -3,15 +3,31 @@ There is Dockerfile for build Yves and Zed docker containers and additional serv
 ## Quick installation
 ## Create a new SSH key pair:
 Linux/MacOS:
+
 ```
-ssh-keygen -b 2048 -t rsa -f jenkins/id_rsa -q -N ""
+ssh-keygen -b 2048 -m PEM -t rsa -f jenkins/id_rsa -q -N ""
 ```
-Instructions for windows users: https://goo.gl/xHZVUL
+
+Windows: 
+
+```
+Git Bash:
+1. Download and install Git for Windows: https://git-scm.com/download/win
+  a. Select to Use Git from the Windows Command Prompt.
+  b. Select to Use OpenSSL library.
+  c. Accept the default extra option configuration by clicking Install.
+2. Launching GitBash
+  a. Chenge directory to the docker-shop-suite
+  b. ssh-keygen.exe  -b 2048 -m PEM -t rsa -f jenkins/id_rsa -q -N ""
+```
+
+## Run buid and start docker-compose
 
 ```
 docker-compose build
 docker-compose up -d
 ```
+
 ##NewRelic usage
 If you plan to use the [NewRelic](https://newrelic.com/) for monitoring please define the `NEWRELIC_KEY` as the environment variable of the application container.
 
