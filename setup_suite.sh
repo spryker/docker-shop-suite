@@ -73,7 +73,7 @@ sudo rm -rf $OLD_APPLICATION_VERSION
 sudo chown jenkins /versions
 
 #Changes which need to restore jenkins jobs for local builds
-if [ "${SMTP_HOST}" == "127.0.0.1" ]; then 
+if [ "${ZED_HOST}" == "os.de.demoshop.local" ]; then 
    cd $APPLICATION_PATH
    sed -i 's/\/hudson.tasks.Shell/\/org.jvnet.hudson.plugins.SSHBuilder/g' vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php  
    sed -i 's/\<hudson.tasks.Shell\>/org.jvnet.hudson.plugins.SSHBuilder plugin\=\x27ssh\@2.6.1\x27\>\n     \<siteName\>jenkins\@app\:222\<\/siteName/g' vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
