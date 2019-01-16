@@ -62,6 +62,10 @@ services:
     volumes:
         - versions-sync:/versions:rw
         - static-sync:/static:rw
+    extra_hosts:
+        - "www.de.demoshop.local:127.0.0.1"
+        - "os.de.demoshop.local:127.0.0.1"
+        - "glue.de.demoshop.local:127.0.0.1"
 
   db:
 #    restart: always
