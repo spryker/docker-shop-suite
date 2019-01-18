@@ -72,17 +72,33 @@ ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
 sudo chown jenkins /versions
 
-#Changes which need to restore jenkins jobs for local builds
-if [ "${ZED_HOST}" == "os.de.demoshop.local" ]; then 
-   cd $APPLICATION_PATH
-   sed -i 's/\/hudson.tasks.Shell/\/org.jvnet.hudson.plugins.SSHBuilder/g' vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php  
-   sed -i 's/\<hudson.tasks.Shell\>/org.jvnet.hudson.plugins.SSHBuilder plugin\=\x27ssh\@2.6.1\x27\>\n     \<siteName\>jenkins\@app\:222\<\/siteName/g' vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
-   mkdir deploy
-   cp /versions/vars deploy/
-   ln -s /usr/local/bin/php /usr/bin/php
-   vendor/bin/console setup:jenkins:generate
+#Cron jobs generate
+updateCronJobs() {
+   appHost=$1
+   cronJobFile="vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php"
+   if [ -f ${cronJobFile} ]; then
+      cd $APPLICATION_PATH
+      sed -i "s/\/hudson.tasks.Shell/\/org.jvnet.hudson.plugins.SSHBuilder/g" vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
+      sed -i "s/\<hudson.tasks.Shell\>/org.jvnet.hudson.plugins.SSHBuilder plugin\=\x27ssh\@2.6.1\x27\>\n     \<siteName\>jenkins\@${appHost}\:222\<\/siteName/g" vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
+      mkdir -p deploy
+      cp /versions/vars deploy/
+      if [ ! -L /usr/bin/php ]; then
+         ln -s /usr/local/bin/php /usr/bin/php
+      fi
+      vendor/bin/console setup:jenkins:generate
+   fi
+}
+
+# if local build
+if [ "${ZED_HOST}" == "os.de.demoshop.local" ]; then
+   updateCronJobs "app"
+# if build run  on an AWS instance 
+elif $(nc -znw 2 169.254.169.254 80); then
+   instance_ip=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+   updateCronJobs ${instance_ip}
 fi
 
+echo $APPLICATION_PATH > /versions/latest_successful_build
 
 echo "Spryker shop suite has been successfully installed"
 echo "You could get it with the next links:"

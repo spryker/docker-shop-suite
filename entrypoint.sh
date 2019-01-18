@@ -54,14 +54,24 @@ j2 /etc/ssmtp/ssmtp.conf.j2 > /etc/ssmtp/ssmtp.conf
 # Put Zed host IP to /etc/hosts file:
 echo "127.0.0.1	$ZED_HOST" >> /etc/hosts
 
-if [ -f /data/initialize ]
-then
-    /setup_suite.sh
-    # Disable maintenance mode to validate LetsEncrypt certificates
-    test -f /maintenance_on.flag && rm /maintenance_on.flag
-    bash /setup_ssl.sh ${YVES_HOST//www./} $(curl http://checkip.amazonaws.com/ -s) &
+#"To build or not to build"
+if [ -f /versions/latest_successful_build ]; then
+     source  /versions/vars
+     APPLICATION_PATH=$(cat /versions/latest_successful_build)
+     if [ -L /data ]; then
+       echo "An application link already exist"
+     else
+       sudo rm -rf /data
+       ln -s $APPLICATION_PATH /data
+     fi
+     cd /data
+     vendor/bin/install -vvv
+else
+      /setup_suite.sh
+      # Disable maintenance mode to validate LetsEncrypt certificates
+      test -f /maintenance_on.flag && rm /maintenance_on.flag
+      bash /setup_ssl.sh ${YVES_HOST//www./} $(curl http://checkip.amazonaws.com/ -s) &
 fi
-
 #cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
 killall -9 nginx
 
