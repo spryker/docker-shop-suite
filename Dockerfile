@@ -1,5 +1,3 @@
-# docker build -t spryker/dockertestphp71 -f Dockerfile .
-
 FROM php:7.2-fpm
 
 # Install tini (init handler)
@@ -37,23 +35,25 @@ ENV PHPIZE_DEPS \
   pkg-config          \
   re2c
 
-# Set Debian sources
-RUN \
-  apt-get update && apt-get install -q -y --no-install-recommends wget gnupg apt-transport-https && \
-##  echo "deb http://deb.debian.org/debian/ stretch main non-free contrib\n" > /etc/apt/sources.list.d/debian.list && \
-##  echo "deb-src http://deb.debian.org/debian/ stretch main non-free contrib\n" >> /etc/apt/sources.list.d/debian.list && \
-  echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/node.list &&      \
-      wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - &&           \
-  echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' > /etc/apt/sources.list.d/newrelic.list && \
-      wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add -
 
 #Fixing the postgresql-client installation issue
 RUN mkdir -p /usr/share/man/man7/ && touch /usr/share/man/man7/ABORT.7.gz.dpkg-tmp && \
     mkdir -p /usr/share/man/man1/ && touch /usr/share/man/man1/psql.1.gz
 
-# Install Debian packages
+# Set Debian sources
 RUN \
-  apt-get -qy update && apt-get install -q -y --no-install-recommends $PHPIZE_DEPS \
+  apt-get update && apt-get install -q -y --no-install-recommends \
+  wget                \
+  gnupg               \
+  apt-transport-https \
+&& echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/node.list       \
+&& wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -                \
+&& echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' > /etc/apt/sources.list.d/newrelic.list  \
+&& wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - \
+
+# Install Debian packages
+
+&&  apt-get -qy update && apt-get install -q -y --no-install-recommends $PHPIZE_DEPS \
     apt-utils           \
     ca-certificates     \
     curl                \
@@ -163,15 +163,11 @@ COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 # Prepare application
 ARG GITHUB_TOKEN
-#RUN if [ -z $GITHUB_TOKEN ]; then echo ERROR: Must provide argument: GITHUB_TOKEN; exit 1; fi
 
 RUN install -d -o www-data -g www-data -m 0755 /data /var/www
-#COPY . /data
-##ADD . /data
 RUN mkdir -p /data/data/DE/logs
 RUN mkdir -p /versions
 RUN chown -R www-data:www-data /data
-
 
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
@@ -184,8 +180,6 @@ COPY setup_suite.sh /setup_suite.sh
 COPY setup_ssl.sh /setup_ssl.sh
 COPY vars.j2 /vars.j2
 RUN chmod +x /setup_suite.sh
-#Create the file flag which show that the shop has not been installed yet
-RUN touch /data/initialize
 
 # Add jenkins authorized_keys
 RUN mkdir -p /etc/spryker/jenkins/.ssh
@@ -204,12 +198,6 @@ COPY application/app_files/Mailer.patch /etc/spryker/
 #COPY nginx/waiting/waiting_vhost.conf /etc/nginx/waiting/waiting_vhost.conf
 #COPY nginx/waiting/nginx_waiting.conf /etc/nginx/nginx_waiting.conf
 #RUN chown -R www-data:www-data /etc/nginx
-
-##RUN if [ ! -d vendor ]; then ./build; fi
-
-#RUN composer config --global github-protocols https \
-#    && composer config -g github-oauth.github.com $GITHUB_TOKEN \
-#    && composer install --no-progress --no-suggest --no-scripts --prefer-dist --no-dev --optimize-autoloader
 
 # Run app with entrypoints
 ENTRYPOINT ["/tini", "--", "/entrypoint.sh"]
