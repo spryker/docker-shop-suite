@@ -1,5 +1,6 @@
 #!/bin/bash -x
 
+export PATH=$PATH:/usr/local/bin
 #cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
 #cp /etc/nginx/nginx_waiting.conf /etc/nginx/nginx.conf
 
@@ -64,7 +65,13 @@ if [ -f /versions/latest_successful_build ]; then
        sudo rm -rf /data
        ln -s $APPLICATION_PATH /data
      fi
+     # because config/Zed/cronjobs/cron.conf set static variable bin -  /usr/bin/php
+     if [ ! -L /usr/bin/php -a ! -f /usr/bin/php ]; then
+          ln -s /usr/local/bin/php /usr/bin/php
+     fi
      cd /data
+     mkdir -p deploy
+     cp /versions/vars deploy/
      vendor/bin/install -vvv
 else
       /setup_suite.sh

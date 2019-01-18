@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+PATH=$PATH:/usr/local/bin
 #Create the current build folder in the /versions
 curdate=(`date +%Y-%m-%d_%H-%M`)
 APPLICATION_PATH=/versions/$curdate
@@ -80,11 +81,12 @@ updateCronJobs() {
       cd $APPLICATION_PATH
       sed -i "s/\/hudson.tasks.Shell/\/org.jvnet.hudson.plugins.SSHBuilder/g" vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
       sed -i "s/\<hudson.tasks.Shell\>/org.jvnet.hudson.plugins.SSHBuilder plugin\=\x27ssh\@2.6.1\x27\>\n     \<siteName\>jenkins\@${appHost}\:222\<\/siteName/g" vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
+      # because config/Zed/cronjobs/cron.conf set static variable bin -  /usr/bin/php
+      if [ ! -L /usr/bin/php -a ! -f /usr/bin/php ]; then
+          ln -s /usr/local/bin/php /usr/bin/php
+      fi	 
       mkdir -p deploy
       cp /versions/vars deploy/
-      if [ ! -L /usr/bin/php ]; then
-         ln -s /usr/local/bin/php /usr/bin/php
-      fi
       vendor/bin/console setup:jenkins:generate
    fi
 }
