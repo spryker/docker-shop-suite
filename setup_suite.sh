@@ -89,8 +89,10 @@ updateCronJobs() {
    fi
 }
 
+# if local build
 if [ "${ZED_HOST}" == "os.de.demoshop.local" ]; then
    updateCronJobs "app"
+# if build run  on an AWS instance 
 elif $(nc -znw 2 169.254.169.254 80); then
    instance_ip=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
    updateCronJobs ${instance_ip}
