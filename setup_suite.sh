@@ -78,13 +78,9 @@ updateCronJobs() {
    cronJobFile="vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php"
    if [ -f ${cronJobFile} ]; then
       cd $APPLICATION_PATH
-      sed -i "s/\/hudson.tasks.Shell/\/org.jvnet.hudson.plugins.SSHBuilder/g" vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
-      sed -i "s/\<hudson.tasks.Shell\>/org.jvnet.hudson.plugins.SSHBuilder plugin\=\x27ssh\@2.6.1\x27\>\n     \<siteName\>jenkins\@${appHost}\:222\<\/siteName/g" vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php
-      mkdir -p deploy
-      cp /versions/vars deploy/
-      if [ ! -L /usr/bin/php ]; then
-         ln -s /usr/local/bin/php /usr/bin/php
-      fi
+      sed -i 's/\$PHP_BIN//g' config/Zed/cronjobs/jobs.php
+      sed -i "s/appHost/${appHost}/g" /etc/spryker/Cronjobs.patch
+      patch -p0 < /etc/spryker/Cronjobs.patch
       vendor/bin/console setup:jenkins:generate
    fi
 }

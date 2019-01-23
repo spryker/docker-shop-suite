@@ -1,0 +1,50 @@
+--- vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php	2019-01-23 09:14:36.902516606 +0000
++++ vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php.new	2019-01-23 09:15:20.256566406 +0000
+@@ -368,11 +368,12 @@
+   <triggers class='vector'>$schedule</triggers>
+   <concurrentBuild>false</concurrentBuild>
+   <builders>
+-    <hudson.tasks.Shell>";
++    <org.jvnet.hudson.plugins.SSHBuilder plugin='ssh@2.6.1'>
++     <siteName>jenkins@172.31.26.218:222</siteName>";
+
+         $xml .= $this->getCommand($command, $store);
+         $xml .= "
+-    </hudson.tasks.Shell>
++    </org.jvnet.hudson.plugins.SSHBuilder>
+   </builders>\n"
+             . $this->getPublisherString($job) . "\n
+   <buildWrappers/>
+@@ -459,8 +460,6 @@
+         $commandTemplate = '<command>%s
+ export APPLICATION_ENV=%s
+ export APPLICATION_STORE=%s
+-cd %s
+-. %s
+ %s</command>';
+
+         $cronjobsConfigPath = $this->config->getCronjobsConfigFilePath();
+@@ -470,11 +469,10 @@
+         $destination = APPLICATION_ROOT_DIR;
+
+         if ($environment->isNotDevelopment()) {
+-            $checkDeployFolderExistsBashCommand = '[ -f ' . APPLICATION_ROOT_DIR . '/deploy/vars ]';
+-            $sourceBashCommand = '. ' . APPLICATION_ROOT_DIR . '/deploy/vars';
++            $checkDeployFolderExistsBashCommand = '[ -f ' . '/versions/vars ]';
++            $sourceBashCommand = '. ' . '/versions/vars';
+
+-            $customBashCommand = $checkDeployFolderExistsBashCommand . ' ' . '&amp;&amp;' . ' ' . $sourceBashCommand;
+-            $destination = '\$destination_release_dir';
++	      $customBashCommand = $checkDeployFolderExistsBashCommand . ' ' . '&amp;&amp;' . ' ' . $sourceBashCommand;
+         }
+
+         return sprintf(
+@@ -482,8 +480,6 @@
+             $customBashCommand,
+             $environment->getEnvironment(),
+             $store,
+-            $destination,
+-            $cronjobsConfigPath,
+             $command
+         );
+     }
