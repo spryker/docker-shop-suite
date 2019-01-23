@@ -79,8 +79,8 @@ updateCronJobs() {
    if [ -f ${cronJobFile} ]; then
       cd $APPLICATION_PATH
       sed -i 's/\$PHP_BIN//g' config/Zed/cronjobs/jobs.php
-      sed -i "s/appHost/${appHost}/g" /etc/spryker/Cronjobs.patch
       patch -p0 < /etc/spryker/Cronjobs.patch
+      sed -i "s/appHost/${appHost}/g" ${cronJobFile}
       vendor/bin/console setup:jenkins:generate
    fi
 }

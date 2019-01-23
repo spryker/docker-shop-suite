@@ -1,13 +1,13 @@
---- vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php	2019-01-23 10:24:21.706296470 +0000
-+++ vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php.new	2019-01-23 10:29:57.419197363 +0000
-@@ -368,11 +368,11 @@
+--- vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php	2019-01-23 12:51:13.067451000 +0000
++++ vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php.new	2019-01-23 12:54:48.748754000 +0000
+@@ -368,11 +368,12 @@
    <triggers class='vector'>$schedule</triggers>
    <concurrentBuild>false</concurrentBuild>
    <builders>
 -    <hudson.tasks.Shell>";
--
 +    <org.jvnet.hudson.plugins.SSHBuilder plugin='ssh@2.6.1'>
-+       <siteName>jenkins@appHost:222</siteName>";
++        <siteName>jenkins@appHost:222</siteName>";
+ 
          $xml .= $this->getCommand($command, $store);
          $xml .= "
 -    </hudson.tasks.Shell>
@@ -15,30 +15,30 @@
    </builders>\n"
              . $this->getPublisherString($job) . "\n
    <buildWrappers/>
-@@ -459,8 +459,6 @@
+@@ -459,8 +460,6 @@
          $commandTemplate = '<command>%s
  export APPLICATION_ENV=%s
  export APPLICATION_STORE=%s
 -cd %s
 -. %s
  %s</command>';
-
+ 
          $cronjobsConfigPath = $this->config->getCronjobsConfigFilePath();
-@@ -470,11 +468,10 @@
+@@ -470,11 +469,10 @@
          $destination = APPLICATION_ROOT_DIR;
-
+ 
          if ($environment->isNotDevelopment()) {
 -            $checkDeployFolderExistsBashCommand = '[ -f ' . APPLICATION_ROOT_DIR . '/deploy/vars ]';
 -            $sourceBashCommand = '. ' . APPLICATION_ROOT_DIR . '/deploy/vars';
 +            $checkDeployFolderExistsBashCommand = '[ -f ' . '/versions/vars ]';
 +            $sourceBashCommand = '. ' . '/versions/vars';
-
+ 
              $customBashCommand = $checkDeployFolderExistsBashCommand . ' ' . '&amp;&amp;' . ' ' . $sourceBashCommand;
--            $destination = '\$destination_release_dir';
+-            $destination = '$destination_release_dir';
          }
-
+ 
          return sprintf(
-@@ -482,8 +479,6 @@
+@@ -482,8 +480,6 @@
              $customBashCommand,
              $environment->getEnvironment(),
              $store,
