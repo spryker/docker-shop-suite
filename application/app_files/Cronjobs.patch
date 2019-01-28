@@ -1,5 +1,14 @@
---- vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php	2019-01-23 12:51:13.067451000 +0000
-+++ vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php.new	2019-01-23 12:54:48.748754000 +0000
+--- vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php	2019-01-28 16:43:09.000000000 +0200
++++ vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php.new	2019-01-28 16:46:35.000000000 +0200
+@@ -354,7 +354,7 @@
+   <description></description>
+   <logRotator>
+     <daysToKeep>$daysToKeep</daysToKeep>
+-    <numToKeep>-1</numToKeep>
++    <numToKeep>100</numToKeep>
+     <artifactDaysToKeep>$daysToKeep</artifactDaysToKeep>
+     <artifactNumToKeep>-1</artifactNumToKeep>
+   </logRotator>
 @@ -368,11 +368,12 @@
    <triggers class='vector'>$schedule</triggers>
    <concurrentBuild>false</concurrentBuild>

@@ -78,6 +78,9 @@ updateCronJobs() {
    cronJobFile="vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php"
    if [ -f ${cronJobFile} ]; then
       cd $APPLICATION_PATH
+      ## remove it after march release 
+      sed -i 's/\\\$destination_release_dir/$destination_release_dir/g' ${cronJobFile}
+      ##
       sed -i 's/\$PHP_BIN//g' config/Zed/cronjobs/jobs.php
       patch -p0 < /etc/spryker/Cronjobs.patch
       sed -i "s/appHost/${appHost}/g" ${cronJobFile}
