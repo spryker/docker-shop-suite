@@ -176,6 +176,7 @@ COPY store.php /store.php
 COPY dockersuite_development.yml /dockersuite_development.yml
 COPY dockersuite_staging.yml /dockersuite_staging.yml
 COPY dockersuite_production.yml /dockersuite_production.yml
+COPY dockersuite_restore_state.yml /dockersuite_restore_state.yml
 COPY setup_suite.sh /setup_suite.sh
 COPY setup_ssl.sh /setup_ssl.sh
 COPY vars.j2 /vars.j2

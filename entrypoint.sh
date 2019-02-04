@@ -65,7 +65,9 @@ if [ -f /versions/latest_successful_build ]; then
        ln -s $APPLICATION_PATH /data
      fi
      cd /data
+     cp /dockersuite_restore_state.yml config/install/${APPLICATION_ENV:-staging}.yml
      vendor/bin/install -vvv
+     chown -R www-data:www-data /data/
 else
       /setup_suite.sh
       # Disable maintenance mode to validate LetsEncrypt certificates
