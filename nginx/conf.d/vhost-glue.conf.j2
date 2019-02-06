@@ -7,7 +7,7 @@ server {
     listen 10001;
 
     # Listener for testing/development - one host only, doesn't require external LoadBalancer
-    listen 80;
+    listen 8080;
 
 ##    server_name ~^glue\\.de\\..+\\.local$;
     server_name {{GLUE_HOST}};
