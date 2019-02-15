@@ -19,6 +19,7 @@ services:
       - "222:222"
     environment:
       ENV_NAME: dockersuite
+      DOMAIN_NAME: demoshop.local
       APPLICATION_ENV: staging
       APPLICATION_STORE: DE
       POSTGRES_HOST: db

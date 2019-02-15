@@ -127,7 +127,8 @@ $config[RabbitMqEnv::RABBITMQ_API_HOST] = getenv('RABBITMQ_HOST');
 $config[RabbitMqEnv::RABBITMQ_API_PORT] = getenv('RABBITMQ_API_PORT');
 $config[RabbitMqEnv::RABBITMQ_API_USERNAME] = getenv('RABBITMQ_USER');
 $config[RabbitMqEnv::RABBITMQ_API_PASSWORD] = getenv('RABBITMQ_PASSWORD');
-$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = getenv('RABBITMQ_VHOST');
+##$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = getenv('RABBITMQ_VHOST');
+
 $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
     'DE' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'DE-connection',
@@ -135,7 +136,7 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_PORT => getenv('RABBITMQ_PORT'),
         RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_PASSWORD'),
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_USER'),
-        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST'),
+        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST') . '_DE',
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['DE'],
         RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION => true,
     ],
@@ -145,7 +146,7 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_PORT => getenv('RABBITMQ_PORT'),
         RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_PASSWORD'),
         RabbitMqEnv::RABBITMQ_USERNAME =>  getenv('RABBITMQ_USER'),
-        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST'),   #should be another one
+        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST') . '_AT',
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['AT'],
     ],
     'US' => [
@@ -154,7 +155,7 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_PORT => getenv('RABBITMQ_PORT'),
         RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_PASSWORD'),
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_USER'),
-        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST'),  #should be another one
+        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => getenv('RABBITMQ_VHOST') . '_US',
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['US'],
     ],
 ];
