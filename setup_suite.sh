@@ -56,6 +56,7 @@ curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
 # Copy config_local.php config
 cp /config_local.php config/Shared/config_local.php
+cp /config_local_AT.php config/Shared/config_local_AT.php
 #Copy store.php which fixed the multistore issue
 cp /store.php config/Shared/store.php
 #Copy [production|staging|development].yml only if it doesn't exist

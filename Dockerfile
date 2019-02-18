@@ -141,6 +141,7 @@ RUN \
 # Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/conf.d/ /etc/nginx/conf.d/
+COPY nginx/sites-available/ /etc/nginx/sites-available/
 COPY nginx/maintenance.conf /etc/nginx/maintenance.conf
 COPY nginx/maintenance.html /maintenance/index.html
 COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
@@ -172,6 +173,7 @@ RUN chown -R www-data:www-data /data
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
 COPY config_local.php /config_local.php
+COPY config_local_AT.php /config_local_AT.php
 COPY store.php /store.php
 COPY dockersuite_development.yml /dockersuite_development.yml
 COPY dockersuite_staging.yml /dockersuite_staging.yml

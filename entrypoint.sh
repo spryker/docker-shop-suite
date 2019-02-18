@@ -4,9 +4,21 @@
 #cp /etc/nginx/nginx_waiting.conf /etc/nginx/nginx.conf
 
 # Update Yves and Zed Nginx configuration files with the correct domain names
-j2 /etc/nginx/conf.d/vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
-j2 /etc/nginx/conf.d/vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
-j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
+##j2 /etc/nginx/conf.d/vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
+##j2 /etc/nginx/conf.d/vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
+##j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
+j2 /etc/nginx/sites-available/de-vhost-yves.conf.j2 > /etc/nginx/sites-available/de-vhost-yves.conf
+j2 /etc/nginx/sites-available/de-vhost-zed.conf.j2 > /etc/nginx/sites-available/de-vhost-zed.conf
+j2 /etc/nginx/sites-available/de-vhost-glue.conf.j2 > /etc/nginx/sites-available/de-vhost-glue.conf
+j2 /etc/nginx/sites-available/at-vhost-yves.conf.j2 > /etc/nginx/sites-available/at-vhost-yves.conf
+j2 /etc/nginx/sites-available/at-vhost-zed.conf.j2 > /etc/nginx/sites-available/at-vhost-zed.conf
+j2 /etc/nginx/sites-available/at-vhost-glue.conf.j2 > /etc/nginx/sites-available/at-vhost-glue.conf
+ln -s /etc/nginx/sites-available/de-vhost-yves.conf /etc/nginx/sites-enabled/de-vhost-yves.conf
+ln -s /etc/nginx/sites-available/de-vhost-zed.conf /etc/nginx/sites-enabled/de-vhost-zed.conf
+ln -s /etc/nginx/sites-available/de-vhost-glue.conf /etc/nginx/sites-enabled/de-vhost-glue.conf
+ln -s /etc/nginx/sites-available/at-vhost-yves.conf /etc/nginx/sites-enabled/at-vhost-yves.conf
+ln -s /etc/nginx/sites-available/at-vhost-zed.conf /etc/nginx/sites-enabled/at-vhost-zed.conf
+ln -s /etc/nginx/sites-available/at-vhost-glue.conf /etc/nginx/sites-enabled/at-vhost-glue.conf
 
 /usr/sbin/nginx -g 'daemon on;' &
 

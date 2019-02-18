@@ -9,21 +9,19 @@ server {
     # Listener for testing/development - one host only, doesn't require external LoadBalancer
     listen 8080;
 
-##    server_name ~^glue\\.de\\..+\\.local$;
-    server_name {{GLUE_HOST}};
+    server_name glue.at.{{DOMAIN_NAME}};
     keepalive_timeout 0;
     access_log /dev/stdout extended;
 
     root /data/public/Glue;
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store AT;
 
     # Maintenance mode
     include /etc/nginx/maintenance.conf;
 
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
-
-    set $application_env staging;
-    set $application_store DE;
 
     # Timeout for Api requests - 10 minutes
     # (longer requests should be converted to jobs and executed via jenkins)
@@ -53,6 +51,9 @@ server {
         fastcgi_param APPLICATION_ENV $application_env;
         fastcgi_param APPLICATION_STORE $application_store;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
         more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
 

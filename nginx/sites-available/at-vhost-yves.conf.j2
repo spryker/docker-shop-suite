@@ -4,12 +4,14 @@ upstream backend-yves {
 
 server {
     listen 8080 default;
-##    server_name ~^www\\.de\\..+\\.local$;
-    server_name {{YVES_HOST}};
+    server_name www.at.{{DOMAIN_NAME}};
     keepalive_timeout 0;
     access_log  /dev/stdout extended;
 
     root /data/public/Yves;
+
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store AT;
 
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
@@ -44,6 +46,11 @@ server {
         #more_set_headers "Access-Control-Allow-Credentials: true";
         #more_set_headers "Access-Control-Allow-Headers: Authorization";
 
+        # CORS - Allow ajax calls from cdn/static scripts
+        if ($http_origin ~* "^(http|https)://(img[1234]|cdn|static|cms)\.") {
+            add_header "Access-Control-Allow-Origin" $http_origin;
+        }
+
       	# Frontend - force browser to use new rendering engine
       	more_set_headers "X-UA-Compatible: IE=Edge,chrome=1";
 
@@ -60,7 +67,9 @@ server {
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
 
 }
-
