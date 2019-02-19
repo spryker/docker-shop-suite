@@ -3,6 +3,7 @@
 use Spryker\Shared\Application\ApplicationConstants;
 use Spryker\Shared\Collector\CollectorConstants;
 use Spryker\Shared\Customer\CustomerConstants;
+use Spryker\Shared\GlueApplication\GlueApplicationConstants;
 use Spryker\Shared\Newsletter\NewsletterConstants;
 use Spryker\Shared\ProductManagement\ProductManagementConstants;
 use Spryker\Shared\Propel\PropelConstants;
@@ -10,6 +11,7 @@ use Spryker\Shared\RabbitMq\RabbitMqEnv;
 use Spryker\Shared\Search\SearchConstants;
 use Spryker\Shared\Session\SessionConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
+
 
 
 /**  Yves host  **/
@@ -61,7 +63,7 @@ $config[SessionConstants::YVES_SESSION_COOKIE_DOMAIN] = $config[ApplicationConst
 $config[SessionConstants::ZED_SESSION_COOKIE_NAME] = $config[ApplicationConstants::HOST_ZED];
 
 /** Database credentials **/
-$config[PropelConstants::ZED_DB_DATABASE] = 'AT_' . getenv('POSTGRES_DATABASE');
+$config[PropelConstants::ZED_DB_DATABASE] = 'AT_' . getenv('APPLICATION_ENV') . '_zed';
 
 /** Elasticsearch  **/
 $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]
@@ -70,7 +72,9 @@ $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]
     = 'at_search';
 
 /** RabbitMQ **/
-$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = getenv('RABBITMQ_VHOST') . '_AT';
+$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = '/AT_' . getenv('APPLICATION_ENV') . '_zed';
+$config[RabbitMqEnv::RABBITMQ_CONNECTIONS]['AT'][RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION] = true;
+
 
 /**  Queue **/
 //$config[QueueConstants::QUEUE_WORKER_INTERVAL_MILLISECONDS] = 1000;

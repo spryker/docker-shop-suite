@@ -128,6 +128,8 @@ $config[RabbitMqEnv::RABBITMQ_API_PORT] = getenv('RABBITMQ_API_PORT');
 $config[RabbitMqEnv::RABBITMQ_API_USERNAME] = getenv('RABBITMQ_USER');
 $config[RabbitMqEnv::RABBITMQ_API_PASSWORD] = getenv('RABBITMQ_PASSWORD');
 ##$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = getenv('RABBITMQ_VHOST');
+$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = '/AT_' . getenv('APPLICATION_ENV') . '_zed';
+
 
 $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
     'DE' => [

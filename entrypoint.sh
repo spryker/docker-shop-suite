@@ -86,6 +86,7 @@ else
       bash /setup_ssl.sh ${YVES_HOST//www./} $(curl http://checkip.amazonaws.com/ -s) &
 fi
 
+killall -9 nginx
 supervisorctl restart php-fpm
 supervisorctl restart nginx
 

@@ -172,16 +172,16 @@ RUN chown -R www-data:www-data /data
 
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
-COPY config_local.php /config_local.php
-COPY config_local_AT.php /config_local_AT.php
-COPY store.php /store.php
-COPY dockersuite_development.yml /dockersuite_development.yml
-COPY dockersuite_staging.yml /dockersuite_staging.yml
-COPY dockersuite_production.yml /dockersuite_production.yml
-COPY dockersuite_restore_state.yml /dockersuite_restore_state.yml
-COPY setup_suite.sh /setup_suite.sh
-COPY setup_ssl.sh /setup_ssl.sh
-COPY vars.j2 /vars.j2
+COPY spryker/config_local.php /config_local.php
+COPY spryker/config_local_AT.php /config_local_AT.php
+COPY spryker/store.php /store.php
+COPY spryker/dockersuite_development.yml /dockersuite_development.yml
+COPY spryker/dockersuite_staging.yml /dockersuite_staging.yml
+COPY spryker/dockersuite_production.yml /dockersuite_production.yml
+COPY spryker/dockersuite_restore_state.yml /dockersuite_restore_state.yml
+COPY spryker/setup_suite.sh /setup_suite.sh
+COPY spryker/setup_ssl.sh /setup_ssl.sh
+COPY spryker/vars.j2 /vars.j2
 RUN chmod +x /setup_suite.sh
 
 # Add jenkins authorized_keys

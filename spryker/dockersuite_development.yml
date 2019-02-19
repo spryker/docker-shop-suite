@@ -1,9 +1,9 @@
 env:
-    APPLICATION_ENV: staging
+    APPLICATION_ENV: development
 
 stores:
     - DE
-#    - AT
+    - AT
 #    - US
 
 command-timeout: 3600
@@ -84,34 +84,34 @@ sections:
         delete-all-exchanges:
             command: "vendor/bin/console queue:exchanges:delete-all"
             stores: true
-#
-#
-#    database-flush:
-#        delete-elastic-search-index:
-#            command: "vendor/bin/console search:index:delete"
-#            stores: true
-#            groups:
-#                - elastic
-#
-#        delete-storage:
-#            command: "vendor/bin/console storage:delete"
-#            stores: true
-#            groups:
-#                - redis
-#
-##        drop-database:
-##            pre: "hidden/maintenance-zed-on"
-##            command: "vendor/bin/console propel:database:drop"
-##            stores: true
-##            groups:
-##                - propel
-#
-#        delete-migration-files:
-#            command: "vendor/bin/console propel:migration:delete"
+
+
+    database-flush:
+        delete-elastic-search-index:
+            command: "vendor/bin/console search:index:delete"
+            stores: true
+            groups:
+                - elastic
+
+        delete-storage:
+            command: "vendor/bin/console storage:delete"
+            stores: true
+            groups:
+                - redis
+
+#        drop-database:
+#            pre: "hidden/maintenance-zed-on"
+#            command: "vendor/bin/console propel:database:drop"
 #            stores: true
 #            groups:
 #                - propel
-#
+
+        delete-migration-files:
+            command: "vendor/bin/console propel:migration:delete"
+            stores: true
+            groups:
+                - propel
+
 
     database-migrate:
         propel-config:
@@ -204,28 +204,28 @@ sections:
             command: "vendor/bin/console setup:jenkins:enable"
 
 
-#    frontend:
-#        dependencies-install:
-#            command: "vendor/bin/console frontend:project:install-dependencies -vvv"
-#            groups:
-#                - project
-#
-#        yves-install-dependencies:
-#            command: "vendor/bin/console frontend:yves:install-dependencies -vvv"
-#            groups:
-#                - yves
-#
-#        yves-build-frontend:
-#            command: "vendor/bin/console frontend:yves:build -vvv"
-#            groups:
-#                - yves
-#
-#        zed-install-dependencies:
-#            command: "vendor/bin/console frontend:zed:install-dependencies -vvv"
-#            groups:
-#                - zed
-#
-#        zed-build-frontend:
-#            command: "vendor/bin/console frontend:zed:build"
-#            groups:
-#                - zed
+    frontend:
+        dependencies-install:
+            command: "vendor/bin/console frontend:project:install-dependencies -vvv"
+            groups:
+                - project
+
+        yves-install-dependencies:
+            command: "vendor/bin/console frontend:yves:install-dependencies -vvv"
+            groups:
+                - yves
+
+        yves-build-frontend:
+            command: "vendor/bin/console frontend:yves:build -vvv"
+            groups:
+                - yves
+
+        zed-install-dependencies:
+            command: "vendor/bin/console frontend:zed:install-dependencies -vvv"
+            groups:
+                - zed
+
+        zed-build-frontend:
+            command: "vendor/bin/console frontend:zed:build"
+            groups:
+                - zed
