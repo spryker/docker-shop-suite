@@ -1,12 +1,6 @@
 #!/bin/bash -x
 
-#cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf.bk
-#cp /etc/nginx/nginx_waiting.conf /etc/nginx/nginx.conf
-
-# Update Yves and Zed Nginx configuration files with the correct domain names
-##j2 /etc/nginx/conf.d/vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
-##j2 /etc/nginx/conf.d/vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
-##j2 /etc/nginx/conf.d/vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
+# Update Yves, Zed and Glue Nginx and PHP configuration files with the correct environment variables
 j2 /etc/nginx/conf.d/backends.conf.j2 > /etc/nginx/conf.d/backends.conf
 j2 /usr/local/etc/php-fpm.d/yves.conf.j2 > /usr/local/etc/php-fpm.d/yves.conf
 j2 /usr/local/etc/php-fpm.d/zed.conf.j2 > /usr/local/etc/php-fpm.d/zed.conf
@@ -24,7 +18,6 @@ ln -s /etc/nginx/sites-available/de-vhost-glue.conf /etc/nginx/sites-enabled/de-
 ln -s /etc/nginx/sites-available/at-vhost-yves.conf /etc/nginx/sites-enabled/at-vhost-yves.conf
 ln -s /etc/nginx/sites-available/at-vhost-zed.conf /etc/nginx/sites-enabled/at-vhost-zed.conf
 ln -s /etc/nginx/sites-available/at-vhost-glue.conf /etc/nginx/sites-enabled/at-vhost-glue.conf
-
 
 /usr/sbin/nginx -g 'daemon on;' &
 
@@ -92,8 +85,6 @@ else
       test -f /maintenance_on.flag && rm /maintenance_on.flag
       bash /setup_ssl.sh ${YVES_HOST//www./} $(curl http://checkip.amazonaws.com/ -s) &
 fi
-#cp /etc/nginx/nginx.conf.bk /etc/nginx/nginx.conf
-killall -9 nginx
 
 supervisorctl restart php-fpm
 supervisorctl restart nginx
