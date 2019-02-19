@@ -150,7 +150,7 @@ COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
 RUN rm -f /usr/local/etc/php-fpm.d/*
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY php/php.ini.j2 /usr/local/etc/php/php.ini.j2
-COPY php/pool.d/*.conf /usr/local/etc/php-fpm.d/
+COPY php/pool.d/*.conf.j2 /usr/local/etc/php-fpm.d/
 #RUN echo "memory_limit = 2G" >> /usr/local/etc/php/php.ini
 # Opcache configuration
 COPY php/ext/opcache.ini /tmp/opcache.ini

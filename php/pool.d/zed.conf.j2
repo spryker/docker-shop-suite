@@ -1,4 +1,4 @@
-[yves]
+[{{APPLICATION_ENV}}-zed]
 clear_env = no
 catch_workers_output = yes
 listen = /tmp/.fpm.$pool.sock
@@ -15,7 +15,7 @@ pm.max_spare_servers = 4
 ; Avoid PHP memory leaks
 pm.max_requests = 500
 
-pm.status_path = /php-fpm-status-yves
+pm.status_path = /php-fpm-status-zed
 ping.path = /fpm-ping.php
 ping.response = OK
 

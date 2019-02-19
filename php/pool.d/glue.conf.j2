@@ -1,4 +1,4 @@
-[zed]
+[{{APPLICATION_ENV}}-glue]
 clear_env = no
 catch_workers_output = yes
 listen = /tmp/.fpm.$pool.sock
@@ -15,7 +15,7 @@ pm.max_spare_servers = 4
 ; Avoid PHP memory leaks
 pm.max_requests = 500
 
-pm.status_path = /php-fpm-status-zed
+pm.status_path = /php-fpm-status-glue
 ping.path = /fpm-ping.php
 ping.response = OK
 

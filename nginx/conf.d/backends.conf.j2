@@ -1,0 +1,9 @@
+upstream backend-{{APPLICATION_ENV}}-yves {
+  server unix:/tmp/.fpm.{{APPLICATION_ENV}}-yves.sock;
+}
+upstream backend-{{APPLICATION_ENV}}-zed {
+  server unix:/tmp/.fpm.{{APPLICATION_ENV}}-zed.sock;
+}
+upstream backend-{{APPLICATION_ENV}}-glue {
+  server unix:/tmp/.fpm.{{APPLICATION_ENV}}-glue.sock;
+}

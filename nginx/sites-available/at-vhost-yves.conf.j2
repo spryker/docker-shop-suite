@@ -1,7 +1,3 @@
-upstream backend-yves {
-        server unix:/tmp/.fpm.yves.sock;
-}
-
 server {
     listen 8080 default;
     server_name www.at.{{DOMAIN_NAME}};
@@ -62,7 +58,7 @@ server {
         }
 
         add_header X-Server $hostname;
-        fastcgi_pass backend-yves;
+        fastcgi_pass backend-$application_env-yves;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
