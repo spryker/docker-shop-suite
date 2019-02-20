@@ -69,7 +69,7 @@ j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini
 j2 /etc/ssmtp/ssmtp.conf.j2 > /etc/ssmtp/ssmtp.conf
 
 # Put Zed host IP to /etc/hosts file:
-echo "127.0.0.1	$ZED_HOST" >> /etc/hosts
+echo "127.0.0.1	os.de.${DOMAIN_NAME} os.at.${DOMAIN_NAME} os.us.${DOMAIN_NAME}" >> /etc/hosts
 
 #"To build or not to build"
 if [ -f /versions/latest_successful_build ]; then

@@ -4,7 +4,7 @@ env:
 stores:
     - DE
     - AT
-#    - US
+    - US
 
 command-timeout: 3600
 
