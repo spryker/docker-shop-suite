@@ -93,7 +93,9 @@ else
       /setup_suite.sh
       # Disable maintenance mode to validate LetsEncrypt certificates
       test -f /maintenance_on.flag && rm /maintenance_on.flag
-      bash /setup_ssl.sh ${YVES_HOST//www./} $(curl http://checkip.amazonaws.com/ -s) &
+      bash /setup_ssl.sh de.${DOMAIN_NAME} $(curl http://checkip.amazonaws.com/ -s) &
+      bash /setup_ssl.sh at.${DOMAIN_NAME} $(curl http://checkip.amazonaws.com/ -s) &
+      bash /setup_ssl.sh us.${DOMAIN_NAME} $(curl http://checkip.amazonaws.com/ -s) &
 fi
 
 killall -9 nginx
