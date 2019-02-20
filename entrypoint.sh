@@ -87,8 +87,8 @@ if [ -f /versions/latest_successful_build ]; then
      chown -R www-data:www-data /data/
 else
       #Create additional RabbitMQ Vhosts:
-      curl -i -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/AT_staging_zed
-      curl -i -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/US_staging_zed
+      curl -i -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2FAT_staging_zed
+      curl -i -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2FUS_staging_zed
       #Deploy Spryker Shop
       /setup_suite.sh
       # Disable maintenance mode to validate LetsEncrypt certificates
