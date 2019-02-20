@@ -52,6 +52,12 @@ psql --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed -
 # Drop the current PostgreSQL AT DB and create the empty one
 dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed
 createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed
+# Kill all others connections/sessions to the PostgreSQL US DB for avoiding an error in the next command
+psql --username=$POSTGRES_USER --host=$POSTGRES_HOST US_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
+# Drop the current PostgreSQL US DB and create the empty one
+dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST US_${APPLICATION_ENV}_zed
+createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST US_${APPLICATION_ENV}_zed
+
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
@@ -108,7 +114,11 @@ echo $APPLICATION_PATH > /versions/latest_successful_build
 
 echo "Spryker shop suite has been successfully installed"
 echo "You could get it with the next links:"
-echo "Frontend (Yves): http://$YVES_HOST"
-echo "Backend   (Zed): http://$ZED_HOST"
-echo "Jenkins        : http://$ZED_HOST:9090"
-echo "RabbitMQ       : http://$ZED_HOST:15672"
+echo "Frontend DE (Yves): http://www.de.$DOMAIN_NAME"
+echo "Frontend AT (Yves): http://www.at.$DOMAIN_NAME"
+echo "Frontend US (Yves): http://www.us.$DOMAIN_NAME"
+echo "Backend DE  (Zed): http://os.de.$DOMAIN_NAME"
+echo "Backend AT  (Zed): http://os.at.$DOMAIN_NAME"
+echo "Backend US  (Zed): http://os.us.$DOMAIN_NAME"
+echo "Jenkins        : http://os.de.$DOMAIN_NAME:9090"
+echo "RabbitMQ       : http://os.de.$DOMAIN_NAME:15672"
