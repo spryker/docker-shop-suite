@@ -37,7 +37,7 @@ services:
       RABBITMQ_API_PORT: 15672
       RABBITMQ_USER: spryker
       RABBITMQ_PASSWORD: secret
-      RABBITMQ_VHOST: /dockersuite
+      RABBITMQ_VHOST: /DE_staging_zed
       YVES_HOST: www.de.demoshop.local
       YVES_PROTOCOL: http
       ZED_HOST: os.de.demoshop.local
@@ -67,7 +67,7 @@ services:
 #    restart: always
     image: postgres:9.6
     environment:
-      POSTGRES_DB: DE_dockersuite_zed
+      POSTGRES_DB: DE_staging_zed
       POSTGRES_USER: spryker
       POSTGRES_PASSWORD: secret
 
@@ -87,7 +87,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: spryker
       RABBITMQ_DEFAULT_PASS: secret
-      RABBITMQ_DEFAULT_VHOST: /dockersuite
+      RABBITMQ_DEFAULT_VHOST: /DE_staging_zed
     ports:
       - "15672:15672"
 
