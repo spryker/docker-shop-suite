@@ -72,4 +72,4 @@ $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]
     = 'at_search';
 
 /** RabbitMQ **/
-$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = 'AT_' . getenv('APPLICATION_ENV') . '_zed';
+$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = '/AT_' . getenv('APPLICATION_ENV') . '_zed';
