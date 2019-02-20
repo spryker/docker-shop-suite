@@ -26,7 +26,7 @@ services:
       POSTGRES_USER: spryker
       POSTGRES_PASSWORD: secret
       PGPASSWORD: secret
-      POSTGRES_DATABASE: DE_dockersuite_zed
+      POSTGRES_DATABASE: DE_staging_zed
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
       REDIS_HOST: redis

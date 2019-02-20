@@ -65,7 +65,8 @@ redis-cli -h $REDIS_HOST flushall
 # Delete all indexes of the Elasticsearch
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
-# Copy config_local_<STORE>.php configs
+# Copy config_local.php and config_local_<STORE>.php configs
+cp /config_local.php config/Shared/config_local.php
 cp /config_local_DE.php config/Shared/config_local_DE.php
 cp /config_local_AT.php config/Shared/config_local_AT.php
 cp /config_local_US.php config/Shared/config_local_US.php

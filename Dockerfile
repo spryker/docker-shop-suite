@@ -172,7 +172,7 @@ RUN chown -R www-data:www-data /data
 
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
-#COPY spryker/config_local.php /config_local.php
+COPY spryker/config_local.php /config_local.php
 COPY spryker/config_local_DE.php /config_local_DE.php
 COPY spryker/config_local_AT.php /config_local_AT.php
 COPY spryker/config_local_US.php /config_local_US.php
