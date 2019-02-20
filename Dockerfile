@@ -172,8 +172,10 @@ RUN chown -R www-data:www-data /data
 
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
-COPY spryker/config_local.php /config_local.php
+#COPY spryker/config_local.php /config_local.php
+COPY spryker/config_local_DE.php /config_local_DE.php
 COPY spryker/config_local_AT.php /config_local_AT.php
+COPY spryker/config_local_US.php /config_local_US.php
 COPY spryker/store.php /store.php
 COPY spryker/dockersuite_development.yml /dockersuite_development.yml
 COPY spryker/dockersuite_staging.yml /dockersuite_staging.yml

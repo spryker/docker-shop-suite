@@ -42,11 +42,16 @@ composer require aws/aws-sdk-php
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL
 export PGPASSWORD=$POSTGRES_PASSWORD
-# Kill all others connections/sessions to the PostgreSQL for avoiding an error in the next command
-psql --username=$POSTGRES_USER --host=$POSTGRES_HOST $POSTGRES_DATABASE -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
-# Drop the current PostgreSQL db and create the empty one
-dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST $POSTGRES_DATABASE
-createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST $POSTGRES_DATABASE
+# Kill all others connections/sessions to the PostgreSQL DE DB for avoiding an error in the next command
+psql --username=$POSTGRES_USER --host=$POSTGRES_HOST DE_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
+# Drop the current PostgreSQL DE DB and create the empty one
+dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST DE_${APPLICATION_ENV}_zed
+createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST DE_${APPLICATION_ENV}_zed
+# Kill all others connections/sessions to the PostgreSQL AT DB for avoiding an error in the next command
+psql --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
+# Drop the current PostgreSQL AT DB and create the empty one
+dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed
+createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
@@ -54,11 +59,12 @@ redis-cli -h $REDIS_HOST flushall
 # Delete all indexes of the Elasticsearch
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
-# Copy config_local.php config
-cp /config_local.php config/Shared/config_local.php
+# Copy config_local_<STORE>.php configs
+cp /config_local_DE.php config/Shared/config_local_DE.php
 cp /config_local_AT.php config/Shared/config_local_AT.php
+cp /config_local_US.php config/Shared/config_local_US.php
 #Copy store.php which fixed the multistore issue
-cp /store.php config/Shared/store.php
+##cp /store.php config/Shared/store.php
 #Copy [production|staging|development].yml only if it doesn't exist
 test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
 
