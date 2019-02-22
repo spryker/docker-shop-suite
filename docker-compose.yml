@@ -18,7 +18,6 @@ services:
       - "10001:10001"
       - "222:222"
     environment:
-      ENV_NAME: dockersuite
       DOMAIN_NAME: demoshop.local
       APPLICATION_ENV: staging
       POSTGRES_HOST: db
@@ -26,25 +25,17 @@ services:
       POSTGRES_USER: spryker
       POSTGRES_PASSWORD: secret
       PGPASSWORD: secret
-      POSTGRES_DATABASE: DE_staging_zed
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PROTOCOL: redis
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_API_PORT: 15672
       RABBITMQ_USER: spryker
       RABBITMQ_PASSWORD: secret
-      RABBITMQ_VHOST: /DE_staging_zed
-      YVES_HOST: www.de.demoshop.local
-      YVES_PROTOCOL: http
-      ZED_HOST: os.de.demoshop.local
-      ZED_PROTOCOL: http
       JENKINS_HOST: jenkins
       JENKINS_PORT: 8080
-      GLUE_HOST: glue.de.demoshop.local
       NEWRELIC_KEY: 5c2eyournewrelickey1111111111021cb198cee
       GITHUB_TOKEN: 8888yourgithubtoken8888
       PHP_CLI_RAM: 2048

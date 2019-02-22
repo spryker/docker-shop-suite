@@ -5,13 +5,13 @@ upstream backend-yves {
 server {
     listen 8080 default;
 ##    server_name ~^www\\.de\\..+\\.local$;
-    server_name {{YVES_HOST}};
+    server_name www.de.{{DOMAIN_NAME}};
     keepalive_timeout 0;
     access_log  /dev/stdout extended;
 
     {% if YVES_HTTP_TO_HTTPS is defined %}{% if YVES_HTTP_TO_HTTPS == "1" %}
     # Redirect all HTTP requests to HTTPS
-    rewrite ^(.*)$ https://{{YVES_HOST}}$1 redirect;
+    rewrite ^(.*)$ https://www.de.{{DOMAIN_NAME}}$1 redirect;
     {% endif %}{% endif %}
     root /data/public/Yves;
 
@@ -71,7 +71,7 @@ server {
 server {
     listen 4443 default ssl http2;
 ##    server_name ~^www\\.de\\..+\\.local$;
-    server_name {{YVES_HOST}};
+    server_name www.de.{{DOMAIN_NAME}};
 
     ssl on;
     ssl_certificate /etc/letsencrypt/live/{{ YVES_HOST }}/fullchain.pem;
