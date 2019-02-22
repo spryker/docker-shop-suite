@@ -62,8 +62,8 @@ $config[SessionConstants::YVES_SESSION_COOKIE_NAME] = $config[ApplicationConstan
 $config[SessionConstants::YVES_SESSION_COOKIE_DOMAIN] = $config[ApplicationConstants::HOST_YVES];
 $config[SessionConstants::ZED_SESSION_COOKIE_NAME] = $config[ApplicationConstants::HOST_ZED];
 
-/** Database credentials **/
-$config[PropelConstants::ZED_DB_DATABASE] = 'AT_' . getenv('APPLICATION_ENV') . '_zed';
+/** Database credentials AT store uses DE database in this installation **/
+$config[PropelConstants::ZED_DB_DATABASE] = 'DE_' . getenv('APPLICATION_ENV') . '_zed';
 
 /** Elasticsearch  */
 $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]
