@@ -76,7 +76,6 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_USERNAME => getenv('RABBITMQ_USER'),
         RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => '/DE_' . getenv('APPLICATION_ENV') . '_zed',
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['DE'],
-        RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION => true,
     ],
     'AT' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'AT-connection',

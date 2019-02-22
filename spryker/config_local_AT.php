@@ -73,3 +73,4 @@ $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]
 
 /** RabbitMQ **/
 $config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = '/AT_' . getenv('APPLICATION_ENV') . '_zed';
+$config[RabbitMqEnv::RABBITMQ_CONNECTIONS]['AT'][RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION] = true;
