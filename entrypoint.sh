@@ -43,7 +43,7 @@ set -xe
 j2 /vars.j2 > /versions/vars
 
 # Install NewRelic php app monitoring
-echo $NEWRELIC_KEY | sudo newrelic-install install
+##echo $NEWRELIC_KEY | sudo newrelic-install install
 
 # Configure PHP
 j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini 

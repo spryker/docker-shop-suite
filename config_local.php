@@ -3,6 +3,7 @@
 use Spryker\Shared\Application\ApplicationConstants;
 use Spryker\Shared\Collector\CollectorConstants;
 use Spryker\Shared\Customer\CustomerConstants;
+use Spryker\Shared\Kernel\KernelConstants;
 use Spryker\Shared\Newsletter\NewsletterConstants;
 use Spryker\Shared\ProductManagement\ProductManagementConstants;
 use Spryker\Shared\Propel\PropelConstants;
@@ -11,11 +12,14 @@ use Spryker\Shared\Session\SessionConstants;
 use Spryker\Shared\Setup\SetupConstants;
 use Spryker\Shared\Storage\StorageConstants;
 use Spryker\Shared\PropelQueryBuilder\PropelQueryBuilderConstants;
+use Spryker\Shared\Twig\TwigConstants;
+use Spryker\Shared\ZedNavigation\ZedNavigationConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
 use Spryker\Shared\Log\LogConstants;
 use Monolog\Logger;
 use Spryker\Shared\RabbitMq\RabbitMqEnv;
 use Spryker\Shared\GlueApplication\GlueApplicationConstants;
+
 
 // ---------- Yves host
 $config[ApplicationConstants::HOST_YVES] = getenv('YVES_HOST');
@@ -167,3 +171,44 @@ $config[LogConstants::LOG_LEVEL] = Logger::ERROR;
 
 // ----------- Glue Application
 $config[GlueApplicationConstants::GLUE_APPLICATION_DOMAIN] = sprintf('%s', $GLUE_HOST);
+
+
+
+/** Optimizing **/
+/** Deactivate All Debug Functions And the Symfony Toolbar **/
+$config[ApplicationConstants::ENABLE_APPLICATION_DEBUG] = false;
+$config[ApplicationConstants::ENABLE_WEB_PROFILER] = false;
+$config[PropelConstants::PROPEL_DEBUG] = false;
+
+/** Activate Twig Compiler **/
+$config[TwigConstants::ZED_TWIG_OPTIONS] = [
+   'cache' => new Twig_Cache_Filesystem(sprintf(
+	'%s/data/%s/cache/Zed/twig',
+	 APPLICATION_ROOT_DIR, $CURRENT_STORE),
+	 Twig_Cache_Filesystem::FORCE_BYTECODE_INVALIDATION),
+];
+
+$config[TwigConstants::YVES_TWIG_OPTIONS] = [
+    'cache' => new Twig_Cache_Filesystem(sprintf(
+	'%s/data/%s/cache/Yves/twig',
+	 APPLICATION_ROOT_DIR, $CURRENT_STORE),
+	 Twig_Cache_Filesystem::FORCE_BYTECODE_INVALIDATION),
+];
+
+/** Activate Twig Path Cache **/
+$config[TwigConstants::YVES_PATH_CACHE_FILE] = sprintf(
+    '%s/data/%s/cache/Yves/twig/.pathCache',
+    APPLICATION_ROOT_DIR,
+    $CURRENT_STORE
+);
+$config[TwigConstants::ZED_PATH_CACHE_FILE] = sprintf(
+    '%s/data/%s/cache/Zed/twig/.pathCache',
+    APPLICATION_ROOT_DIR,
+    $CURRENT_STORE
+);
+
+/** Activate Zed Navigation Cache (Default On) **/
+$config[ZedNavigationConstants::ZED_NAVIGATION_CACHE_ENABLED] = true;
+
+/** Activate Class Resolver Cache **/
+$config[KernelConstants::AUTO_LOADER_UNRESOLVABLE_CACHE_ENABLED] = true;
