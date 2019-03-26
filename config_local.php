@@ -23,7 +23,7 @@ use Spryker\Shared\GlueApplication\GlueApplicationConstants;
 
 // ---------- Yves host
 $config[ApplicationConstants::HOST_YVES] = getenv('YVES_HOST');
-$config[ApplicationConstants::PORT_YVES] = ':8080';
+$config[ApplicationConstants::PORT_YVES] = '';
 $config[ApplicationConstants::PORT_SSL_YVES] = '';
 $config[ApplicationConstants::BASE_URL_YVES] = sprintf(
     'http://%s%s',
