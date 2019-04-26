@@ -14,7 +14,7 @@ j2 /etc/nginx/sites-available/at-vhost-zed.conf.j2 > /etc/nginx/sites-available/
 j2 /etc/nginx/sites-available/at-vhost-glue.conf.j2 > /etc/nginx/sites-available/at-vhost-glue.conf
 j2 /etc/nginx/sites-available/us-vhost-yves.conf.j2 > /etc/nginx/sites-available/us-vhost-yves.conf
 j2 /etc/nginx/sites-available/us-vhost-zed.conf.j2 > /etc/nginx/sites-available/us-vhost-zed.conf
-j2 /etc/nginx/sites-available/su-vhost-glue.conf.j2 > /etc/nginx/sites-available/us-vhost-glue.conf
+j2 /etc/nginx/sites-available/us-vhost-glue.conf.j2 > /etc/nginx/sites-available/us-vhost-glue.conf
 ln -s /etc/nginx/sites-available/de-vhost-yves.conf /etc/nginx/sites-enabled/de-vhost-yves.conf
 ln -s /etc/nginx/sites-available/de-vhost-zed.conf /etc/nginx/sites-enabled/de-vhost-zed.conf
 ln -s /etc/nginx/sites-available/de-vhost-glue.conf /etc/nginx/sites-enabled/de-vhost-glue.conf
