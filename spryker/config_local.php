@@ -14,6 +14,10 @@ use Spryker\Shared\Setup\SetupConstants;
 use Spryker\Shared\Storage\StorageConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
 
+use Pyz\Shared\Scheduler\SchedulerConfig;
+use Spryker\Shared\Scheduler\SchedulerConstants;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConfig;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConstants;
 
 /** Session and KV storage */
 $config[StorageConstants::STORAGE_REDIS_PROTOCOL] = getenv('REDIS_PROTOCOL');
@@ -31,7 +35,6 @@ $config[SessionConstants::ZED_SESSION_REDIS_HOST] = getenv('REDIS_HOST');
 $config[SessionConstants::ZED_SESSION_REDIS_PORT] = getenv('REDIS_PORT');
 $config[SessionConstants::ZED_SESSION_REDIS_PASSWORD] = getenv('REDIS_PASSWORD');
 $config[SessionConstants::ZED_SESSION_REDIS_DATABASE] = 2;
-
 
 /** Database credentials **/
 $config[PropelConstants::ZED_DB_USERNAME] = getenv('POSTGRES_USER');
@@ -60,6 +63,15 @@ $ELASTICA_PARAMETER__EXTRA = [
 $config[ApplicationConstants::ELASTICA_PARAMETER__EXTRA] = $ELASTICA_PARAMETER__EXTRA;
 $config[SearchConstants::ELASTICA_PARAMETER__EXTRA] = $ELASTICA_PARAMETER__EXTRA;
 
+// ---------- Scheduler
+$config[SchedulerConstants::ENABLED_SCHEDULERS] = [
+    SchedulerConfig::SCHEDULER_JENKINS,
+];
+$config[SchedulerJenkinsConstants::JENKINS_CONFIGURATION] = [
+    SchedulerConfig::SCHEDULER_JENKINS => [
+        SchedulerJenkinsConfig::SCHEDULER_JENKINS_BASE_URL => 'http://' . getenv('JENKINS_HOST') . ':' . getenv('JENKINS_PORT') . '/',
+    ],
+];
 
 
 /** RabbitMQ **/
@@ -105,3 +117,5 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
 /** Jenkins **/
 $config[SetupConstants::JENKINS_BASE_URL] = 'http://' . getenv('JENKINS_HOST') . ':' . getenv('JENKINS_PORT') . '/';
 $config[SetupConstants::JENKINS_DIRECTORY] = '/var/jenkins_home';
+
+$config[SchedulerJenkinsConstants::JENKINS_TEMPLATE_PATH] = './jenkins-job.default.xml.twig';
