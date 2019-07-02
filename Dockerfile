@@ -90,7 +90,7 @@ RUN \
     openssh-server      \
     newrelic-php5       \
 
-  && mkdir /var/run/sshd                                    \
+  && test -d || mkdir /var/run/sshd                         \
   && usermod --home /data www-data                          \
   && usermod -s /bin/bash www-data                          \
   && echo "www-data:bigsecretpass" | chpasswd               \
