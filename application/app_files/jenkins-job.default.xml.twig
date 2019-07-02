@@ -27,7 +27,7 @@
     <concurrentBuild>false</concurrentBuild>
     <builders>
         <org.jvnet.hudson.plugins.SSHBuilder plugin='ssh@2.6.1'>
-          <siteName>jenkins@@appHost@:222</siteName>";
+          <siteName>www-data@@appHost@:222</siteName>";
             <command>
                 {%- block setup %}
                     [ -z "${PHP_BIN}" ] &amp;&amp; export PHP_BIN=php

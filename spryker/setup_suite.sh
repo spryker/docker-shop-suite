@@ -9,7 +9,7 @@ cd $APPLICATION_PATH
 # Avoid ssh dialog question
 sudo mkdir ~/.ssh
 sudo touch ~/.ssh/known_hosts
-sudo chown jenkins  ~/.ssh/known_hosts
+sudo chown www-data  ~/.ssh/known_hosts
 sudo ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Get Spryker shop suite from the official github repo
@@ -104,7 +104,7 @@ OLD_APPLICATION_VERSION=$(readlink /data)
 sudo rm -rf /data
 ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
-sudo chown jenkins /versions
+sudo chown www-data /versions
 
 echo $APPLICATION_PATH > /versions/latest_successful_build
 

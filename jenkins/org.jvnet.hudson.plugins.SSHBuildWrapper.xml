@@ -3,7 +3,7 @@
   <sites>
     <org.jvnet.hudson.plugins.CredentialsSSHSite>
       <hostname>localhost</hostname>
-      <username>jenkins</username>
+      <username>www-data</username>
       <port>222</port>
       <credentialId>1</credentialId>
       <serverAliveInterval>0</serverAliveInterval>
