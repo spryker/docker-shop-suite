@@ -60,6 +60,7 @@ sections:
     jenkins-down:
         jenkins-stop:
             command: "vendor/bin/console scheduler:suspend"
+            stores: true
 
     cache:
         twig-cache-warmup:
@@ -250,7 +251,9 @@ sections:
     jenkins-up:
         jenkins-generate:
             command: "vendor/bin/console scheduler:setup"
+            stores: true
 
         jenkins-enable:
             command: "vendor/bin/console scheduler:resume"
+            stores: true
 
