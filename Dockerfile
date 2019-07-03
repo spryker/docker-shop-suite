@@ -90,10 +90,16 @@ RUN \
     openssh-server      \
     newrelic-php5       \
 
-  && test -d /var/run/sshd || mkdir /var/run/sshd                         \
+  && test -d /var/run/sshd || mkdir /var/run/sshd           \
   && usermod --home /data www-data                          \
   && usermod -s /bin/bash www-data                          \
   && echo "www-data:bigsecretpass" | chpasswd               \
+
+  && useradd -m -s /bin/bash -d /data jenkins               \
+  && echo "jenkins:bigsecretpass" | chpasswd                \
+  #Add user to group www-data and to sudoers file           \
+  && usermod -a -G www-data jenkins                         \
+  && echo 'jenkins ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers  \
 
 # Install PHP extensions
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
