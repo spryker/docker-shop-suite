@@ -77,8 +77,9 @@ cp /config_local_US.php config/Shared/config_local_US.php
 test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
 
 # Hack for config_default.php and REDIS_HOST/PORT
-sed -r -i -e "s|($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*';|\1getenv('REDIS_HOST');|g" config/Shared/config_default.php
-sed -r -i -e "s|($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*;|\1getenv('REDIS_PORT');|g" config/Shared/config_default.php
+sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
+sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
+
 
 function getMyAddr(){
   # if build run on an AWS instance

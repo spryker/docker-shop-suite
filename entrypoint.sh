@@ -102,6 +102,9 @@ killall -9 nginx
 supervisorctl restart php-fpm
 supervisorctl restart nginx
 
+test -d /run/sshd || mkdir /run/sshd
+supervisorctl restart sshd
+
 # Unset maintenance flag
 test -f /maintenance_on.flag && rm /maintenance_on.flag
 
