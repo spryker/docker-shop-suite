@@ -46,15 +46,16 @@ $config[ApplicationConstants::YVES_TRUSTED_HOSTS] = [];
 
 // ---------- Zed host
 $config[ApplicationConstants::HOST_ZED] = getenv('ZED_HOST');
-$config[ApplicationConstants::PORT_ZED] = ':8080';
-$config[ApplicationConstants::PORT_SSL_ZED] = '';
+$config[ApplicationConstants::PORT_ZED] = '8080';
+$config[ApplicationConstants::PORT_SSL_ZED] = '4443';
+$config[ZedRequestConstants::ZED_API_SSL_ENABLED] = (bool)getenv('ZED_HTTPS_ON');
 $config[ApplicationConstants::BASE_URL_ZED] = sprintf(
-    'http://%s%s',
+    'http://%s:%s',
     $config[ApplicationConstants::HOST_ZED],
     $config[ApplicationConstants::PORT_ZED]
 );
 $config[ApplicationConstants::BASE_URL_SSL_ZED] = sprintf(
-    'https://%s%s',
+    'https://%s:%s',
     $config[ApplicationConstants::HOST_ZED],
     $config[ApplicationConstants::PORT_SSL_ZED]
 );
