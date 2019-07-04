@@ -19,6 +19,10 @@ use Spryker\Shared\Log\LogConstants;
 use Monolog\Logger;
 use Spryker\Shared\RabbitMq\RabbitMqEnv;
 use Spryker\Shared\GlueApplication\GlueApplicationConstants;
+use Pyz\Shared\Scheduler\SchedulerConfig;
+use Spryker\Shared\Scheduler\SchedulerConstants;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConfig;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConstants;
 
 
 // ---------- Yves host
@@ -163,10 +167,23 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
     ],
 ];
 
+
+// ---------- Scheduler
+$config[SchedulerConstants::ENABLED_SCHEDULERS] = [
+    SchedulerConfig::SCHEDULER_JENKINS,
+];
+$config[SchedulerJenkinsConstants::JENKINS_CONFIGURATION] = [
+    SchedulerConfig::SCHEDULER_JENKINS => [
+        SchedulerJenkinsConfig::SCHEDULER_JENKINS_BASE_URL => 'http://' . getenv('JENKINS_HOST') . ':' . getenv('JENKINS_PORT') . '/',
+    ],
+];
+
+
+
 /** Jenkins **/
 $config[SetupConstants::JENKINS_BASE_URL] = 'http://' . getenv('JENKINS_HOST') . ':' . getenv('JENKINS_PORT') . '/';
 $config[SetupConstants::JENKINS_DIRECTORY] = '/var/jenkins_home';
-
+$config[SchedulerJenkinsConstants::JENKINS_TEMPLATE_PATH] = './jenkins-job.default.xml.twig';
 $config[LogConstants::LOG_LEVEL] = Logger::ERROR;
 
 // ----------- Glue Application
