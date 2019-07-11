@@ -90,13 +90,16 @@ RUN \
     openssh-server      \
     newrelic-php5       \
 
-  && mkdir /var/run/sshd  \
-  && useradd -m -s /bin/bash -d /data jenkins               \
-  && echo "jenkins:bigsecretpass" | chpasswd                \
+  && test -d /var/run/sshd || mkdir /var/run/sshd    \
+  && usermod --home /data -s /bin/bash www-data   \
+  && echo "www-data:bigsecretpass" | chpasswd     \
   #Add user to group www-data and to sudoers file
-  && usermod -a -G www-data jenkins                         \
-  && echo 'jenkins ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers  \
- 
+
+  && useradd -m -s /bin/bash -d /data jenkins              \
+  && echo "jenkins:bigsecretpass" | chpasswd               \
+  #Add user to group www-data and to sudoers file
+  && usermod -a -G www-data jenkins                        \
+  && echo 'jenkins ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \ 
 
 # Install PHP extensions
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
@@ -183,17 +186,17 @@ COPY vars.j2 /vars.j2
 RUN chmod +x /setup_suite.sh
 
 # Add jenkins authorized_keys
-RUN mkdir -p /etc/spryker/jenkins/.ssh
-COPY jenkins/id_rsa.pub /etc/spryker/jenkins/.ssh/authorized_keys
+RUN mkdir -p /etc/spryker/www-data/.ssh
+COPY jenkins/id_rsa.pub /etc/spryker/www-data/.ssh/authorized_keys
 RUN sed -i '/^#AuthorizedKeysFile/aAuthorizedKeysFile      .ssh/authorized_keys /etc/spryker/%u/.ssh/authorized_keys\nPort 222 ' /etc/ssh/sshd_config  \
- && chmod 600 /etc/spryker/jenkins/.ssh/authorized_keys \
- && chown jenkins:jenkins /etc/spryker/jenkins/.ssh/authorized_keys
-RUN sed -i '/chown\ jenkins/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY" > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."' /entrypoint.sh
+ && chmod 600 /etc/spryker/www-data/.ssh/authorized_keys \
+ && chown www-data:www-data /etc/spryker/www-data/.ssh/authorized_keys
+RUN sed -i '/chown\ www-data/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY" > /etc/spryker/www-data/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."' /entrypoint.sh
 
 # Add SwiftMailer AWS configuration
 COPY application/app_files/MailDependencyProvider.php /etc/spryker/
 COPY application/app_files/Mailer.patch /etc/spryker/
-COPY application/app_files/Cronjobs.patch /etc/spryker/
+COPY application/app_files/jenkins-job.default.xml.twig /etc/spryker/
 
 #The workaround for Azure 4 min timeout
 #RUN mkdir -p /etc/nginx/waiting

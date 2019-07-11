@@ -9,7 +9,7 @@ cd $APPLICATION_PATH
 # Avoid ssh dialog question
 sudo mkdir ~/.ssh
 sudo touch ~/.ssh/known_hosts
-sudo chown jenkins  ~/.ssh/known_hosts
+sudo chown www-data  ~/.ssh/known_hosts
 sudo ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 # Get Spryker shop suite from the official github repo
@@ -61,6 +61,10 @@ cp /store.php config/Shared/store.php
 #Copy [production|staging|development].yml only if it doesn't exist
 test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
 
+# Workaround for config_default.php and REDIS_HOST/PORT
+sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
+sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
+
 # Full app install
 vendor/bin/install -vvv
 
@@ -70,32 +74,7 @@ OLD_APPLICATION_VERSION=$(readlink /data)
 sudo rm -rf /data
 ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
-sudo chown jenkins /versions
-
-#Cron jobs generate
-updateCronJobs() {
-   appHost=$1
-   cronJobFile="vendor/spryker/setup/src/Spryker/Zed/Setup/Business/Model/Cronjobs.php"
-   if [ -f ${cronJobFile} ]; then
-      cd $APPLICATION_PATH
-      ## remove it after march release 
-      sed -i 's/\\\$destination_release_dir/$destination_release_dir/g' ${cronJobFile}
-      ##
-      sed -i 's/\$PHP_BIN//g' config/Zed/cronjobs/jobs.php
-      patch -p0 < /etc/spryker/Cronjobs.patch
-      sed -i "s/appHost/${appHost}/g" ${cronJobFile}
-      vendor/bin/console setup:jenkins:generate
-   fi
-}
-
-# if local build
-if [ "${ZED_HOST}" == "os.de.demoshop.local" ]; then
-   updateCronJobs "app"
-# if build run  on an AWS instance 
-elif $(nc -znw 2 169.254.169.254 80); then
-   instance_ip=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
-   updateCronJobs ${instance_ip}
-fi
+sudo chown www-data /versions
 
 echo $APPLICATION_PATH > /versions/latest_successful_build
 

@@ -19,6 +19,10 @@ use Spryker\Shared\Log\LogConstants;
 use Monolog\Logger;
 use Spryker\Shared\RabbitMq\RabbitMqEnv;
 use Spryker\Shared\GlueApplication\GlueApplicationConstants;
+use Pyz\Shared\Scheduler\SchedulerConfig;
+use Spryker\Shared\Scheduler\SchedulerConstants;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConfig;
+use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConstants;
 
 
 // ---------- Yves host
@@ -42,15 +46,16 @@ $config[ApplicationConstants::YVES_TRUSTED_HOSTS] = [];
 
 // ---------- Zed host
 $config[ApplicationConstants::HOST_ZED] = getenv('ZED_HOST');
-$config[ApplicationConstants::PORT_ZED] = ':8080';
-$config[ApplicationConstants::PORT_SSL_ZED] = '';
+$config[ApplicationConstants::PORT_ZED] = '8080';
+$config[ApplicationConstants::PORT_SSL_ZED] = '4443';
+$config[ZedRequestConstants::ZED_API_SSL_ENABLED] = (bool)getenv('ZED_HTTPS_ON');
 $config[ApplicationConstants::BASE_URL_ZED] = sprintf(
-    'http://%s%s',
+    'http://%s:%s',
     $config[ApplicationConstants::HOST_ZED],
     $config[ApplicationConstants::PORT_ZED]
 );
 $config[ApplicationConstants::BASE_URL_SSL_ZED] = sprintf(
-    'https://%s%s',
+    'https://%s:%s',
     $config[ApplicationConstants::HOST_ZED],
     $config[ApplicationConstants::PORT_SSL_ZED]
 );
@@ -163,10 +168,23 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
     ],
 ];
 
+
+// ---------- Scheduler
+$config[SchedulerConstants::ENABLED_SCHEDULERS] = [
+    SchedulerConfig::SCHEDULER_JENKINS,
+];
+$config[SchedulerJenkinsConstants::JENKINS_CONFIGURATION] = [
+    SchedulerConfig::SCHEDULER_JENKINS => [
+        SchedulerJenkinsConfig::SCHEDULER_JENKINS_BASE_URL => 'http://' . getenv('JENKINS_HOST') . ':' . getenv('JENKINS_PORT') . '/',
+    ],
+];
+
+
+
 /** Jenkins **/
 $config[SetupConstants::JENKINS_BASE_URL] = 'http://' . getenv('JENKINS_HOST') . ':' . getenv('JENKINS_PORT') . '/';
 $config[SetupConstants::JENKINS_DIRECTORY] = '/var/jenkins_home';
-
+$config[SchedulerJenkinsConstants::JENKINS_TEMPLATE_PATH] = '/etc/spryker/jenkins-job.default.xml.twig';
 $config[LogConstants::LOG_LEVEL] = Logger::ERROR;
 
 // ----------- Glue Application
