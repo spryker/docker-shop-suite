@@ -184,7 +184,7 @@ $config[SchedulerJenkinsConstants::JENKINS_CONFIGURATION] = [
 /** Jenkins **/
 $config[SetupConstants::JENKINS_BASE_URL] = 'http://' . getenv('JENKINS_HOST') . ':' . getenv('JENKINS_PORT') . '/';
 $config[SetupConstants::JENKINS_DIRECTORY] = '/var/jenkins_home';
-$config[SchedulerJenkinsConstants::JENKINS_TEMPLATE_PATH] = './jenkins-job.default.xml.twig';
+$config[SchedulerJenkinsConstants::JENKINS_TEMPLATE_PATH] = '/etc/spryker/jenkins-job.default.xml.twig';
 $config[LogConstants::LOG_LEVEL] = Logger::ERROR;
 
 // ----------- Glue Application

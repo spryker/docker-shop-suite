@@ -65,21 +65,6 @@ test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPL
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
 
-function getMyAddr(){
-  # if build run on an AWS instance
-  if $(nc -znw 2 169.254.169.254 80); then
-    myaddr=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
-  else
-    # if local build
-    myaddr=app
-  fi
-  echo ${myaddr}
-}
-
-# Getting template for Jenkins jobs
-cp /etc/spryker/jenkins-job.default.xml.twig ./
-sed -i -e "s/@appHost@/$(getMyAddr)/g"  ./jenkins-job.default.xml.twig
-
 # Full app install
 vendor/bin/install -vvv
 

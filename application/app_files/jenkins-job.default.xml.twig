@@ -34,7 +34,7 @@
                     source /versions/vars
                     export APPLICATION_ENV={{ getenv('APPLICATION_ENV') }}
                     export APPLICATION_STORE={{ job.store }}
-                    cd {{ working_dir }}
+                    cd /data
                 {% endblock setup -%}
                 {%- block command %}
                     {{ job.command }}
