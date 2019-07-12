@@ -6,25 +6,21 @@ j2 /usr/local/etc/php-fpm.d/yves.conf.j2 > /usr/local/etc/php-fpm.d/yves.conf
 j2 /usr/local/etc/php-fpm.d/zed.conf.j2 > /usr/local/etc/php-fpm.d/zed.conf
 j2 /usr/local/etc/php-fpm.d/glue.conf.j2 > /usr/local/etc/php-fpm.d/glue.conf
 j2 /etc/nginx/conf.d/backends.conf.j2 > /etc/nginx/conf.d/backends.conf
-j2 /etc/nginx/sites-available/de-vhost-yves.conf.j2 > /etc/nginx/sites-available/de-vhost-yves.conf
-j2 /etc/nginx/sites-available/de-vhost-zed.conf.j2 > /etc/nginx/sites-available/de-vhost-zed.conf
-j2 /etc/nginx/sites-available/de-vhost-glue.conf.j2 > /etc/nginx/sites-available/de-vhost-glue.conf
-j2 /etc/nginx/sites-available/at-vhost-yves.conf.j2 > /etc/nginx/sites-available/at-vhost-yves.conf
-j2 /etc/nginx/sites-available/at-vhost-zed.conf.j2 > /etc/nginx/sites-available/at-vhost-zed.conf
-j2 /etc/nginx/sites-available/at-vhost-glue.conf.j2 > /etc/nginx/sites-available/at-vhost-glue.conf
-j2 /etc/nginx/sites-available/us-vhost-yves.conf.j2 > /etc/nginx/sites-available/us-vhost-yves.conf
-j2 /etc/nginx/sites-available/us-vhost-zed.conf.j2 > /etc/nginx/sites-available/us-vhost-zed.conf
-j2 /etc/nginx/sites-available/us-vhost-glue.conf.j2 > /etc/nginx/sites-available/us-vhost-glue.conf
-ln -s /etc/nginx/sites-available/de-vhost-yves.conf /etc/nginx/sites-enabled/de-vhost-yves.conf
-ln -s /etc/nginx/sites-available/de-vhost-zed.conf /etc/nginx/sites-enabled/de-vhost-zed.conf
-ln -s /etc/nginx/sites-available/de-vhost-glue.conf /etc/nginx/sites-enabled/de-vhost-glue.conf
-ln -s /etc/nginx/sites-available/at-vhost-yves.conf /etc/nginx/sites-enabled/at-vhost-yves.conf
-ln -s /etc/nginx/sites-available/at-vhost-zed.conf /etc/nginx/sites-enabled/at-vhost-zed.conf
-ln -s /etc/nginx/sites-available/at-vhost-glue.conf /etc/nginx/sites-enabled/at-vhost-glue.conf
-ln -s /etc/nginx/sites-available/us-vhost-yves.conf /etc/nginx/sites-enabled/us-vhost-yves.conf
-ln -s /etc/nginx/sites-available/us-vhost-zed.conf /etc/nginx/sites-enabled/us-vhost-zed.conf
-ln -s /etc/nginx/sites-available/us-vhost-glue.conf /etc/nginx/sites-enabled/us-vhost-glue.conf
-
+#Parse string STORES to the array of country names STORE
+IFS=',' read -ra STORE <<< "$STORES"
+#Create the Nginx virtualhost for each store
+for i in "${STORE[@]}"; do
+    export XX=$i
+    export xx=$(echo $i | tr [A-Z] [a-z])
+    j2 /etc/nginx/sites-available/xx-vhost-yves.conf.j2 > /etc/nginx/sites-available/${xx}-vhost-yves.conf
+    j2 /etc/nginx/sites-available/xx-vhost-zed.conf.j2 > /etc/nginx/sites-available/${xx}-vhost-zed.conf
+    j2 /etc/nginx/sites-available/xx-vhost-glue.conf.j2 > /etc/nginx/sites-available/${xx}-vhost-glue.conf
+    ln -s /etc/nginx/sites-available/${xx}-vhost-yves.conf /etc/nginx/sites-enabled/${xx}-vhost-yves.conf
+    ln -s /etc/nginx/sites-available/${xx}-vhost-zed.conf /etc/nginx/sites-enabled/${xx}-vhost-zed.conf
+    ln -s /etc/nginx/sites-available/${xx}-vhost-glue.conf /etc/nginx/sites-enabled/${xx}-vhost-glue.conf
+    # Put Zed host IP to /etc/hosts file
+    echo "127.0.0.1   os.${xx}.${DOMAIN_NAME}" >> /etc/hosts
+done
 /usr/sbin/nginx -g 'daemon on;' &
 
 # Enable maintenance mode
@@ -68,10 +64,6 @@ j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini
 # Configure SSMTP
 j2 /etc/ssmtp/ssmtp.conf.j2 > /etc/ssmtp/ssmtp.conf
 
-# Put Zed host IP to /etc/hosts file:
-echo "127.0.0.1   os.de.${DOMAIN_NAME} os.at.${DOMAIN_NAME} os.us.${DOMAIN_NAME}" >> /etc/hosts
-
-
 function getMyAddr(){
   # if build run on an AWS instance
   if $(nc -znw 2 169.254.169.254 80); then
@@ -85,7 +77,6 @@ function getMyAddr(){
 
 # Getting template for Jenkins jobs
 sed -i -e "s/@appHost@/$(getMyAddr)/g"  /etc/spryker/jenkins-job.default.xml.twig
-
 
 
 #"To build or not to build"

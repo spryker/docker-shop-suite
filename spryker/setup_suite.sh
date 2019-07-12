@@ -74,7 +74,11 @@ cp /config_local_US.php config/Shared/config_local_US.php
 #Copy store.php which fixed the multistore issue
 ##cp /store.php config/Shared/store.php
 #Copy [production|staging|development].yml only if it doesn't exist
-test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
+test -f config/install/${APPLICATION_ENV:-staging}.yml.old || cp /dockersuite_${APPLICATION_ENV:-staging}.yml.old config/install/${APPLICATION_ENV:-staging}.yml
+#TODO: use the new version of yml when Jenkins console command will be updated
+##test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
+
+
 
 # Hack for config_default.php and REDIS_HOST/PORT
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php

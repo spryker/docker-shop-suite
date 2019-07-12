@@ -1,13 +1,13 @@
 server {
     listen 8080 default;
-    server_name www.de.{{DOMAIN_NAME}};
+    server_name www.{{xx}}.{{DOMAIN_NAME}};
     keepalive_timeout 0;
     access_log  /dev/stdout extended;
 
     root /data/public/Yves;
 
     set $application_env {{APPLICATION_ENV}};
-    set $application_store DE;
+    set $application_store {{XX}};
 
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
