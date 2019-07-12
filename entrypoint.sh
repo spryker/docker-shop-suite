@@ -7,7 +7,7 @@ j2 /usr/local/etc/php-fpm.d/zed.conf.j2 > /usr/local/etc/php-fpm.d/zed.conf
 j2 /usr/local/etc/php-fpm.d/glue.conf.j2 > /usr/local/etc/php-fpm.d/glue.conf
 j2 /etc/nginx/conf.d/backends.conf.j2 > /etc/nginx/conf.d/backends.conf
 #Parse string STORES to the array of country names STORE
-IFS=',' read -ra STORE <<< "$STORES"
+IFS=',' read -ra STORE <<< "${STORES}"
 #Create the Nginx virtualhost for each store
 for i in "${STORE[@]}"; do
     export XX=$i
@@ -27,23 +27,23 @@ done
 touch /maintenance_on.flag
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
-export PGPASSWORD=$POSTGRES_PASSWORD
+export PGPASSWORD=${POSTGRES_PASSWORD}
 # Waiting for PostgreSQL database starting
-until psql -h $POSTGRES_HOST -p "$POSTGRES_PORT" -U "$POSTGRES_USER" DE_${APPLICATION_ENV}_zed -c '\l'; do
+until psql -h ${POSTGRES_HOST} -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" DE_${APPLICATION_ENV}_zed -c '\l'; do
   echo "Waiting for PostgreSQL..."
   sleep 3
 done
 echo "PostgreSQL is available now. Good."
 
 # Waiting for the Elasticsearch starting
-until curl -s "$ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT" > /dev/null; do
+until curl -s "${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}" > /dev/null; do
   echo "Waiting for Elasticsearch..."
   sleep 3
 done
 echo "Elasticsearch is available now. Good."
 
 # Waiting for the RabbitMQ starting
-until curl -s "$RABBITMQ_HOST:$RABBITMQ_API_PORT" > /dev/null; do
+until curl -s "${RABBITMQ_HOST}:${RABBITMQ_API_PORT}" > /dev/null; do
   echo "Waiting for RabbitMQ..."
   sleep 3
 done
@@ -87,7 +87,7 @@ if [ -f /versions/latest_successful_build ]; then
        echo "An application link already exist"
      else
        sudo rm -rf /data
-       ln -s $APPLICATION_PATH /data
+       ln -s ${APPLICATION_PATH} /data
      fi
      cd /data
      cp /dockersuite_restore_state.yml config/install/${APPLICATION_ENV:-staging}.yml

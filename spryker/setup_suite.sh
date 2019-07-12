@@ -45,22 +45,25 @@ composer require aws/aws-sdk-php
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL
 export PGPASSWORD=$POSTGRES_PASSWORD
-# Kill all others connections/sessions to the PostgreSQL DE DB for avoiding an error in the next command
-psql --username=$POSTGRES_USER --host=$POSTGRES_HOST DE_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
-# Drop the current PostgreSQL DE DB and create the empty one
-dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST DE_${APPLICATION_ENV}_zed
-createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST DE_${APPLICATION_ENV}_zed
-# Kill all others connections/sessions to the PostgreSQL AT DB for avoiding an error in the next command
-psql --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
-# Drop the current PostgreSQL AT DB and create the empty one
-dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed
-createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST AT_${APPLICATION_ENV}_zed
-# Kill all others connections/sessions to the PostgreSQL US DB for avoiding an error in the next command
-psql --username=$POSTGRES_USER --host=$POSTGRES_HOST US_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
-# Drop the current PostgreSQL US DB and create the empty one
-dropdb --username=$POSTGRES_USER --host=$POSTGRES_HOST US_${APPLICATION_ENV}_zed
-createdb --username=$POSTGRES_USER --host=$POSTGRES_HOST US_${APPLICATION_ENV}_zed
 
+#Parse string STORES to the array of country names STORE
+IFS=',' read -ra STORE <<< "${STORES}"
+#Create the Nginx virtualhost for each store
+for i in "${STORE[@]}"; do
+    export XX=$i
+    export xx=$(echo $i | tr [A-Z] [a-z])
+    # Kill all others connections/sessions to the PostgreSQL DB for avoiding an error in the next command
+    psql --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
+    # Drop the current PostgreSQL DB and create the empty one
+    dropdb --if-exists --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed
+    createdb --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed
+
+    # Create Spryker config_local_XX.php store config from the jinja2 template
+    j2 /config_local_${XX}.php.j2 > config/Shared/config_local_${XX}.php
+done
+cp /config_local.php config/Shared/config_local.php
+#Copy store.php which fixed the multistore issue
+##cp /store.php config/Shared/store.php
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
@@ -68,24 +71,14 @@ redis-cli -h $REDIS_HOST flushall
 # Delete all indexes of the Elasticsearch
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
-# Copy config_local.php and config_local_<STORE>.php configs
-cp /config_local.php config/Shared/config_local.php
-cp /config_local_DE.php config/Shared/config_local_DE.php
-cp /config_local_AT.php config/Shared/config_local_AT.php
-cp /config_local_US.php config/Shared/config_local_US.php
-#Copy store.php which fixed the multistore issue
-##cp /store.php config/Shared/store.php
 #Copy [production|staging|development].yml only if it doesn't exist
 test -f config/install/${APPLICATION_ENV:-staging}.yml.old || cp /dockersuite_${APPLICATION_ENV:-staging}.yml.old config/install/${APPLICATION_ENV:-staging}.yml
 #TODO: use the new version of yml when Jenkins console command will be updated
 ##test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
 
-
-
 # Hack for config_default.php and REDIS_HOST/PORT
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
-
 
 # Full app install
 vendor/bin/install -vvv
@@ -103,13 +96,17 @@ echo $APPLICATION_PATH > /versions/latest_successful_build
 # Disable maintenance mode
 rm /maintenance_on.flag
 
-echo "Spryker shop suite has been successfully installed"
+echo "Spryker shop has been successfully installed"
 echo "You could get it with the next links:"
-echo "Frontend DE (Yves): http://www.de.$DOMAIN_NAME"
-echo "Frontend AT (Yves): http://www.at.$DOMAIN_NAME"
-echo "Frontend US (Yves): http://www.us.$DOMAIN_NAME"
-echo "Backend DE  (Zed): http://os.de.$DOMAIN_NAME"
-echo "Backend AT  (Zed): http://os.at.$DOMAIN_NAME"
-echo "Backend US  (Zed): http://os.us.$DOMAIN_NAME"
-echo "Jenkins        : http://os.de.$DOMAIN_NAME:9090"
-echo "RabbitMQ       : http://os.de.$DOMAIN_NAME:15672"
+#Parse string STORES to the array of country names STORE
+IFS=',' read -ra STORE <<< "${STORES}"
+#Create the Nginx virtualhost for each store
+for i in "${STORE[@]}"; do
+    export XX=$i
+    export xx=$(echo $i | tr [A-Z] [a-z])
+    echo "Frontend ${{XX}} (Yves): http://www.${{xx}}.${DOMAIN_NAME}"
+    echo "Backend ${{XX}}   (Zed): http://os.${{xx}}.${DOMAIN_NAME}"
+    echo "API ${{XX}}      (Glue): http://glue.${{xx}}.${DOMAIN_NAME}"
+done
+echo "Jenkins                : http://os.$(echo ${STORE[0]} | tr [A-Z] [a-z]).${DOMAIN_NAME}:9090"
+echo "RabbitMQ               : http://os.$(echo ${STORE[0]} | tr [A-Z] [a-z]).${DOMAIN_NAME}:15672"
