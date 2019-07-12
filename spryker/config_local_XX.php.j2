@@ -15,9 +15,9 @@ use Spryker\Shared\Storage\StorageConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
 
 /**  Yves host  **/
-$config[ApplicationConstants::HOST_YVES] = 'www.de.' . getenv('DOMAIN_NAME');
+$config[ApplicationConstants::HOST_YVES] = 'www.{{xx}}.' . getenv('DOMAIN_NAME');
 $config[ApplicationConstants::PORT_YVES] = ':8080';
-$config[ApplicationConstants::PORT_SSL_YVES] = '';
+$config[ApplicationConstants::PORT_SSL_YVES] = ':4443';
 $config[ApplicationConstants::BASE_URL_YVES] = sprintf(
     'http://%s%s',
     $config[ApplicationConstants::HOST_YVES],
@@ -34,9 +34,9 @@ $config[CustomerConstants::BASE_URL_YVES] = $config[ApplicationConstants::BASE_U
 $config[ApplicationConstants::YVES_TRUSTED_HOSTS] = [];
 
 /**  Zed host  **/
-$config[ApplicationConstants::HOST_ZED] = 'os.de.' . getenv('DOMAIN_NAME');
+$config[ApplicationConstants::HOST_ZED] = 'os.{{xx}}.' . getenv('DOMAIN_NAME');
 $config[ApplicationConstants::PORT_ZED] = ':8080';
-$config[ApplicationConstants::PORT_SSL_ZED] = '';
+$config[ApplicationConstants::PORT_SSL_ZED] = ':4443';
 $config[ApplicationConstants::BASE_URL_ZED] = sprintf(
     'http://%s%s',
     $config[ApplicationConstants::HOST_ZED],
@@ -64,14 +64,14 @@ $config[SessionConstants::ZED_SESSION_COOKIE_NAME] = $config[ApplicationConstant
 
 
 /** Database credentials **/
-$config[PropelConstants::ZED_DB_DATABASE] = 'DE_' . getenv('APPLICATION_ENV') . '_zed';
+$config[PropelConstants::ZED_DB_DATABASE] = '{{XX}}_' . getenv('APPLICATION_ENV') . '_zed';
 
 /** Elasticsearch  */
 $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]
     = $config[CollectorConstants::ELASTICA_PARAMETER__INDEX_NAME]
     = $config[SearchConstants::ELASTICA_PARAMETER__INDEX_NAME]
-    = 'de_search';
+    = '{{xx}}_search';
 
 /** RabbitMQ **/
-$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = '/DE_' . getenv('APPLICATION_ENV') . '_zed';
-$config[RabbitMqEnv::RABBITMQ_CONNECTIONS]['DE'][RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION] = true;
+$config[RabbitMqEnv::RABBITMQ_API_VIRTUAL_HOST] = '/{{XX}}_' . getenv('APPLICATION_ENV') . '_zed';
+$config[RabbitMqEnv::RABBITMQ_CONNECTIONS]['{{XX}}'][RabbitMqEnv::RABBITMQ_DEFAULT_CONNECTION] = true;
