@@ -21,6 +21,8 @@ git checkout master
 # Copy maintenance page
 rm -rf /maintenance
 cp -r ${APPLICATION_PATH}/public/Zed/maintenance /maintenance
+# Enable maintenance mode
+sudo touch /maintenance_on.flag
 
 # Swift Mailer AWS configuration
 if [ $SMTP_HOST != "127.0.0.1" ]
@@ -97,6 +99,9 @@ sudo rm -rf $OLD_APPLICATION_VERSION
 sudo chown www-data /versions
 
 echo $APPLICATION_PATH > /versions/latest_successful_build
+
+# Disable maintenance mode
+rm /maintenance_on.flag
 
 echo "Spryker shop suite has been successfully installed"
 echo "You could get it with the next links:"
