@@ -47,11 +47,6 @@ sections:
 #            command: "vendor/bin/console setup:empty-generated-directory"
 
 
-    jenkins-down:
-        jenkins-stop:
-            command: "vendor/bin/console setup:jenkins:disable"
-
-
     generate:
         generate-transfers:
             command: "vendor/bin/console transfer:generate"
@@ -62,6 +57,10 @@ sections:
 #        generate-ide-auto-completion:
 #            command: "vendor/bin/console dev:ide:generate-auto-completion"
 
+    jenkins-down:
+        jenkins-stop:
+            command: "vendor/bin/console scheduler:suspend"
+            stores: true
 
     cache:
         twig-cache-warmup:
@@ -223,14 +222,6 @@ sections:
                 - DE
 
 
-    jenkins-up:
-#        jenkins-generate:
-#            command: "vendor/bin/console setup:jenkins:generate"
-
-        jenkins-enable:
-            command: "vendor/bin/console setup:jenkins:enable"
-
-
     frontend:
         dependencies-install:
             command: "vendor/bin/console frontend:project:install-dependencies -vvv"
@@ -256,3 +247,13 @@ sections:
             command: "vendor/bin/console frontend:zed:build"
             groups:
                 - zed
+
+    jenkins-up:
+        jenkins-generate:
+            command: "vendor/bin/console scheduler:setup"
+            stores: true
+
+        jenkins-enable:
+            command: "vendor/bin/console scheduler:resume"
+            stores: true
+

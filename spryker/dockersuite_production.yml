@@ -49,7 +49,8 @@ sections:
 
     jenkins-down:
         jenkins-stop:
-            command: "vendor/bin/console setup:jenkins:disable"
+            command: "vendor/bin/console scheduler:suspend"
+            stores: true
 
 
     generate:
@@ -195,15 +196,6 @@ sections:
             command: "vendor/bin/console product-label:relations:update"
             stores: true
 
-
-    jenkins-up:
-#        jenkins-generate:
-#            command: "vendor/bin/console setup:jenkins:generate"
-
-        jenkins-enable:
-            command: "vendor/bin/console setup:jenkins:enable"
-
-
     frontend:
         dependencies-install:
             command: "vendor/bin/console frontend:project:install-dependencies -vvv"
@@ -229,3 +221,13 @@ sections:
             command: "vendor/bin/console frontend:zed:build"
             groups:
                 - zed
+
+    jenkins-up:
+        jenkins-generate:
+            command: "vendor/bin/console scheduler:setup"
+            stores: true
+
+        jenkins-enable:
+            command: "vendor/bin/console scheduler:resume"
+            stores: true
+

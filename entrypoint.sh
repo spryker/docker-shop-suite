@@ -71,6 +71,23 @@ j2 /etc/ssmtp/ssmtp.conf.j2 > /etc/ssmtp/ssmtp.conf
 # Put Zed host IP to /etc/hosts file:
 echo "127.0.0.1   os.de.${DOMAIN_NAME} os.at.${DOMAIN_NAME} os.us.${DOMAIN_NAME}" >> /etc/hosts
 
+
+function getMyAddr(){
+  # if build run on an AWS instance
+  if $(nc -znw 2 169.254.169.254 80); then
+    myaddr=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+  else
+    # if local build
+    myaddr=app
+  fi
+  echo ${myaddr}
+}
+
+# Getting template for Jenkins jobs
+sed -i -e "s/@appHost@/$(getMyAddr)/g"  /etc/spryker/jenkins-job.default.xml.twig
+
+
+
 #"To build or not to build"
 if [ -f /versions/latest_successful_build ]; then
      source  /versions/vars
@@ -106,7 +123,7 @@ supervisorctl restart nginx
 test -f /maintenance_on.flag && rm /maintenance_on.flag
 
 chown -R www-data:www-data /data
-chown jenkins /versions/
+chown www-data /versions/
 
 # Call command...
 exec $*
