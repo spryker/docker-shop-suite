@@ -56,7 +56,7 @@ set -xe
 j2 /vars.j2 > /versions/vars
 
 # Install NewRelic php app monitoring
-echo $NEWRELIC_KEY | sudo newrelic-install install
+echo ${NEWRELIC_KEY} | sudo newrelic-install install
 
 # Configure PHP
 j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini 
@@ -94,19 +94,30 @@ if [ -f /versions/latest_successful_build ]; then
      vendor/bin/install -vvv
      chown -R www-data:www-data /data/
 else
-      #Create additional RabbitMQ Vhosts:
-      curl -i -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2FAT_staging_zed
-      curl -i -u $RABBITMQ_USER:$RABBITMQ_PASSWORD -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2FUS_staging_zed
-      #Deploy Spryker Shop
-      /setup_suite.sh
-      # Disable maintenance mode to validate LetsEncrypt certificates
-      test -f /maintenance_on.flag && rm /maintenance_on.flag
-      bash /setup_ssl.sh de.${DOMAIN_NAME} $(curl http://checkip.amazonaws.com/ -s) &
-      bash /setup_ssl.sh at.${DOMAIN_NAME} $(curl http://checkip.amazonaws.com/ -s) &
-      bash /setup_ssl.sh us.${DOMAIN_NAME} $(curl http://checkip.amazonaws.com/ -s) &
+     #Parse string STORES to the array of country names STORE
+     IFS=',' read -ra STORE <<< "${STORES}"
+     #Create the RabbitMQ virtualhost for each store
+     for i in "${STORE[@]}"; do
+       export XX=$i
+       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2F${XX}_staging_zed
+       echo "The RabbitMQ Vhost ${XX}_staging_zed has been created"
+     done
+
+     #Deploy Spryker Shop
+     /setup_suite.sh
+     # Disable maintenance mode to validate LetsEncrypt certificates
+     test -f /maintenance_on.flag && rm /maintenance_on.flag
+
+     #Create the RabbitMQ virtualhost for each store
+     for i in "${STORE[@]}"; do
+       export XX=$i
+       export xx=$(echo $i | tr [A-Z] [a-z])
+       bash /setup_ssl.sh ${xx}.${DOMAIN_NAME} $(curl http://checkip.amazonaws.com/ -s) &
+       echo "The SSL web server config has been configured for ${XX} shop"
+     done
 fi
 
-killall -9 nginx
+##killall -9 nginx
 supervisorctl restart php-fpm
 supervisorctl restart nginx
 

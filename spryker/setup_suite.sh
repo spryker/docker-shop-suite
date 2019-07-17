@@ -59,7 +59,7 @@ for i in "${STORE[@]}"; do
     createdb --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed
 
     # Create Spryker config_local_XX.php store config from the jinja2 template
-    j2 /config_local_${XX}.php.j2 > config/Shared/config_local_${XX}.php
+    j2 /config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
 done
 cp /config_local.php config/Shared/config_local.php
 #Copy store.php which fixed the multistore issue
@@ -72,13 +72,15 @@ redis-cli -h $REDIS_HOST flushall
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
 #Copy [production|staging|development].yml only if it doesn't exist
-test -f config/install/${APPLICATION_ENV:-staging}.yml.old || cp /dockersuite_${APPLICATION_ENV:-staging}.yml.old config/install/${APPLICATION_ENV:-staging}.yml
+test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
 #TODO: use the new version of yml when Jenkins console command will be updated
 ##test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
 
 # Hack for config_default.php and REDIS_HOST/PORT
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
+
+npm cache clean --force
 
 # Full app install
 vendor/bin/install -vvv
@@ -104,9 +106,9 @@ IFS=',' read -ra STORE <<< "${STORES}"
 for i in "${STORE[@]}"; do
     export XX=$i
     export xx=$(echo $i | tr [A-Z] [a-z])
-    echo "Frontend ${{XX}} (Yves): http://www.${{xx}}.${DOMAIN_NAME}"
-    echo "Backend ${{XX}}   (Zed): http://os.${{xx}}.${DOMAIN_NAME}"
-    echo "API ${{XX}}      (Glue): http://glue.${{xx}}.${DOMAIN_NAME}"
+    echo "Frontend ${XX} (Yves): http://www.${xx}.${DOMAIN_NAME}"
+    echo "Backend ${XX}   (Zed): http://os.${xx}.${DOMAIN_NAME}"
+    echo "API ${XX}      (Glue): http://glue.${xx}.${DOMAIN_NAME}"
 done
 echo "Jenkins                : http://os.$(echo ${STORE[0]} | tr [A-Z] [a-z]).${DOMAIN_NAME}:9090"
 echo "RabbitMQ               : http://os.$(echo ${STORE[0]} | tr [A-Z] [a-z]).${DOMAIN_NAME}:15672"
