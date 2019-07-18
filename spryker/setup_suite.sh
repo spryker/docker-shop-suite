@@ -3,6 +3,7 @@
 #Create the current build folder in the /versions
 curdate=(`date +%Y-%m-%d_%H-%M`)
 APPLICATION_PATH=/versions/$curdate
+store_yml="stores:\n"
 mkdir -p $APPLICATION_PATH
 cd $APPLICATION_PATH
 
@@ -60,6 +61,8 @@ for i in "${STORE[@]}"; do
 
     # Create Spryker config_local_XX.php store config from the jinja2 template
     j2 /config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
+
+    store_yml="${store_yml}  - ${XX}\n"
 done
 cp /config_local.php config/Shared/config_local.php
 #Copy store.php which fixed the multistore issue
@@ -71,16 +74,17 @@ redis-cli -h $REDIS_HOST flushall
 # Delete all indexes of the Elasticsearch
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
-#Copy [production|staging|development].yml only if it doesn't exist
-test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
-#TODO: use the new version of yml when Jenkins console command will be updated
+#Prepare [production|staging|development].yml only if it doesn't exist
 ##test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
+test -f config/install/${APPLICATION_ENV:-staging}.yml || cp config/install/docker.yml config/install/${APPLICATION_ENV:-staging}.yml
+sed -r -i -e "s/APPLICATION_ENV: docker/APPLICATION_ENV: ${APPLICATION_ENV:-staging}/g" config/install/${APPLICATION_ENV:-staging}.yml
+sed -r -i -e "s/stores:\n  - DE\n  - AT\n  - US\n/${store_yml}/g" config/install/${APPLICATION_ENV:-staging}.yml
 
 # Hack for config_default.php and REDIS_HOST/PORT
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
 
-npm cache clean --force
+#npm cache clean --force
 
 # Full app install
 vendor/bin/install -vvv
