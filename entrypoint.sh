@@ -117,7 +117,7 @@ else
      done
 fi
 
-##killall -9 nginx
+killall -9 nginx
 supervisorctl restart php-fpm
 supervisorctl restart nginx
 
