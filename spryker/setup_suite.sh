@@ -75,10 +75,33 @@ redis-cli -h $REDIS_HOST flushall
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
 #Prepare [production|staging|development].yml only if it doesn't exist
-##test -f config/install/${APPLICATION_ENV:-staging}.yml || cp /dockersuite_${APPLICATION_ENV:-staging}.yml config/install/${APPLICATION_ENV:-staging}.yml
+if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then
+    cp config/install/docker.yml /tmp/install_config_buf.yml
+    sed -i -r "/env:/,/sections:/d" /tmp/install_config_buf.yml
+    cat <<EOF > config/install/${APPLICATION_ENV:-staging}.yml
+env:
+    APPLICATION_ENV: ${APPLICATION_ENV:-staging}
+
+stores:
+${store_yml}
+sections:
+EOF
+    cat  /tmp/install_config_buf.yml >> config/install/${APPLICATION_ENV:-staging}.yml
+fi
+
 test -f config/install/${APPLICATION_ENV:-staging}.yml || cp config/install/docker.yml config/install/${APPLICATION_ENV:-staging}.yml
-sed -r -i -e "s/APPLICATION_ENV: docker/APPLICATION_ENV: ${APPLICATION_ENV:-staging}/g" config/install/${APPLICATION_ENV:-staging}.yml
-sed -r -i -e "s/stores:\n  - DE\n  - AT\n  - US\n/${store_yml}/g" config/install/${APPLICATION_ENV:-staging}.yml
+
+# Delete all default stores, but with `stores:` and `sections:` lines which need to be returned
+sed -i -r "/env:/,/sections:/d" config/install/${APPLICATION_ENV:-staging}.yml
+echo "env:" > config/install/${APPLICATION_ENV:-staging}.yml
+echo "    APPLICATION_ENV: ${APPLICATION_ENV:-staging}" >> config/install/${APPLICATION_ENV:-staging}.yml
+echo "" >> config/install/${APPLICATION_ENV:-staging}.yml
+echo "stores:" >> config/install/${APPLICATION_ENV:-staging}.yml
+echo ${store_yml} >> config/install/${APPLICATION_ENV:-staging}.yml
+echo "" >> config/install/${APPLICATION_ENV:-staging}.yml
+echo "sections:" >> config/install/${APPLICATION_ENV:-staging}.yml
+
+
 
 # Hack for config_default.php and REDIS_HOST/PORT
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
