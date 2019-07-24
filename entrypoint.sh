@@ -53,7 +53,7 @@ echo "RabbitMQ is available now. Good."
 set -xe
 
 # Put env variables to /versions/vars file for using it in Jenkins jobs
-j2 /vars.j2 > /versions/vars
+j2 /etc/spryker/vars.j2 > /versions/vars
 
 # Install NewRelic php app monitoring
 echo ${NEWRELIC_KEY} | sudo newrelic-install install
@@ -90,7 +90,7 @@ if [ -f /versions/latest_successful_build ]; then
        ln -s ${APPLICATION_PATH} /data
      fi
      cd /data
-     cp /dockersuite_restore_state.yml config/install/${APPLICATION_ENV:-staging}.yml
+     cp /etc/spryker/dockersuite_restore_state.yml config/install/${APPLICATION_ENV:-staging}.yml
      vendor/bin/install -vvv
      chown -R www-data:www-data /data/
 else

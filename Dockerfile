@@ -171,20 +171,22 @@ ARG GITHUB_TOKEN
 RUN install -d -o www-data -g www-data -m 0755 /data /var/www
 RUN mkdir -p /data/data/DE/logs
 RUN mkdir -p /versions
+RUN mkdir -p /etc/spryker
 RUN chown -R www-data:www-data /data
 
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
-COPY spryker/config_local.php /config_local.php
-COPY spryker/config_local_XX.php.j2 /config_local_XX.php.j2
-COPY spryker/store.php /store.php
-COPY spryker/dockersuite_development.yml /dockersuite_development.yml
-COPY spryker/dockersuite_staging.yml /dockersuite_staging.yml
-COPY spryker/dockersuite_production.yml /dockersuite_production.yml
-COPY spryker/dockersuite_restore_state.yml /dockersuite_restore_state.yml
+COPY spryker/config_local.php /etc/spryker/config_local.php
+COPY spryker/config_local_XX.php.j2 /etc/spryker/config_local_XX.php.j2
+##COPY spryker/store.php /etc/spryker/store.php
+COPY spryker/dockersuite_development.yml /etc/spryker/dockersuite_development.yml
+COPY spryker/dockersuite_staging.yml /etc/spryker/dockersuite_staging.yml
+COPY spryker/staging.yml /etc/spryker/staging.yml
+COPY spryker/dockersuite_production.yml /etc/spryker/dockersuite_production.yml
+COPY spryker/dockersuite_restore_state.yml /etc/spryker/dockersuite_restore_state.yml
 COPY spryker/setup_suite.sh /setup_suite.sh
 COPY spryker/setup_ssl.sh /setup_ssl.sh
-COPY spryker/vars.j2 /vars.j2
+COPY spryker/vars.j2 /etc/spryker/vars.j2
 RUN chmod +x /setup_suite.sh
 
 # Add jenkins authorized_keys

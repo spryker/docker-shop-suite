@@ -3,9 +3,11 @@
 #Create the current build folder in the /versions
 curdate=(`date +%Y-%m-%d_%H-%M`)
 APPLICATION_PATH=/versions/$curdate
-store_yml="stores:\n"
 mkdir -p $APPLICATION_PATH
 cd $APPLICATION_PATH
+
+# Create a temporary file with the list of stores for using in install config
+echo "" > /tmp/stores.yml
 
 # Avoid ssh dialog question
 sudo mkdir ~/.ssh
@@ -42,7 +44,7 @@ fi
 export COMPOSER_MEMORY_LIMIT=-1
 composer global require hirak/prestissimo
 composer install
-composer require aws/aws-sdk-php
+composer require --no-update aws/aws-sdk-php
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL
 export PGPASSWORD=$POSTGRES_PASSWORD
@@ -60,11 +62,17 @@ for i in "${STORE[@]}"; do
     createdb --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed
 
     # Create Spryker config_local_XX.php store config from the jinja2 template
-    j2 /config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
+    j2 /etc/spryker/config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
 
-    store_yml="${store_yml}  - ${XX}\n"
+    # Add all stores to the temporary file for using in install config
+    echo "  - ${XX}" >> /tmp/stores.yml
 done
-cp /config_local.php config/Shared/config_local.php
+
+# Add the additional line (which delete with sed) to the temporary file for using in install config
+echo "sections:" >> /tmp/stores.yml
+
+cp /etc/spryker/config_local.php config/Shared/config_local.php
+
 #Copy store.php which fixed the multistore issue
 ##cp /store.php config/Shared/store.php
 
@@ -78,29 +86,22 @@ curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then
     cp config/install/docker.yml /tmp/install_config_buf.yml
     sed -i -r "/env:/,/sections:/d" /tmp/install_config_buf.yml
+    sed -i -r "/build-development:/,/rest-api:generate:documentation\"/d" /tmp/install_config_buf.yml
     cat <<EOF > config/install/${APPLICATION_ENV:-staging}.yml
 env:
     APPLICATION_ENV: ${APPLICATION_ENV:-staging}
 
 stores:
-${store_yml}
-sections:
 EOF
+    cat  /tmp/stores.yml >> config/install/${APPLICATION_ENV:-staging}.yml
     cat  /tmp/install_config_buf.yml >> config/install/${APPLICATION_ENV:-staging}.yml
+    # Add `stores: true` for the `setup:init-db` command
+    sed -i -r '/setup:init-db"/ a \
+            stores: true' config/install/${APPLICATION_ENV:-staging}.yml
+    # Add `stores: true` for the `queue:permission:set` command
+    sed -i -r '/queue:permission:set"/ a \
+            stores: true' config/install/${APPLICATION_ENV:-staging}.yml
 fi
-
-test -f config/install/${APPLICATION_ENV:-staging}.yml || cp config/install/docker.yml config/install/${APPLICATION_ENV:-staging}.yml
-
-# Delete all default stores, but with `stores:` and `sections:` lines which need to be returned
-sed -i -r "/env:/,/sections:/d" config/install/${APPLICATION_ENV:-staging}.yml
-echo "env:" > config/install/${APPLICATION_ENV:-staging}.yml
-echo "    APPLICATION_ENV: ${APPLICATION_ENV:-staging}" >> config/install/${APPLICATION_ENV:-staging}.yml
-echo "" >> config/install/${APPLICATION_ENV:-staging}.yml
-echo "stores:" >> config/install/${APPLICATION_ENV:-staging}.yml
-echo ${store_yml} >> config/install/${APPLICATION_ENV:-staging}.yml
-echo "" >> config/install/${APPLICATION_ENV:-staging}.yml
-echo "sections:" >> config/install/${APPLICATION_ENV:-staging}.yml
-
 
 
 # Hack for config_default.php and REDIS_HOST/PORT
