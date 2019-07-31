@@ -178,10 +178,10 @@ WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
 COPY spryker/config_local.php /etc/spryker/config_local.php
 COPY spryker/config_local_XX.php.j2 /etc/spryker/config_local_XX.php.j2
-##COPY spryker/store.php /etc/spryker/store.php
+COPY spryker/store.php /etc/spryker/store.php
 COPY spryker/dockersuite_development.yml /etc/spryker/dockersuite_development.yml
 COPY spryker/dockersuite_staging.yml /etc/spryker/dockersuite_staging.yml
-COPY spryker/staging.yml /etc/spryker/staging.yml
+COPY spryker/install_spryker.yml.j2 /etc/spryker/install_spryker.yml.j2
 COPY spryker/dockersuite_production.yml /etc/spryker/dockersuite_production.yml
 COPY spryker/dockersuite_restore_state.yml /etc/spryker/dockersuite_restore_state.yml
 COPY spryker/setup_suite.sh /setup_suite.sh
@@ -211,7 +211,7 @@ COPY application/app_files/jenkins-job.default.xml.twig /etc/spryker/
 # Run app with entrypoints
 ENTRYPOINT ["/tini", "--", "/entrypoint.sh"]
 
-EXPOSE 8080 8081 222
+EXPOSE 8080 222
 
 #STOPSIGNAL SIGQUIT
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf", "--nodaemon"]

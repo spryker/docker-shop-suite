@@ -74,7 +74,7 @@ echo "sections:" >> /tmp/stores.yml
 cp /etc/spryker/config_local.php config/Shared/config_local.php
 
 #Copy store.php which fixed the multistore issue
-##cp /store.php config/Shared/store.php
+##cp /etc/spryker/store.php config/Shared/store.php
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
@@ -84,24 +84,11 @@ curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
 #Prepare [production|staging|development].yml only if it doesn't exist
 if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then
-    cp config/install/docker.yml /tmp/install_config_buf.yml
-    sed -i -r "/env:/,/sections:/d" /tmp/install_config_buf.yml
-    sed -i -r "/build-development:/,/rest-api:generate:documentation\"/d" /tmp/install_config_buf.yml
-    cat <<EOF > config/install/${APPLICATION_ENV:-staging}.yml
-env:
-    APPLICATION_ENV: ${APPLICATION_ENV:-staging}
-
-stores:
-EOF
-    cat  /tmp/stores.yml >> config/install/${APPLICATION_ENV:-staging}.yml
-    cat  /tmp/install_config_buf.yml >> config/install/${APPLICATION_ENV:-staging}.yml
-    # Add `stores: true` for the `setup:init-db` command
-    sed -i -r '/setup:init-db"/ a \
-            stores: true' config/install/${APPLICATION_ENV:-staging}.yml
-    # Add `stores: true` for the `queue:permission:set` command
-    sed -i -r '/queue:permission:set"/ a \
-            stores: true' config/install/${APPLICATION_ENV:-staging}.yml
+    j2 /etc/spryker/install_spryker.yml.j2 > config/install/${APPLICATION_ENV:-staging}.yml
+    cat /tmp/stores.yml >> config/install/${APPLICATION_ENV:-staging}.yml
+    cat /etc/spryker/dockersuite_staging.yml >> config/install/${APPLICATION_ENV:-staging}.yml
 fi
+#cp /etc/spryker/dockersuite_staging.yml config/install/${APPLICATION_ENV:-staging}.yml
 
 
 # Hack for config_default.php and REDIS_HOST/PORT
@@ -109,6 +96,8 @@ sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
 
 #npm cache clean --force
+
+vendor/bin/console propel:install
 
 # Full app install
 vendor/bin/install -vvv

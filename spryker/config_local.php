@@ -2,6 +2,7 @@
 use Spryker\Shared\Application\ApplicationConstants;
 use Spryker\Shared\Collector\CollectorConstants;
 use Spryker\Shared\Customer\CustomerConstants;
+use Spryker\Shared\Event\EventConstants;
 use Spryker\Shared\GlueApplication\GlueApplicationConstants;
 use Spryker\Shared\Newsletter\NewsletterConstants;
 use Spryker\Shared\ProductManagement\ProductManagementConstants;
@@ -89,15 +90,15 @@ $config[RabbitMqEnv::RABBITMQ_CONNECTIONS] = [
         RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => '/DE_' . getenv('APPLICATION_ENV') . '_zed',
         RabbitMqEnv::RABBITMQ_STORE_NAMES => ['DE'],
     ],
-#    'AT' => [
-#        RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'AT-connection',
-#        RabbitMqEnv::RABBITMQ_HOST => getenv('RABBITMQ_HOST'),
-#        RabbitMqEnv::RABBITMQ_PORT => getenv('RABBITMQ_PORT'),
-#        RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_PASSWORD'),
-#        RabbitMqEnv::RABBITMQ_USERNAME =>  getenv('RABBITMQ_USER'),
-#        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => '/AT_' . getenv('APPLICATION_ENV') . '_zed',
-#        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['AT'],
-#    ],
+    'AT' => [
+        RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'AT-connection',
+        RabbitMqEnv::RABBITMQ_HOST => getenv('RABBITMQ_HOST'),
+        RabbitMqEnv::RABBITMQ_PORT => getenv('RABBITMQ_PORT'),
+        RabbitMqEnv::RABBITMQ_PASSWORD => getenv('RABBITMQ_PASSWORD'),
+        RabbitMqEnv::RABBITMQ_USERNAME =>  getenv('RABBITMQ_USER'),
+        RabbitMqEnv::RABBITMQ_VIRTUAL_HOST => '/AT_' . getenv('APPLICATION_ENV') . '_zed',
+        RabbitMqEnv::RABBITMQ_STORE_NAMES => ['AT'],
+    ],
     'US' => [
         RabbitMqEnv::RABBITMQ_CONNECTION_NAME => 'US-connection',
         RabbitMqEnv::RABBITMQ_HOST => getenv('RABBITMQ_HOST'),
@@ -119,3 +120,6 @@ $config[SetupConstants::JENKINS_BASE_URL] = 'http://' . getenv('JENKINS_HOST') .
 $config[SetupConstants::JENKINS_DIRECTORY] = '/var/jenkins_home';
 
 $config[SchedulerJenkinsConstants::JENKINS_TEMPLATE_PATH] = '/etc/spryker/jenkins-job.default.xml.twig';
+
+/** Debugging **/
+$config[EventConstants::LOGGER_ACTIVE] = true;
