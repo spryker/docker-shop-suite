@@ -1,10 +1,3 @@
-env:
-    APPLICATION_ENV: staging
-
-stores:
-    - DE
-    - AT
-#    - US
 
 command-timeout: 3600
 

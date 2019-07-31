@@ -76,7 +76,7 @@ function getMyAddr(){
 }
 
 # Getting template for Jenkins jobs
-sed -i -e "s/@appHost@/$(getMyAddr)/g"  /etc/spryker/jenkins-job.default.xml.twig
+sed -i -e "s/@appHost@/$(getMyAddr)/g" /etc/spryker/jenkins-job.default.xml.twig
 
 
 #"To build or not to build"
@@ -90,7 +90,7 @@ if [ -f /versions/latest_successful_build ]; then
        ln -s ${APPLICATION_PATH} /data
      fi
      cd /data
-     cp /etc/spryker/dockersuite_restore_state.yml config/install/${APPLICATION_ENV:-staging}.yml
+     cp config/install/dockersuite_restore_state.yml config/install/${APPLICATION_ENV:-staging}.yml
      vendor/bin/install -vvv
      chown -R www-data:www-data /data/
 else

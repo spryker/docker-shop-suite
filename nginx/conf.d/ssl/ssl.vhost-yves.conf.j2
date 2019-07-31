@@ -3,7 +3,7 @@ upstream backend-yves {
 }
 
 server {
-    listen 8080 default;
+    listen 80 default;
 ##    server_name ~^www\\.de\\..+\\.local$;
     server_name www.de.{{DOMAIN_NAME}};
     keepalive_timeout 0;
@@ -69,7 +69,7 @@ server {
 }
 
 server {
-    listen 4443 default ssl http2;
+    listen 443 default ssl http2;
 ##    server_name ~^www\\.de\\..+\\.local$;
     server_name www.de.{{DOMAIN_NAME}};
 

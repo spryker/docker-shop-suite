@@ -88,6 +88,13 @@ if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then
     cat /tmp/stores.yml >> config/install/${APPLICATION_ENV:-staging}.yml
     cat /etc/spryker/dockersuite_staging.yml >> config/install/${APPLICATION_ENV:-staging}.yml
 fi
+#Prepare dockersuite_restore_state.yml (only if it doesn't exist) for future restoring shop after the container restart
+if [ ! -f config/install/dockersuite_restore_state.yml ]; then
+    j2 /etc/spryker/install_spryker.yml.j2 > config/install/dockersuite_restore_state.yml
+    cat /tmp/stores.yml >> config/install/dockersuite_restore_state.yml
+    cat /etc/spryker/dockersuite_restore_state.yml >> config/install/dockersuite_restore_state.yml
+fi
+
 #cp /etc/spryker/dockersuite_staging.yml config/install/${APPLICATION_ENV:-staging}.yml
 
 
