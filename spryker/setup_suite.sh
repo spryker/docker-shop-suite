@@ -7,7 +7,9 @@ mkdir -p $APPLICATION_PATH
 cd $APPLICATION_PATH
 
 # Create a temporary file with the list of stores for using in install config
-echo "" > /tmp/stores.yml
+echo "APPLICATION_ENV: ${APPLICATION_ENV}" > /etc/spryker/stores.yml
+echo "DOMAIN_NAME: ${DOMAIN_NAME}" >> /etc/spryker/stores.yml
+echo "stores:" >> /etc/spryker/stores.yml
 
 # Avoid ssh dialog question
 sudo mkdir ~/.ssh
@@ -65,16 +67,17 @@ for i in "${STORE[@]}"; do
     j2 /etc/spryker/config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
 
     # Add all stores to the temporary file for using in install config
-    echo "  - ${XX}" >> /tmp/stores.yml
+    echo "  - ${XX}" >> /etc/spryker/stores.yml
 done
 
-# Add the additional line (which delete with sed) to the temporary file for using in install config
-echo "sections:" >> /tmp/stores.yml
+# Create Spryker main config config_local.php from the jinja2 template
+j2 /etc/spryker/config_local.php.j2 /etc/spryker/stores.yml -o config/Shared/config_local.php
 
-cp /etc/spryker/config_local.php config/Shared/config_local.php
+# Create the frontend config frontend-build-config.json from the jinja2 template
+j2 /etc/spryker/frontend-build-config.json.j2 /etc/spryker/stores.yml -o config/Yves/frontend-build-config.json
 
-#Copy store.php which fixed the multistore issue
-##cp /etc/spryker/store.php config/Shared/store.php
+#Copy stores.php which fixed the multistore issue
+##cp /etc/spryker/stores.php config/Shared/stores.php
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
@@ -82,21 +85,15 @@ redis-cli -h $REDIS_HOST flushall
 # Delete all indexes of the Elasticsearch
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
+
 #Prepare [production|staging|development].yml only if it doesn't exist
 if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then
-    j2 /etc/spryker/install_spryker.yml.j2 > config/install/${APPLICATION_ENV:-staging}.yml
-    cat /tmp/stores.yml >> config/install/${APPLICATION_ENV:-staging}.yml
-    cat /etc/spryker/dockersuite_staging.yml >> config/install/${APPLICATION_ENV:-staging}.yml
+    j2 /etc/spryker/install_spryker.yml.j2 /etc/spryker/stores.yml -o config/install/${APPLICATION_ENV:-staging}.yml
 fi
-#Prepare dockersuite_restore_state.yml (only if it doesn't exist) for future restoring shop after the container restart
+#Prepare restore_spryker_state.yml (only if it doesn't exist) for future restoring shop after the container restart
 if [ ! -f config/install/dockersuite_restore_state.yml ]; then
-    j2 /etc/spryker/install_spryker.yml.j2 > config/install/dockersuite_restore_state.yml
-    cat /tmp/stores.yml >> config/install/dockersuite_restore_state.yml
-    cat /etc/spryker/dockersuite_restore_state.yml >> config/install/dockersuite_restore_state.yml
+    j2 /etc/spryker/restore_spryker_state.yml.j2 /etc/spryker/stores.yml -o config/install/restore_spryker_state.yml
 fi
-
-#cp /etc/spryker/dockersuite_staging.yml config/install/${APPLICATION_ENV:-staging}.yml
-
 
 # Hack for config_default.php and REDIS_HOST/PORT
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
@@ -104,7 +101,7 @@ sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/
 
 #npm cache clean --force
 
-vendor/bin/console propel:install
+#vendor/bin/console propel:install
 
 # Full app install
 vendor/bin/install -vvv
@@ -122,17 +119,5 @@ echo $APPLICATION_PATH > /versions/latest_successful_build
 # Disable maintenance mode
 rm /maintenance_on.flag
 
-echo "Spryker shop has been successfully installed"
-echo "You could get it with the next links:"
-#Parse string STORES to the array of country names STORE
-IFS=',' read -ra STORE <<< "${STORES}"
-#Create the Nginx virtualhost for each store
-for i in "${STORE[@]}"; do
-    export XX=$i
-    export xx=$(echo $i | tr [A-Z] [a-z])
-    echo "Frontend ${XX} (Yves): http://www.${xx}.${DOMAIN_NAME}"
-    echo "Backend ${XX}   (Zed): http://os.${xx}.${DOMAIN_NAME}"
-    echo "API ${XX}      (Glue): http://glue.${xx}.${DOMAIN_NAME}"
-done
-echo "Jenkins                : http://os.$(echo ${STORE[0]} | tr [A-Z] [a-z]).${DOMAIN_NAME}:9090"
-echo "RabbitMQ               : http://os.$(echo ${STORE[0]} | tr [A-Z] [a-z]).${DOMAIN_NAME}:15672"
+# Print output text with the setup results
+j2 /etc/spryker/setup_output.j2 /etc/spryker/stores.yml

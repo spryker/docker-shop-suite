@@ -131,7 +131,7 @@ RUN \
   && echo "extension=redis.so" > $PHP_INI_DIR/conf.d/docker-php-ext-redis.ini \
 
 # Install jinja2 cli
-  && easy_install j2cli \
+  && easy_install pyaml j2cli jinja2-cli \
 
 # Install composerrm -rf /var/lib/apt/lists/
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
@@ -176,15 +176,15 @@ RUN chown -R www-data:www-data /data
 
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
-COPY spryker/config_local.php /etc/spryker/config_local.php
+COPY spryker/config_local.php.j2 /etc/spryker/config_local.php.j2
 COPY spryker/config_local_XX.php.j2 /etc/spryker/config_local_XX.php.j2
-COPY spryker/store.php /etc/spryker/store.php
-COPY spryker/dockersuite_staging.yml /etc/spryker/dockersuite_staging.yml
+#COPY spryker/stores.php /etc/spryker/stores.php
 COPY spryker/install_spryker.yml.j2 /etc/spryker/install_spryker.yml.j2
-COPY spryker/dockersuite_restore_state.yml /etc/spryker/dockersuite_restore_state.yml
+COPY spryker/restore_spryker_state.yml.j2 /etc/spryker/restore_spryker_state.yml.j2
 COPY spryker/setup_suite.sh /setup_suite.sh
 COPY spryker/setup_ssl.sh /setup_ssl.sh
 COPY spryker/vars.j2 /etc/spryker/vars.j2
+COPY spryker/setup_output.j2 /etc/spryker/setup_output.j2
 RUN chmod +x /setup_suite.sh
 
 # Add jenkins authorized_keys
