@@ -90,7 +90,7 @@ if [ -f /versions/latest_successful_build ]; then
        ln -s ${APPLICATION_PATH} /data
      fi
      cd /data
-     cp config/install/dockersuite_restore_state.yml config/install/${APPLICATION_ENV:-staging}.yml
+     cp config/install/restore_spryker_state.yml config/install/${APPLICATION_ENV:-staging}.yml
      vendor/bin/install -vvv
      chown -R www-data:www-data /data/
 else
@@ -100,6 +100,8 @@ else
      for i in "${STORE[@]}"; do
        export XX=$i
        curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2F${XX}_staging_zed
+       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"password":"'"${RABBITMQ_PASSWORD}${XX}"'", "tags":"management"}' http://${RABBITMQ_HOST}:15672/api/users/${XX}_rabbit
+       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"configure":".*","write":".*","read":".*"}' http://${RABBITMQ_HOST}:15672/api/permissions/%2F${XX}_staging_zed/${XX}_rabbit
        echo "The RabbitMQ Vhost ${XX}_staging_zed has been created"
      done
 
