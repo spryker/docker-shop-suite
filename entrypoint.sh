@@ -100,9 +100,11 @@ else
      for i in "${STORE[@]}"; do
        export XX=$i
        curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2F${XX}_staging_zed
-       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"password":"'"${RABBITMQ_PASSWORD}${XX}"'", "tags":"management"}' http://${RABBITMQ_HOST}:15672/api/users/${XX}_rabbit
-       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"configure":".*","write":".*","read":".*"}' http://${RABBITMQ_HOST}:15672/api/permissions/%2F${XX}_staging_zed/${XX}_rabbit
-       echo "The RabbitMQ Vhost ${XX}_staging_zed has been created"
+       echo "The RabbitMQ Vhost ${XX}_${APPLICATION_ENV}_zed has been created"
+       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"password":"'"${RABBITMQ_PASSWORD}${XX}"'", "tags":"management"}' http://${RABBITMQ_HOST}:15672/api/users/${XX}_${APPLICATION_ENV}
+       echo "The RabbitMQ user ${XX}_${APPLICATION_ENV} has been created"
+       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"configure":".*","write":".*","read":".*"}' http://${RABBITMQ_HOST}:15672/api/permissions/%2F${XX}_${APPLICATION_ENV}_zed/${XX}_${APPLICATION_ENV}
+       echo "The RabbitMQ user ${XX}_${APPLICATION_ENV} has got the access to the Vhost ${XX}_${APPLICATION_ENV}_zed"
      done
 
      #Deploy Spryker Shop
