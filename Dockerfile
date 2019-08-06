@@ -1,7 +1,7 @@
 FROM php:7.2-fpm
 
 # Install tini (init handler)
-ADD https://github.com/krallin/tini/releases/download/v0.9.0/tini /tini
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /tini
 RUN chmod +x /tini
 
 # For running APT in non-interactive mode
