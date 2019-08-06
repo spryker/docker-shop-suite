@@ -67,7 +67,7 @@ for i in "${STORE[@]}"; do
     j2 /etc/spryker/config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
 
     # Clean ${XX} store import data if the store doesn't exist
-    if [![ "${STORES}" != *"${XX}"* ]]; then
+    if [[ "${STORES}" != *"${XX}"* ]]; then
        sed -i -E "/.*,${XX},.*$/d" data/import/shipment_price.csv
        sed -i -E "/.*,${XX},.*$/d" data/import/product_price.csv
        sed -i -E "/.*,${XX},.*$/d" data/import/product_option_price.csv
