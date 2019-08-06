@@ -179,6 +179,7 @@ COPY entrypoint.sh /entrypoint.sh
 COPY spryker/config_local.php.j2 /etc/spryker/config_local.php.j2
 COPY spryker/config_local_XX.php.j2 /etc/spryker/config_local_XX.php.j2
 #COPY spryker/stores.php /etc/spryker/stores.php
+COPY spryker/StockConfig.php.j2 /etc/spryker/StockConfig.php.j2
 COPY spryker/install_spryker.yml.j2 /etc/spryker/install_spryker.yml.j2
 COPY spryker/restore_spryker_state.yml.j2 /etc/spryker/restore_spryker_state.yml.j2
 COPY spryker/setup_suite.sh /setup_suite.sh

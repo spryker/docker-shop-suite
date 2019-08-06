@@ -66,6 +66,13 @@ for i in "${STORE[@]}"; do
     # Create Spryker config_local_XX.php store config from the jinja2 template
     j2 /etc/spryker/config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
 
+    # Clean ${XX} store import data if the store doesn't exist
+    if [![ "${STORES}" != *"${XX}"* ]]; then
+       sed -i -E "/.*,${XX},.*$/d" data/import/shipment_price.csv
+       sed -i -E "/.*,${XX},.*$/d" data/import/product_price.csv
+       sed -i -E "/.*,${XX},.*$/d" data/import/product_option_price.csv
+    fi
+
     # Add all stores to the temporary file for using in install config
     echo "  - ${XX}" >> /etc/spryker/stores.yml
 done
@@ -75,6 +82,10 @@ j2 /etc/spryker/config_local.php.j2 /etc/spryker/stores.yml -o config/Shared/con
 
 # Create the frontend config frontend-build-config.json from the jinja2 template
 j2 /etc/spryker/frontend-build-config.json.j2 /etc/spryker/stores.yml -o config/Yves/frontend-build-config.json
+
+# Create the Stock config StockConfig.php from the jinja2 template
+j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/StockConfig.php
+
 
 #Copy stores.php which fixed the multistore issue
 ##cp /etc/spryker/stores.php config/Shared/stores.php
