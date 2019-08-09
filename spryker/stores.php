@@ -45,24 +45,6 @@ $stores['DE'] = [
     'storesWithSharedPersistence' => [],
 ];
 
-$stores['AT'] = [
-        'storesWithSharedPersistence' => [],
-        'queuePools' => [
-            'synchronizationPool' => [
-                'AT-connection',
-            ],
-        ],
-    ] + $stores['DE'];
-
-$stores['US'] = [
-        'queuePools' => [
-            'synchronizationPool' => [
-                'US-connection',
-            ],
-        ],
-        'storesWithSharedPersistence' => [],
-    ] + $stores['DE'];
-
 // @hook travis-ci
 
 return $stores;

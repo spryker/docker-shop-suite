@@ -7,7 +7,7 @@
       "namespace": "{{ store }}",
       "themes": [],
       "defaultTheme": "default"
-    },
+{% if loop.last %}    } {% else %}    }, {% endif %}
 {% endfor %}
   ]
 }

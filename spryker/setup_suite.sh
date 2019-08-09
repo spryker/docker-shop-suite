@@ -66,16 +66,24 @@ for i in "${STORE[@]}"; do
     # Create Spryker config_local_XX.php store config from the jinja2 template
     j2 /etc/spryker/config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
 
-    # Clean ${XX} store import data if the store doesn't exist
-    if [[ "${STORES}" != *"${XX}"* ]]; then
-       sed -i -E "/.*,${XX},.*$/d" data/import/shipment_price.csv
-       sed -i -E "/.*,${XX},.*$/d" data/import/product_price.csv
-       sed -i -E "/.*,${XX},.*$/d" data/import/product_option_price.csv
-    fi
-
     # Add all stores to the temporary file for using in install config
     echo "  - ${XX}" >> /etc/spryker/stores.yml
 done
+
+# Clean hardcoded AT store import data if the store doesn't exist
+if [[ "${STORES}" != *"AT"* ]]; then
+   sed -i -E "/.*,AT,.*$/d" data/import/shipment_price.csv
+   sed -i -E "/.*,AT,.*$/d" data/import/product_price.csv
+   sed -i -E "/.*,AT,.*$/d" data/import/product_option_price.csv
+   rm config/Shared/*_AT.php
+fi
+# Clean hardcoded US store import data if the store doesn't exist
+if [[ "${STORES}" != *"US"* ]]; then
+   sed -i -E "/.*,US,.*$/d" data/import/shipment_price.csv
+   sed -i -E "/.*,US,.*$/d" data/import/product_price.csv
+   sed -i -E "/.*,US,.*$/d" data/import/product_option_price.csv
+   rm config/Shared/*_US.php
+fi
 
 # Create Spryker main config config_local.php from the jinja2 template
 j2 /etc/spryker/config_local.php.j2 /etc/spryker/stores.yml -o config/Shared/config_local.php
@@ -91,8 +99,12 @@ cp /etc/nginx/robots.txt public/Yves/robots.txt
 cp /etc/nginx/robots.txt public/Zed/robots.txt
 cp /etc/nginx/robots.txt public/Glue/robots.txt
 
-#Copy stores.php which fixed the multistore issue
-##cp /etc/spryker/stores.php config/Shared/stores.php
+#Copy stores.php which fixed the multistore hardcoded data
+if [[ "${STORES}" == "DE" ]]; then
+    cp /etc/spryker/stores.php config/Shared/stores.php
+fi
+
+
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
