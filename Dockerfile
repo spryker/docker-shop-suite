@@ -143,6 +143,7 @@ RUN \
 
 # Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/robots.txt /etc/nginx/robots.txt
 COPY nginx/conf.d/ /etc/nginx/conf.d/
 COPY nginx/sites-available/ /etc/nginx/sites-available/
 COPY nginx/maintenance.conf /etc/nginx/maintenance.conf

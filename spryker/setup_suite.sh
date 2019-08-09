@@ -86,6 +86,10 @@ j2 /etc/spryker/frontend-build-config.json.j2 /etc/spryker/stores.yml -o config/
 # Create the Stock config StockConfig.php from the jinja2 template
 j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/StockConfig.php
 
+# Put robots.txt file for avoiding indexing
+cp /etc/nginx/robots.txt public/Yves/robots.txt
+cp /etc/nginx/robots.txt public/Zed/robots.txt
+cp /etc/nginx/robots.txt public/Glue/robots.txt
 
 #Copy stores.php which fixed the multistore issue
 ##cp /etc/spryker/stores.php config/Shared/stores.php
