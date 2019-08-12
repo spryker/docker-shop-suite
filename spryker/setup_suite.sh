@@ -20,8 +20,8 @@ sudo ssh-keyscan github.com >> ~/.ssh/known_hosts
 # Get Spryker shop suite from the official github repo
 ##curl -H 'Authorization: token $GITHUB_TOKEN' https://github.com/spryker/suite-nonsplit.git
 #git clone https://sprykerbot:$GITHUB_TOKEN@github.com/spryker/suite.git ./
-git clone https://github.com/spryker-shop/suite.git ./
-git checkout master
+git clone https://github.com/spryker-shop/b2c-demo-shop.git ./
+git checkout tags/201907.0
 
 # Copy maintenance page
 rm -rf /maintenance
@@ -74,14 +74,24 @@ done
 if [[ "${STORES}" != *"AT"* ]]; then
    sed -i -E "/.*,AT,.*$/d" data/import/shipment_price.csv
    sed -i -E "/.*,AT,.*$/d" data/import/product_price.csv
+   sed -i -E "/.*,AT,.*$/d" data/import/product_price_schedule.csv
    sed -i -E "/.*,AT,.*$/d" data/import/product_option_price.csv
+   sed -i -E "/.*,AT.*$/d" data/import/discount_store.csv
+   sed -i -E "/.*,AT.*$/d" data/import/icecat_biz_data/product_abstract_store.csv
+   sed -i -E "/.*,AT.*$/d" data/import/cms_block_store.csv
+   sed -i -E "/.*,AT.*$/d" data/import/cms_page_store.csv
    rm config/Shared/*_AT.php
 fi
 # Clean hardcoded US store import data if the store doesn't exist
 if [[ "${STORES}" != *"US"* ]]; then
    sed -i -E "/.*,US,.*$/d" data/import/shipment_price.csv
    sed -i -E "/.*,US,.*$/d" data/import/product_price.csv
+   sed -i -E "/.*,US,.*$/d" data/import/product_price_schedule.csv
    sed -i -E "/.*,US,.*$/d" data/import/product_option_price.csv
+   sed -i -E "/.*,US.*$/d" data/import/discount_store.csv
+   sed -i -E "/.*,US.*$/d" data/import/icecat_biz_data/product_abstract_store.csv
+   sed -i -E "/.*,US.*$/d" data/import/cms_block_store.csv
+   sed -i -E "/.*,US.*$/d" data/import/cms_page_store.csv
    rm config/Shared/*_US.php
 fi
 

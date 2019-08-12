@@ -1,4 +1,8 @@
-== Spryker shop has been successfully installed ==
+
+
+================================================================================
+================= Spryker shop has been successfully installed =================
+================================================================================
 You could get it with the next links:
 {% for store in stores %}
 Frontend {{ store }} (Yves): http://www.{{ store }}.{{ DOMAIN_NAME }}
@@ -7,4 +11,5 @@ API { store }}       (Glue): http://glue.{{ store }}.{{ DOMAIN_NAME }}
 {% endfor %}
 Jenkins                    : http://os.{{ stores[0] }}.{{ DOMAIN_NAME }}:9090
 RabbitMQ                   : http://os.{{ stores[0] }}.{{ DOMAIN_NAME }}:15672
-==================================================
+================================================================================
+
