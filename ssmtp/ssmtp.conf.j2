@@ -4,4 +4,4 @@ AuthUser={{ SMTP_USER }}
 AuthPass={{ SMTP_PASS }}
 UseTLS={{ SMTP_TLS | default('no') }}
 FromLineOverride=yes
-hostname=www.{{ DOMAIN_NAME }}
+hostname={{ DOMAIN_NAME }}
