@@ -56,7 +56,9 @@ set -xe
 j2 /etc/spryker/vars.j2 > /versions/vars
 
 # Install NewRelic php app monitoring
-echo ${NEWRELIC_KEY} | sudo newrelic-install install
+if [ ! -z ${NEWRELIC_KEY} ]; then
+  echo ${NEWRELIC_KEY} | sudo newrelic-install install
+fi
 
 # Configure PHP
 j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini 
