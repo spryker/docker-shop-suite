@@ -78,6 +78,7 @@ RUN \
     psmisc              \
     python-dev          \
     python-setuptools   \
+    python-pip          \
     redis-tools         \
     rsync               \
     msmtp               \
@@ -131,7 +132,7 @@ RUN \
   && echo "extension=redis.so" > $PHP_INI_DIR/conf.d/docker-php-ext-redis.ini \
 
 # Install jinja2 cli
-  && python /usr/lib/python2.7/dist-packages/setuptools/command/easy_install.py  pyaml j2cli jinja2-cli \
+  && pip install pyaml j2cli jinja2-cli \
 
 # Install composerrm -rf /var/lib/apt/lists/
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
