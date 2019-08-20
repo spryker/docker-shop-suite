@@ -37,7 +37,7 @@ touch /maintenance_on.flag
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
 export PGPASSWORD=${POSTGRES_PASSWORD}
 # Waiting for PostgreSQL database starting
-until psql -h ${POSTGRES_HOST} -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" DE_${APPLICATION_ENV}_zed -c '\l'; do
+until psql -h ${POSTGRES_HOST} -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" ${ENV_NAME}_${STORE[0]} -c '\l'; do
   echo "Waiting for PostgreSQL..."
   sleep 3
 done
