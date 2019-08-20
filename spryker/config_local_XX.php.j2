@@ -64,7 +64,7 @@ $config[SessionConstants::ZED_SESSION_COOKIE_NAME] = $config[ApplicationConstant
 
 
 /** Database credentials **/
-$config[PropelConstants::ZED_DB_DATABASE] = '{{ XX }}_' . getenv('APPLICATION_ENV') . '_zed';
+$config[PropelConstants::ZED_DB_DATABASE] = getenv('ENV_NAME') . '_{{ XX }}';
 
 /** Elasticsearch  */
 $config[ApplicationConstants::ELASTICA_PARAMETER__INDEX_NAME]

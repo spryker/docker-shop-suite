@@ -58,10 +58,10 @@ for i in "${STORE[@]}"; do
     export XX=$i
     export xx=$(echo $i | tr [A-Z] [a-z])
     # Kill all others connections/sessions to the PostgreSQL DB for avoiding an error in the next command
-    psql --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
+    psql --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${ENV_NAME}_${XX} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
     # Drop the current PostgreSQL DB and create the empty one
-    dropdb --if-exists --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed
-    createdb --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${XX}_${APPLICATION_ENV}_zed
+    dropdb --if-exists --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${ENV_NAME}_${XX}
+    createdb --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${ENV_NAME}_${XX}
 
     # Create Spryker config_local_XX.php store config from the jinja2 template
     j2 /etc/spryker/config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
