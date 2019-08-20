@@ -1,5 +1,6 @@
 #!/bin/bash
 
+myIp=$2
 ZED_HTTPS=0
 YVES_HTTPS=0
 GLUE_HTTPS=0
@@ -11,10 +12,6 @@ test -n "${GLUE_HTTPS_ON}" && test "${GLUE_HTTPS_ON}" -eq 1 && GLUE_HTTPS=1
 # Checking the first input parameter with the domain
 mainDomain=$1
 test -z ${mainDomain} && echo "No domain specified. Exiting" && exit 1
-
-# Checking the second input parameter with the public IP
-myIp=$2
-test -z ${myIp} && echo "No IP specified. Exiting" && exit 1
 
 # Install Dig if it doesn't installed yet
 function checkDig(){
@@ -73,47 +70,53 @@ function checkCertificates(){
   fi
 }
 
+createVhost(){
+  confPrefix=$1
+  vhostTmpl=$2
+  myDomain=$3
+  j2 /etc/nginx/vhost_templates/${confPrefix}-vhost-${vhostTmpl}.conf.j2 > /etc/nginx/sites-available/vhost-${myDomain}.conf
+  if [ ! -L /etc/nginx/sites-enabled/vhost-${myDomain}.conf ]; then
+    ln -s /etc/nginx/sites-available/vhost-${myDomain}.conf /etc/nginx/sites-enabled/vhost-${myDomain}.conf
+  fi
+}
 
-# Processing ZED domain(s)
-if [ ${ZED_HTTPS} -eq 1 ];then
-  myDomain="os.${mainDomain}"
+processingDomain(){
+  vhostTmpl=$1
+  subDomain=$2
+  mainDomain=$3
+  myDomain="${subDomain}.${mainDomain}"
   checkDig
   checkDomain ${myDomain}
 
   getCertificates "${myDomain}"
   if [ "$(checkCertificates ${myDomain})" == "OK" ]; then
-    j2 /etc/nginx/conf.d/ssl/ssl.vhost-zed.conf.j2 > /etc/nginx/conf.d/vhost-zed.conf
+    createVhost ssl ${vhostTmpl} ${myDomain}
+    echo "The SSL web server config has been configured for ${mainDomain}"
   else
     echo "Cert for ${myDomain} not found"
   fi
+  unset myDomain
+}
+
+# Processing ZED domain(s)
+if [ ${ZED_HTTPS} -eq 1 -a "${myIp}" != "app" ];then
+  processingDomain zed os ${mainDomain}
+else
+  createVhost xx zed os.${mainDomain}
 fi
 
 # Processing YVES domain(s)
-if [ ${YVES_HTTPS} -eq 1 ];then
-  myDomain="www.${mainDomain}"
-  checkDig
-  checkDomain ${myDomain}
-  getCertificates "${myDomain}"
-  if [ "$(checkCertificates ${myDomain})" == "OK" ]; then
-    j2 /etc/nginx/conf.d/ssl/ssl.vhost-yves.conf.j2 > /etc/nginx/conf.d/vhost-yves.conf
-  else
-    echo "Cert for ${myDomain} not found"
-  fi
+if [ ${YVES_HTTPS} -eq 1 -a ${myIp} != "app" ];then
+  processingDomain yves www ${mainDomain}
+else
+  createVhost xx yves www.${mainDomain}
 fi
 
 # Processing GLUE domain(s)
-if [ ${GLUE_HTTPS} -eq 1 ];then
-  myDomain="glue.${mainDomain}"
-  checkDig
-  checkDomain ${myDomain}
-
-  getCertificates "${myDomain}"
-
-  if [ "$(checkCertificates ${myDomain})" == "OK" ]; then
-    j2 /etc/nginx/conf.d/ssl/ssl.vhost-glue.conf.j2 > /etc/nginx/conf.d/vhost-glue.conf
-  else
-    echo "Cert for ${myDomain} not found"
-  fi
+if [ ${GLUE_HTTPS} -eq 1 -a ${myIp} != "app" ];then
+  processingDomain glue glue ${mainDomain}
+else
+  createVhost xx glue glue.${mainDomain}
 fi
 
 supervisorctl restart nginx

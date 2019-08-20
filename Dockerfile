@@ -81,7 +81,7 @@ RUN \
     python-pip          \
     redis-tools         \
     rsync               \
-    msmtp               \
+    msmtp                \
     sudo                \
     supervisor          \
     unzip               \
@@ -146,7 +146,7 @@ RUN \
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
 COPY nginx/robots.txt /etc/nginx/robots.txt
 COPY nginx/conf.d/ /etc/nginx/conf.d/
-COPY nginx/sites-available/ /etc/nginx/sites-available/
+COPY nginx/vhost_templates/ /etc/nginx/vhost_templates/
 COPY nginx/maintenance.conf /etc/nginx/maintenance.conf
 COPY nginx/maintenance.html /maintenance/index.html
 COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
@@ -186,7 +186,7 @@ COPY spryker/frontend-build-config.json.j2 /etc/spryker/frontend-build-config.js
 COPY spryker/install_spryker.yml.j2 /etc/spryker/install_spryker.yml.j2
 COPY spryker/restore_spryker_state.yml.j2 /etc/spryker/restore_spryker_state.yml.j2
 COPY spryker/setup_suite.sh /setup_suite.sh
-COPY spryker/setup_ssl.sh /setup_ssl.sh
+COPY spryker/setup_vhosts.sh /usr/local/bin/setup_vhosts.sh
 COPY spryker/vars.j2 /etc/spryker/vars.j2
 COPY spryker/setup_output.j2 /etc/spryker/setup_output.j2
 RUN chmod +x /setup_suite.sh
