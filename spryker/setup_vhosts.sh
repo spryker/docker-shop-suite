@@ -99,7 +99,7 @@ processingDomain(){
 }
 
 # Processing ZED domain(s)
-if [ ${ZED_HTTPS} -eq 1 -a "${myIp}" != "app" ];then
+if [ ${ZED_HTTPS} -eq 1 -a ${myIp} != "app" ];then
   processingDomain zed os ${mainDomain}
 else
   createVhost xx zed os.${mainDomain}
