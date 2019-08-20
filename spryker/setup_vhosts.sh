@@ -100,6 +100,8 @@ processingDomain(){
 
 # Processing ZED domain(s)
 if [ ${ZED_HTTPS} -eq 1 -a ${myIp} != "app" ];then
+  # Create tmp vhost conf
+  createVhost xx zed os.${mainDomain}
   processingDomain zed os ${mainDomain}
 else
   createVhost xx zed os.${mainDomain}
@@ -107,6 +109,8 @@ fi
 
 # Processing YVES domain(s)
 if [ ${YVES_HTTPS} -eq 1 -a ${myIp} != "app" ];then
+  # Create tmp vhost conf
+  createVhost xx yves www.${mainDomain}
   processingDomain yves www ${mainDomain}
 else
   createVhost xx yves www.${mainDomain}
@@ -114,6 +118,8 @@ fi
 
 # Processing GLUE domain(s)
 if [ ${GLUE_HTTPS} -eq 1 -a ${myIp} != "app" ];then
+  # Create tmp vhost conf
+  createVhost xx glue glue.${mainDomain}
   processingDomain glue glue ${mainDomain}
 else
   createVhost xx glue glue.${mainDomain}
