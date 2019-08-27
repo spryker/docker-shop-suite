@@ -1,7 +1,7 @@
 FROM php:7.2-fpm
 
 # Install tini (init handler)
-ADD https://github.com/krallin/tini/releases/download/v0.9.0/tini /tini
+ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /tini
 RUN chmod +x /tini
 
 # For running APT in non-interactive mode
@@ -78,9 +78,9 @@ RUN \
     psmisc              \
     python-dev          \
     python-setuptools   \
+    python-pip          \
     redis-tools         \
     rsync               \
-    ssmtp               \
     sudo                \
     supervisor          \
     unzip               \
@@ -90,13 +90,16 @@ RUN \
     openssh-server      \
     newrelic-php5       \
 
-  && mkdir /var/run/sshd  \
+  && test -d /var/run/sshd || mkdir /var/run/sshd           \
+  && usermod --home /data www-data                          \
+  && usermod -s /bin/bash www-data                          \
+  && echo "www-data:bigsecretpass" | chpasswd               \
+
   && useradd -m -s /bin/bash -d /data jenkins               \
   && echo "jenkins:bigsecretpass" | chpasswd                \
-  #Add user to group www-data and to sudoers file
+  #Add user to group www-data and to sudoers file           \
   && usermod -a -G www-data jenkins                         \
   && echo 'jenkins ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers  \
- 
 
 # Install PHP extensions
   && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
@@ -128,10 +131,13 @@ RUN \
   && echo "extension=redis.so" > $PHP_INI_DIR/conf.d/docker-php-ext-redis.ini \
 
 # Install jinja2 cli
-  && easy_install j2cli \
+  && pip install pyaml j2cli jinja2-cli \
 
 # Install composerrm -rf /var/lib/apt/lists/
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
+
+# Install nmp (after the issue when installation just nodejs is not enough)
+  && curl -L https://npmjs.org/install.sh | sudo sh \
 
 # Remove build requirements for php modules
   && apt-get -qy autoremove \
@@ -140,7 +146,9 @@ RUN \
 
 # Nginx configuration
 COPY nginx/nginx.conf /etc/nginx/nginx.conf
+COPY nginx/robots.txt /etc/nginx/robots.txt
 COPY nginx/conf.d/ /etc/nginx/conf.d/
+COPY nginx/vhost_templates/ /etc/nginx/vhost_templates/
 COPY nginx/maintenance.conf /etc/nginx/maintenance.conf
 COPY nginx/maintenance.html /maintenance/index.html
 COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
@@ -149,14 +157,11 @@ COPY nginx/fastcgi_params /etc/nginx/fastcgi_params
 RUN rm -f /usr/local/etc/php-fpm.d/*
 COPY php/php-fpm.conf /usr/local/etc/php-fpm.conf
 COPY php/php.ini.j2 /usr/local/etc/php/php.ini.j2
-COPY php/pool.d/*.conf /usr/local/etc/php-fpm.d/
+COPY php/pool.d/*.conf.j2 /usr/local/etc/php-fpm.d/
 #RUN echo "memory_limit = 2G" >> /usr/local/etc/php/php.ini
 # Opcache configuration
 COPY php/ext/opcache.ini /tmp/opcache.ini
 RUN cat /tmp/opcache.ini >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
-
-# Sending email configuration
-COPY ssmtp/ssmtp.conf.j2 /etc/ssmtp/ssmtp.conf.j2
 
 # supervisord configuration
 COPY supervisord.conf /etc/supervisor/supervisord.conf
@@ -167,33 +172,37 @@ ARG GITHUB_TOKEN
 RUN install -d -o www-data -g www-data -m 0755 /data /var/www
 RUN mkdir -p /data/data/DE/logs
 RUN mkdir -p /versions
+RUN mkdir -p /etc/spryker
 RUN chown -R www-data:www-data /data
 
 WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
-COPY config_local.php /config_local.php
-COPY store.php /store.php
-COPY dockersuite_development.yml /dockersuite_development.yml
-COPY dockersuite_staging.yml /dockersuite_staging.yml
-COPY dockersuite_production.yml /dockersuite_production.yml
-COPY dockersuite_restore_state.yml /dockersuite_restore_state.yml
-COPY setup_suite.sh /setup_suite.sh
-COPY setup_ssl.sh /setup_ssl.sh
-COPY vars.j2 /vars.j2
+COPY spryker/config_local.php.j2 /etc/spryker/config_local.php.j2
+COPY spryker/config_local_XX.php.j2 /etc/spryker/config_local_XX.php.j2
+COPY spryker/stores.php /etc/spryker/stores.php
+COPY spryker/StockConfig.php.j2 /etc/spryker/StockConfig.php.j2
+COPY spryker/frontend-build-config.json.j2 /etc/spryker/frontend-build-config.json.j2
+COPY spryker/install_spryker.yml.j2 /etc/spryker/install_spryker.yml.j2
+COPY spryker/restore_spryker_state.yml.j2 /etc/spryker/restore_spryker_state.yml.j2
+COPY spryker/setup_suite.sh /setup_suite.sh
+COPY spryker/setup_vhosts.sh /usr/local/bin/setup_vhosts.sh
+COPY spryker/vars.j2 /etc/spryker/vars.j2
+COPY spryker/setup_output.j2 /etc/spryker/setup_output.j2
 RUN chmod +x /setup_suite.sh
 
 # Add jenkins authorized_keys
-RUN mkdir -p /etc/spryker/jenkins/.ssh
-COPY jenkins/id_rsa.pub /etc/spryker/jenkins/.ssh/authorized_keys
+RUN mkdir -p /etc/spryker/www-data/.ssh
+COPY jenkins/id_rsa.pub /etc/spryker/www-data/.ssh/authorized_keys
 RUN sed -i '/^#AuthorizedKeysFile/aAuthorizedKeysFile      .ssh/authorized_keys /etc/spryker/%u/.ssh/authorized_keys\nPort 222 ' /etc/ssh/sshd_config  \
- && chmod 600 /etc/spryker/jenkins/.ssh/authorized_keys \
- && chown jenkins:jenkins /etc/spryker/jenkins/.ssh/authorized_keys
-RUN sed -i '/chown\ jenkins/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY" > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."' /entrypoint.sh
+ && chmod 600 /etc/spryker/www-data/.ssh/authorized_keys \
+ && chown www-data:www-data /etc/spryker/www-data/.ssh/authorized_keys
+RUN sed -i '/chown\ www-data/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY" > /etc/spryker/www-data/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."' /entrypoint.sh
 
 # Add SwiftMailer AWS configuration
 COPY application/app_files/MailDependencyProvider.php /etc/spryker/
 COPY application/app_files/Mailer.patch /etc/spryker/
-COPY application/app_files/Cronjobs.patch /etc/spryker/
+COPY application/app_files/localMailer.patch /etc/spryker/
+COPY application/app_files/jenkins-job.default.xml.twig /etc/spryker/
 
 #The workaround for Azure 4 min timeout
 #RUN mkdir -p /etc/nginx/waiting
@@ -204,7 +213,7 @@ COPY application/app_files/Cronjobs.patch /etc/spryker/
 # Run app with entrypoints
 ENTRYPOINT ["/tini", "--", "/entrypoint.sh"]
 
-EXPOSE 8080 8081 222
+EXPOSE 80 222 443
 
 #STOPSIGNAL SIGQUIT
 CMD ["supervisord", "-c", "/etc/supervisor/supervisord.conf", "--nodaemon"]

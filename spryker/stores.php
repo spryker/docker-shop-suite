@@ -1,7 +1,5 @@
 <?php
-
 $stores = [];
-
 $stores['DE'] = [
     // different contexts
     'contexts' => [
@@ -33,7 +31,7 @@ $stores['DE'] = [
         'de' => 'de_DE',
     ],
     // first entry is default
-    'countries' => ['DE', 'AT'],
+    'countries' => ['DE', 'AT', 'NO', 'CH', 'ES', 'GB'],
     // internal and shop
     'currencyIsoCode' => 'EUR',
     'currencyIsoCodes' => ['EUR', 'CHF'],
@@ -42,27 +40,7 @@ $stores['DE'] = [
             'DE-connection',
         ],
     ],
-    'storesWithSharedPersistence' => [],
 ];
 
-$stores['AT'] = [
-        'storesWithSharedPersistence' => [],
-        'queuePools' => [
-            'synchronizationPool' => [
-                'AT-connection',
-            ],
-        ],
-    ] + $stores['DE'];
-
-$stores['US'] = [
-        'queuePools' => [
-            'synchronizationPool' => [
-                'US-connection',
-            ],
-        ],
-        'storesWithSharedPersistence' => [],
-    ] + $stores['DE'];
-
 // @hook travis-ci
-
 return $stores;

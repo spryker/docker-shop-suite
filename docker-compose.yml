@@ -14,42 +14,36 @@ services:
       - rabbitmq
       - jenkins
     ports:
-      - "80:8080"
+      - "80:80"
+      - "443:443"
       - "10001:10001"
       - "222:222"
     environment:
-      ENV_NAME: dockersuite
+      ENV_NAME: spryker21
+      DOMAIN_NAME: demoshop.local
+      STORES: DE,AT,US
       APPLICATION_ENV: staging
-      APPLICATION_STORE: DE
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_USER: spryker
       POSTGRES_PASSWORD: secret
       PGPASSWORD: secret
-      POSTGRES_DATABASE: DE_dockersuite_zed
       ELASTICSEARCH_HOST: elasticsearch
       ELASTICSEARCH_PORT: 9200
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PROTOCOL: redis
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_API_PORT: 15672
       RABBITMQ_USER: spryker
       RABBITMQ_PASSWORD: secret
-      RABBITMQ_VHOST: /dockersuite
-      YVES_HOST: www.de.demoshop.local
-      YVES_PROTOCOL: http
-      ZED_HOST: os.de.demoshop.local
-      ZED_PROTOCOL: http
       JENKINS_HOST: jenkins
       JENKINS_PORT: 8080
-      GLUE_HOST: glue.de.demoshop.local
-      NEWRELIC_KEY: 5c2eyournewrelickey1111111111021cb198cee
+      NEWRELIC_KEY:
       GITHUB_TOKEN: 8888yourgithubtoken8888
       PHP_CLI_RAM: 2048
-      SMTP_HOST: 127.0.0.1
-      SMTP_PORT: 25
+      SMTP_HOST: mailhog
+      SMTP_PORT: 1025
       SMTP_USER: ''
       SMTP_PASS: ''
       SMTP_TLS: 'no'
@@ -67,7 +61,8 @@ services:
 #    restart: always
     image: postgres:9.6
     environment:
-      POSTGRES_DB: DE_dockersuite_zed
+      # POSTGRES_DB consists of the ENV_NAME and the first STORE name
+      POSTGRES_DB: spryker21_DE
       POSTGRES_USER: spryker
       POSTGRES_PASSWORD: secret
 
@@ -87,7 +82,7 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: spryker
       RABBITMQ_DEFAULT_PASS: secret
-      RABBITMQ_DEFAULT_VHOST: /dockersuite
+      RABBITMQ_DEFAULT_VHOST: /DE_staging_zed
     ports:
       - "15672:15672"
 
@@ -103,6 +98,12 @@ services:
       - "9090:8080"
     volumes:
       - jenkins-sync:/var/jenkins_home:rw
+
+  mailhog:
+    restart: always
+    image: mailhog/mailhog
+    ports:
+      - 8025:8025
 
 volumes:
   versions-sync:

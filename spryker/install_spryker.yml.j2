@@ -1,10 +1,10 @@
 env:
-    APPLICATION_ENV: staging
+  APPLICATION_ENV: {{APPLICATION_ENV}}
 
 stores:
-    - DE
-#    - AT
-#    - US
+{% for store in stores %}
+    - {{ store }}
+{% endfor %}
 
 command-timeout: 3600
 
@@ -42,23 +42,25 @@ sections:
 #
 #        remove-cache:
 #            command: "vendor/bin/console cache:empty-all"
-
+#
 #        remove-generated-files:
 #            command: "vendor/bin/console setup:empty-generated-directory"
-
-
-    jenkins-down:
-        jenkins-stop:
-            command: "vendor/bin/console setup:jenkins:disable"
 
 
     generate:
         generate-transfers:
             command: "vendor/bin/console transfer:generate"
 
+#        generate-transfer-databuilders:
+#            command: "vendor/bin/console transfer:databuilder:generate"
+
 #        generate-ide-auto-completion:
 #            command: "vendor/bin/console dev:ide:generate-auto-completion"
 
+    jenkins-down:
+        jenkins-stop:
+            command: "vendor/bin/console scheduler:suspend"
+            stores: true
 
     cache:
         twig-cache-warmup:
@@ -100,9 +102,11 @@ sections:
                 - redis
 
 #        drop-database:
-#            pre: "hidden/maintenance-zed-on"
 #            command: "vendor/bin/console propel:database:drop"
-#            stores: true
+#            pre: "hidden/maintenance-zed-on"
+#            stores:
+#                - US
+#                - DE
 #            groups:
 #                - propel
 
@@ -196,14 +200,6 @@ sections:
             stores: true
 
 
-    jenkins-up:
-#        jenkins-generate:
-#            command: "vendor/bin/console setup:jenkins:generate"
-
-        jenkins-enable:
-            command: "vendor/bin/console setup:jenkins:enable"
-
-
     frontend:
         dependencies-install:
             command: "vendor/bin/console frontend:project:install-dependencies -vvv"
@@ -229,3 +225,12 @@ sections:
             command: "vendor/bin/console frontend:zed:build"
             groups:
                 - zed
+
+    jenkins-up:
+        jenkins-generate:
+            command: "vendor/bin/console scheduler:setup"
+            stores: true
+
+        jenkins-enable:
+            command: "vendor/bin/console scheduler:resume"
+            stores: true

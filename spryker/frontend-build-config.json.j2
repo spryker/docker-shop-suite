@@ -1,0 +1,13 @@
+{
+  "path": "assets/%namespace%/%theme%",
+  "namespaces": [
+{% for store in stores %}
+    {
+      "moduleSuffix": "{{ store }}",
+      "namespace": "{{ store }}",
+      "themes": [],
+      "defaultTheme": "default"
+{% if loop.last %}    } {% else %}    }, {% endif %}
+{% endfor %}
+  ]
+}

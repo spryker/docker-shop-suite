@@ -3,15 +3,15 @@ upstream backend-yves {
 }
 
 server {
-    listen 8080 default;
+    listen 80;
 ##    server_name ~^www\\.de\\..+\\.local$;
-    server_name {{YVES_HOST}};
+    server_name {{ myDomain }};
     keepalive_timeout 0;
     access_log  /dev/stdout extended;
 
     {% if YVES_HTTP_TO_HTTPS is defined %}{% if YVES_HTTP_TO_HTTPS == "1" %}
     # Redirect all HTTP requests to HTTPS
-    rewrite ^(.*)$ https://{{YVES_HOST}}$1 redirect;
+    rewrite ^(.*)$ https://{{ myDomain }}$1 redirect;
     {% endif %}{% endif %}
     root /data/public/Yves;
 
@@ -69,13 +69,13 @@ server {
 }
 
 server {
-    listen 4443 default ssl http2;
+    listen 443 default ssl http2;
 ##    server_name ~^www\\.de\\..+\\.local$;
-    server_name {{YVES_HOST}};
+    server_name {{ myDomain }};
 
     ssl on;
-    ssl_certificate /etc/letsencrypt/live/{{ YVES_HOST }}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/{{ YVES_HOST }}/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{ myDomain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ myDomain }}/privkey.pem;
     ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA !RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !EECDH+aRSA+RC4";
 #    ssl_dhparam /etc/dhparams.pem;
     ssl_prefer_server_ciphers on;

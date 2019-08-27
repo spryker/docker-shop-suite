@@ -16,7 +16,7 @@ COPY jenkins/config.xml /var/jenkins_home/config.xml
 
 # Install plugins defined in plugins.txt
 COPY jenkins/plugins.txt /usr/share/jenkins/plugins.txt
-RUN /usr/local/bin/plugins.sh /usr/share/jenkins/plugins.txt
+RUN /usr/local/bin/install-plugins.sh $(cat /usr/share/jenkins/plugins.txt)
 # Make jenkins user owner by jenkins_home
 RUN chown -R jenkins:jenkins /var/jenkins_home 
 
