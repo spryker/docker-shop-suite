@@ -5,11 +5,12 @@
 ================================================================================
 You could get it with the next links:
 {% for store in stores %}
-Frontend {{ store }} (Yves): http://www.{{ store }}.{{ DOMAIN_NAME }}
-Backend {{ store }}   (Zed): http://os.{{ store }}.{{ DOMAIN_NAME }}
-API {{ store }}       (Glue): http://glue.{{ store }}.{{ DOMAIN_NAME }}
+Frontend {{ store }}  (Yves): http://www.{{ store.lower() }}.{{ DOMAIN_NAME }}
+Backend {{ store }}    (Zed): http://os.{{ store.lower() }}.{{ DOMAIN_NAME }}
+API {{ store }}       (Glue): http://glue.{{ store.lower() }}.{{ DOMAIN_NAME }}
 {% endfor %}
-Jenkins                    : http://os.{{ stores[0] }}.{{ DOMAIN_NAME }}:9090
-RabbitMQ                   : http://os.{{ stores[0] }}.{{ DOMAIN_NAME }}:15672
+Jenkins                    : http://os.{{ stores[0].lower() }}.{{ DOMAIN_NAME }}:9090
+RabbitMQ                   : http://os.{{ stores[0].lower() }}.{{ DOMAIN_NAME }}:15672
+Mailhog                    : http://os.{{ stores[0].lower() }}.{{ DOMAIN_NAME }}:8025
 ================================================================================
 
