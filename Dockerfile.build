@@ -62,7 +62,6 @@ RUN \
     nodejs              \
     patch               \
     postgresql-client   \
-    ssmtp               \
     unzip               \
     wget                \
     zip                 \

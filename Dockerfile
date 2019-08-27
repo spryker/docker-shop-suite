@@ -81,7 +81,6 @@ RUN \
     python-pip          \
     redis-tools         \
     rsync               \
-    msmtp                \
     sudo                \
     supervisor          \
     unzip               \
@@ -161,9 +160,6 @@ COPY php/pool.d/*.conf.j2 /usr/local/etc/php-fpm.d/
 COPY php/ext/opcache.ini /tmp/opcache.ini
 RUN cat /tmp/opcache.ini >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
 
-# Sending email configuration
-COPY ssmtp/ssmtp.conf.j2 /etc/ssmtp/ssmtp.conf.j2
-
 # supervisord configuration
 COPY supervisord.conf /etc/supervisor/supervisord.conf
 
@@ -202,6 +198,7 @@ RUN sed -i '/chown\ www-data/a[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKIN
 # Add SwiftMailer AWS configuration
 COPY application/app_files/MailDependencyProvider.php /etc/spryker/
 COPY application/app_files/Mailer.patch /etc/spryker/
+COPY application/app_files/localMailer.patch /etc/spryker/
 COPY application/app_files/jenkins-job.default.xml.twig /etc/spryker/
 
 #The workaround for Azure 4 min timeout
