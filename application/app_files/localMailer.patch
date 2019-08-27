@@ -1,0 +1,40 @@
+--- ./src/Pyz/Zed/Mail/MailDependencyProvider.php      2019-08-27 11:33:56.467829000 +0000
++++ ./src/Pyz/Zed/Mail/MailDependencyProvider.php      2019-08-27 11:53:29.542145000 +0000
+@@ -26,6 +26,10 @@
+ use Spryker\Zed\Newsletter\Communication\Plugin\Mail\NewsletterUnsubscribedMailTypePlugin;
+ use Spryker\Zed\Oms\Communication\Plugin\Mail\OrderConfirmationMailTypePlugin;
+ use Spryker\Zed\Oms\Communication\Plugin\Mail\OrderShippedMailTypePlugin;
++use Spryker\Zed\Mail\Dependency\Mailer\MailToMailerBridge;
++use Swift_Mailer;
++use Swift_Message;
++use Swift_SmtpTransport;
+
+ class MailDependencyProvider extends SprykerMailDependencyProvider
+ {
+@@ -34,6 +38,26 @@
+      *
+      * @return \Spryker\Zed\Kernel\Container
+      */
++
++     protected function addMailer(Container $container)
++     {
++         $container[static::MAILER] = function () {
++             $message = new Swift_Message();
++             $transport = new Swift_SmtpTransport(
++                 $this->getConfig()->getSmtpHost(),
++                 $this->getConfig()->getSmtpPort()
++             );
++              $transport->setHost(getenv('SMTP_HOST'));
++              $transport->setPort(getenv('SMTP_PORT'));
++
++             $mailer = new Swift_Mailer($transport);
++
++             return new MailToMailerBridge($message, $mailer);
++         };
++
++         return $container;
++     }
++
+     public function provideBusinessLayerDependencies(Container $container)
+     {
+         $container = parent::provideBusinessLayerDependencies($container);

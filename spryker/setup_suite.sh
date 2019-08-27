@@ -30,12 +30,15 @@ cp -r ${APPLICATION_PATH}/public/Zed/maintenance /maintenance
 sudo touch /maintenance_on.flag
 
 # Swift Mailer AWS configuration
-if [ $SMTP_HOST != "127.0.0.1" ]
-     then
-#        cp /etc/spryker/MailDependencyProvider.php src/Pyz/Zed/Mail/MailDependencyProvider.php
-      if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/Mailer.patch ]; then
-        patch -p0  ./src/Pyz/Zed/Mail/MailDependencyProvider.php < /etc/spryker/Mailer.patch
-      fi
+if [ $SMTP_HOST == "mailhog" ]
+  then
+    if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/localMailer.patch ]; then
+      patch -p0  ./src/Pyz/Zed/Mail/MailDependencyProvider.php < /etc/spryker/localMailer.patch
+    fi
+else
+    if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/Mailer.patch ]; then
+      patch -p0  ./src/Pyz/Zed/Mail/MailDependencyProvider.php < /etc/spryker/Mailer.patch
+    fi
 fi
 
 # Install all modules for Spryker

@@ -71,11 +71,6 @@ fi
 # Configure PHP
 j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini
 
-# Configure SSMTP
-j2 /etc/ssmtp/ssmtp.conf.j2 > /etc/ssmtp/ssmtp.conf
-
-
-
 # Getting template for Jenkins jobs
 sed -i -e "s/@appHost@/$(getMyAddr local)/g" /etc/spryker/jenkins-job.default.xml.twig
 
