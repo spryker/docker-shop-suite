@@ -117,7 +117,7 @@ supervisorctl restart nginx
 test -f /maintenance_on.flag && rm /maintenance_on.flag
 
 chown -R www-data:www-data /data
-chown www-data /versions/
+chown jenkins /versions/
 
 # Call command...
 exec $*
