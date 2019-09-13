@@ -73,11 +73,12 @@ function checkCertificates(){
 createVhost(){
   confPrefix=$1
   vhostTmpl=$2
-  myDomain=$3
+  export myDomain=$3
   j2 /etc/nginx/vhost_templates/${confPrefix}-vhost-${vhostTmpl}.conf.j2 > /etc/nginx/sites-available/vhost-${myDomain}.conf
   if [ ! -L /etc/nginx/sites-enabled/vhost-${myDomain}.conf ]; then
     ln -s /etc/nginx/sites-available/vhost-${myDomain}.conf /etc/nginx/sites-enabled/vhost-${myDomain}.conf
   fi
+  unset myDomain
 }
 
 processingDomain(){

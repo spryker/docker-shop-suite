@@ -68,6 +68,7 @@ RUN \
     libpq5              \
     libsqlite3-0        \
 #    libssh2-php         \
+    jq                  \
     mc                  \
     netcat              \
     nginx               \
