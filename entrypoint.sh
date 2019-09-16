@@ -74,6 +74,11 @@ j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini
 # Getting template for Jenkins jobs
 sed -i -e "s/@appHost@/$(getMyAddr local)/g" /etc/spryker/jenkins-job.default.xml.twig
 
+if [ ! -f /versions/id_rsa ]; then
+  echo -e $(curl -s -H "X-Vault-Token: ${SSH_KEY_TOKEN}" -X GET https://vault.spryker.systems:8200/v1/AWS_instances_common_storage/data/github_ssh_key | jq .data.data.id_rsa | tr -d '\"') > /versions/id_rsa
+  chmod 600 /versions/id_rsa
+  chown 1000 /versions/id_rsa
+fi
 
 #"To build or not to build"
 if [ -f /versions/latest_successful_build ]; then
