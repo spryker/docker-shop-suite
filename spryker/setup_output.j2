@@ -3,7 +3,16 @@
 ================================================================================
 ================= Spryker shop has been successfully installed =================
 ================================================================================
-You could get it with the next links:
+You could get it with the next links
+{% if SINGLE_STORE == "yes" %}
+Frontend {{ store }}  (Yves): http://www.{{ DOMAIN_NAME }}
+Backend {{ store }}    (Zed): http://os.{{ DOMAIN_NAME }}
+API {{ store }}       (Glue): http://glue.{{ DOMAIN_NAME }}
+Jenkins                    : http://os.{{ DOMAIN_NAME }}:9090
+RabbitMQ                   : http://os.{{ DOMAIN_NAME }}:15672
+Mailhog                    : http://os.{{ DOMAIN_NAME }}:8025
+================================================================================
+{% else %}
 {% for store in stores %}
 Frontend {{ store }}  (Yves): http://www.{{ store.lower() }}.{{ DOMAIN_NAME }}
 Backend {{ store }}    (Zed): http://os.{{ store.lower() }}.{{ DOMAIN_NAME }}
@@ -13,4 +22,4 @@ Jenkins                    : http://os.{{ stores[0].lower() }}.{{ DOMAIN_NAME }}
 RabbitMQ                   : http://os.{{ stores[0].lower() }}.{{ DOMAIN_NAME }}:15672
 Mailhog                    : http://os.{{ stores[0].lower() }}.{{ DOMAIN_NAME }}:8025
 ================================================================================
-
+{% endif %}

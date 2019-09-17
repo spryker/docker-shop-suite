@@ -25,7 +25,15 @@ function getMyAddr(){
 for i in "${STORE[@]}"; do
     export XX=$i
     export xx=$(echo $i | tr [A-Z] [a-z])
-    bash /usr/local/bin/setup_vhosts.sh ${xx}.${DOMAIN_NAME} $(getMyAddr public) &
+
+    if [ ${SINGLE_STORE} == "yes" ]; then
+        mainDomain=${DOMAIN_NAME}
+        echo "127.0.0.1   os.${DOMAIN_NAME}" >> /etc/hosts
+    else
+        mainDomain=${xx}.${DOMAIN_NAME}
+    fi
+
+    bash /usr/local/bin/setup_vhosts.sh ${mainDomain} $(getMyAddr public) &
     # Put Zed host IP to /etc/hosts file
     echo "127.0.0.1   os.${xx}.${DOMAIN_NAME}" >> /etc/hosts
 done
@@ -37,7 +45,7 @@ touch /maintenance_on.flag
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
 export PGPASSWORD=${POSTGRES_PASSWORD}
 # Waiting for PostgreSQL database starting
-until psql -h ${POSTGRES_HOST} -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" ${ENV_NAME}_${STORE[0]} -c '\l'; do
+until psql -h ${POSTGRES_HOST} -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" ${ENV_NAME} -c '\l'; do
   echo "Waiting for PostgreSQL..."
   sleep 3
 done
