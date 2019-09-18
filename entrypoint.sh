@@ -26,8 +26,10 @@ function getMyAddr(){
   echo ${myaddr}
 }
 
-#Add github keys to the system-wide known_hosts file
-ssh-keyscan github.com >> /etc/ssh/ssh_known_hosts
+#Add github/bitbucket/gitlab keys to the system-wide known_hosts file
+ssh-keyscan github.com > /etc/ssh/ssh_known_hosts
+ssh-keyscan bitbucket.org >> /etc/ssh/ssh_known_hosts
+ssh-keyscan gitlab.com >> /etc/ssh/ssh_known_hosts
 
 #Create the Nginx virtualhost for each store
 for i in "${STORE[@]}"; do

@@ -189,6 +189,7 @@ COPY spryker/setup_suite.sh /setup_suite.sh
 COPY spryker/setup_vhosts.sh /usr/local/bin/setup_vhosts.sh
 COPY spryker/vars.j2 /etc/spryker/vars.j2
 COPY spryker/setup_output.j2 /etc/spryker/setup_output.j2
+COPY spryker/ssh_config /etc/ssh/ssh_config
 RUN chmod +x /setup_suite.sh
 
 # Add jenkins authorized_keys
