@@ -11,12 +11,6 @@ echo "APPLICATION_ENV: ${APPLICATION_ENV}" > /etc/spryker/stores.yml
 echo "DOMAIN_NAME: ${DOMAIN_NAME}" >> /etc/spryker/stores.yml
 echo "stores:" >> /etc/spryker/stores.yml
 
-# Avoid ssh dialog question
-sudo mkdir ~/.ssh
-sudo touch ~/.ssh/known_hosts
-sudo chown www-data  ~/.ssh/known_hosts
-sudo ssh-keyscan github.com >> ~/.ssh/known_hosts
-
 # Get Spryker shop suite from the official github repo
 ##curl -H 'Authorization: token $GITHUB_TOKEN' https://github.com/spryker/suite-nonsplit.git
 #git clone https://sprykerbot:$GITHUB_TOKEN@github.com/spryker/suite.git ./
