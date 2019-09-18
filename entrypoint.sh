@@ -1,5 +1,10 @@
 #!/bin/bash -x
 
+
+# Update authorized_keys for users
+[[ ! -z "$WWWDATA_PUB_SSH_KEY" ]] && echo "$WWWDATA_PUB_SSH_KEY"  | base64 -d > /etc/spryker/www-data/.ssh/authorized_keys || echo "SSH key variable is not found. User www-data will use default SSH key."
+[[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY"  | base64 -d > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."
+
 # Update Yves, Zed and Glue Nginx and PHP configuration files with the correct environment variables
 j2 /etc/nginx/conf.d/backends.conf.j2 > /etc/nginx/conf.d/backends.conf
 j2 /usr/local/etc/php-fpm.d/yves.conf.j2 > /usr/local/etc/php-fpm.d/yves.conf
@@ -20,6 +25,11 @@ function getMyAddr(){
   fi
   echo ${myaddr}
 }
+
+#Add github/bitbucket/gitlab keys to the system-wide known_hosts file
+ssh-keyscan github.com > /etc/ssh/ssh_known_hosts
+ssh-keyscan bitbucket.org >> /etc/ssh/ssh_known_hosts
+ssh-keyscan gitlab.com >> /etc/ssh/ssh_known_hosts
 
 #Create the Nginx virtualhost for each store
 for i in "${STORE[@]}"; do
