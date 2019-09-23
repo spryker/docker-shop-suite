@@ -133,7 +133,7 @@ sudo rm -rf /data
 sudo ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
 
-echo $APPLICATION_PATH > /versions/latest_successful_build
+sudo -u jenkins echo $APPLICATION_PATH > /versions/latest_successful_build
 
 # Disable maintenance mode
 sudo supervisorctl restart php-fpm
