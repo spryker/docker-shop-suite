@@ -9,6 +9,7 @@ cd $APPLICATION_PATH
 # Create a temporary file with the list of stores for using in install config
 echo "APPLICATION_ENV: ${APPLICATION_ENV}" > /etc/spryker/stores.yml
 echo "DOMAIN_NAME: ${DOMAIN_NAME}" >> /etc/spryker/stores.yml
+echo "SINGLE_STORE: '${SINGLE_STORE}'" >> /etc/spryker/stores.yml
 echo "stores:" >> /etc/spryker/stores.yml
 
 # Get Spryker shop suite from the official github repo

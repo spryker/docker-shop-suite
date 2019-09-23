@@ -15,7 +15,12 @@ use Spryker\Shared\Storage\StorageConstants;
 use Spryker\Shared\ZedRequest\ZedRequestConstants;
 
 /**  Yves host  **/
+{% if SINGLE_STORE == "yes" %}
+$config[ApplicationConstants::HOST_YVES] = 'www.' . getenv('DOMAIN_NAME');
+{% else %}
 $config[ApplicationConstants::HOST_YVES] = 'www.{{ xx }}.' . getenv('DOMAIN_NAME');
+{% endif %}
+
 $config[ApplicationConstants::PORT_YVES] = '';
 $config[ApplicationConstants::PORT_SSL_YVES] = '';
 $config[ApplicationConstants::BASE_URL_YVES] = sprintf(
@@ -34,7 +39,12 @@ $config[CustomerConstants::BASE_URL_YVES] = $config[ApplicationConstants::BASE_U
 $config[ApplicationConstants::YVES_TRUSTED_HOSTS] = [];
 
 /**  Zed host  **/
+{% if SINGLE_STORE == "yes" %}
+$config[ApplicationConstants::HOST_ZED] = 'os.' . getenv('DOMAIN_NAME');
+{% else %}
 $config[ApplicationConstants::HOST_ZED] = 'os.{{ xx }}.' . getenv('DOMAIN_NAME');
+{% endif %}
+
 $config[ApplicationConstants::PORT_ZED] = '';
 $config[ApplicationConstants::PORT_SSL_ZED] = '';
 $config[ApplicationConstants::BASE_URL_ZED] = sprintf(

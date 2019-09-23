@@ -86,6 +86,7 @@ processingDomain(){
   subDomain=$2
   mainDomain=$3
   myDomain="${subDomain}.${mainDomain}"
+
   checkDig
   checkDomain ${myDomain}
 
