@@ -1,6 +1,5 @@
 #!/bin/bash -x
 
-
 # Update authorized_keys for users
 [[ ! -z "$WWWDATA_PUB_SSH_KEY" ]] && echo "$WWWDATA_PUB_SSH_KEY"  | base64 -d > /etc/spryker/www-data/.ssh/authorized_keys || echo "SSH key variable is not found. User www-data will use default SSH key."
 [[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY"  | base64 -d > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."
@@ -26,10 +25,25 @@ function getMyAddr(){
   echo ${myaddr}
 }
 
-#Add github/bitbucket/gitlab keys to the system-wide known_hosts file
+# Add composer cache directory
+mkdir -p -m775 /var/cache/composer
+
+# Change owner of /versions and /var/cache/composer directories
+chown jenkins:www-data /versions /var/cache/composer
+
+# Add github/bitbucket/gitlab keys to the system-wide known_hosts file
 ssh-keyscan github.com > /etc/ssh/ssh_known_hosts
 ssh-keyscan bitbucket.org >> /etc/ssh/ssh_known_hosts
 ssh-keyscan gitlab.com >> /etc/ssh/ssh_known_hosts
+
+# Create a temporary file with the list of stores for using in install config
+echo "APPLICATION_ENV: ${APPLICATION_ENV}" > /etc/spryker/stores.yml
+echo "DOMAIN_NAME: ${DOMAIN_NAME}" >> /etc/spryker/stores.yml
+echo "stores:" >> /etc/spryker/stores.yml
+for i in "${STORE[@]}"; do
+    XX=$i
+    echo "  - ${XX}" >> /etc/spryker/stores.yml
+done
 
 #Create the Nginx virtualhost for each store
 for i in "${STORE[@]}"; do
@@ -38,11 +52,12 @@ for i in "${STORE[@]}"; do
     bash /usr/local/bin/setup_vhosts.sh ${xx}.${DOMAIN_NAME} $(getMyAddr public) &
     # Put Zed host IP to /etc/hosts file
     echo "127.0.0.1   os.${xx}.${DOMAIN_NAME}" >> /etc/hosts
+
 done
 /usr/sbin/nginx -g 'daemon on;' &
 
 # Enable maintenance mode
-touch /maintenance_on.flag
+sudo -u jenkins touch /tmp/maintenance_on.flag
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
 export PGPASSWORD=${POSTGRES_PASSWORD}
@@ -103,7 +118,6 @@ if [ -f /versions/latest_successful_build ]; then
      cd /data
      cp config/install/restore_spryker_state.yml config/install/${APPLICATION_ENV:-staging}.yml
      vendor/bin/install -vvv
-     chown -R www-data:www-data /data/
 else
      #Parse string STORES to the array of country names STORE
      IFS=',' read -ra STORE <<< "${STORES}"
@@ -121,7 +135,7 @@ else
      #Deploy Spryker Shop
      /setup_suite.sh
      # Disable maintenance mode to validate LetsEncrypt certificates
-     test -f /maintenance_on.flag && rm /maintenance_on.flag
+     test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
 fi
 
 killall -9 nginx
@@ -129,10 +143,9 @@ supervisorctl restart php-fpm
 supervisorctl restart nginx
 
 # Unset maintenance flag
-test -f /maintenance_on.flag && rm /maintenance_on.flag
+test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
 
 chown -R www-data:www-data /data
-chown jenkins /versions/
 
 # Call command...
 exec $*

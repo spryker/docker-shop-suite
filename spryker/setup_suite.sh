@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 
 #Create the current build folder in the /versions
-curdate=(`date +%Y-%m-%d_%H-%M`)
-APPLICATION_PATH=/versions/$curdate
-mkdir -p $APPLICATION_PATH
+echo $(date +%Y-%m-%d_%H-%M) > /tmp/curdate
+export APPLICATION_PATH=/versions/$(cat /tmp/curdate)
+mkdir -p  -m775 ${APPLICATION_PATH}
 cd $APPLICATION_PATH
 
-# Create a temporary file with the list of stores for using in install config
-echo "APPLICATION_ENV: ${APPLICATION_ENV}" > /etc/spryker/stores.yml
-echo "DOMAIN_NAME: ${DOMAIN_NAME}" >> /etc/spryker/stores.yml
-echo "stores:" >> /etc/spryker/stores.yml
+# Add composer cache link
+mkdir -p /data/.composer
+[ ! -L /data/.composer/cache ] && ln -s  /var/cache/composer /data/.composer/cache
 
 # Get Spryker shop suite from the official github repo
 ##curl -H 'Authorization: token $GITHUB_TOKEN' https://github.com/spryker/suite-nonsplit.git
@@ -21,18 +20,19 @@ git checkout tags/201907.0
 rm -rf /maintenance
 cp -r ${APPLICATION_PATH}/public/Zed/maintenance /maintenance
 # Enable maintenance mode
-sudo touch /maintenance_on.flag
+sudo -u jenkins touch /tmp/maintenance_on.flag
 
+mailerPatch(){
+  patchName=$1
+  if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/${patchName}.patch ]; then
+    patch -p0  ./src/Pyz/Zed/Mail/MailDependencyProvider.php < /etc/spryker/${patchName}.patch
+  fi
+}
 # Swift Mailer AWS configuration
-if [ $SMTP_HOST == "mailhog" ]
-  then
-    if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/localMailer.patch ]; then
-      patch -p0  ./src/Pyz/Zed/Mail/MailDependencyProvider.php < /etc/spryker/localMailer.patch
-    fi
+if [ $SMTP_HOST == "mailhog" ]; then
+    mailerPatch localMailer
 else
-    if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/Mailer.patch ]; then
-      patch -p0  ./src/Pyz/Zed/Mail/MailDependencyProvider.php < /etc/spryker/Mailer.patch
-    fi
+   mailerPatch Mailer
 fi
 
 # Install all modules for Spryker
@@ -62,35 +62,16 @@ for i in "${STORE[@]}"; do
 
     # Create Spryker config_local_XX.php store config from the jinja2 template
     j2 /etc/spryker/config_local_XX.php.j2 > config/Shared/config_local_${XX}.php
-
-    # Add all stores to the temporary file for using in install config
-    echo "  - ${XX}" >> /etc/spryker/stores.yml
 done
 
-# Clean hardcoded AT store import data if the store doesn't exist
-if [[ "${STORES}" != *"AT"* ]]; then
-   sed -i -E "/.*,AT,.*$/d" data/import/shipment_price.csv
-   sed -i -E "/.*,AT,.*$/d" data/import/product_price.csv
-   sed -i -E "/.*,AT,.*$/d" data/import/product_price_schedule.csv
-   sed -i -E "/.*,AT,.*$/d" data/import/product_option_price.csv
-   sed -i -E "/.*,AT.*$/d" data/import/discount_store.csv
-   sed -i -E "/.*,AT.*$/d" data/import/icecat_biz_data/product_abstract_store.csv
-   sed -i -E "/.*,AT.*$/d" data/import/cms_block_store.csv
-   sed -i -E "/.*,AT.*$/d" data/import/cms_page_store.csv
-   rm config/Shared/*_AT.php
+# Clean hardcoded AT/DE/US stores import data if the store doesn't exist
+for store in AT US DE; do
+if [[ "${STORES}" != *"${store}"* ]]; then
+   echo -e "\nClean hardcoded ${store} import data\n"
+   for file in $(find ./ -type f -regex ".*/data/import/.*.csv" -exec grep -nEo "[\.\,\:\ ]${store}([\.\,\:\ ]|$)" {} + | cut -d: -f1-2| sort -Vru ); do sed -i -e ${file#*:*}d ${file%:*};done
+   rm config/Shared/*_${store}.php
 fi
-# Clean hardcoded US store import data if the store doesn't exist
-if [[ "${STORES}" != *"US"* ]]; then
-   sed -i -E "/.*,US,.*$/d" data/import/shipment_price.csv
-   sed -i -E "/.*,US,.*$/d" data/import/product_price.csv
-   sed -i -E "/.*,US,.*$/d" data/import/product_price_schedule.csv
-   sed -i -E "/.*,US,.*$/d" data/import/product_option_price.csv
-   sed -i -E "/.*,US.*$/d" data/import/discount_store.csv
-   sed -i -E "/.*,US.*$/d" data/import/icecat_biz_data/product_abstract_store.csv
-   sed -i -E "/.*,US.*$/d" data/import/cms_block_store.csv
-   sed -i -E "/.*,US.*$/d" data/import/cms_page_store.csv
-   rm config/Shared/*_US.php
-fi
+done
 
 # Create Spryker main config config_local.php from the jinja2 template
 j2 /etc/spryker/config_local.php.j2 /etc/spryker/stores.yml -o config/Shared/config_local.php
@@ -101,17 +82,10 @@ j2 /etc/spryker/frontend-build-config.json.j2 /etc/spryker/stores.yml -o config/
 # Create the Stock config StockConfig.php from the jinja2 template
 j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/StockConfig.php
 
-# Put robots.txt file for avoiding indexing
-cp /etc/nginx/robots.txt public/Yves/robots.txt
-cp /etc/nginx/robots.txt public/Zed/robots.txt
-cp /etc/nginx/robots.txt public/Glue/robots.txt
-
 #Copy stores.php which fixed the multistore hardcoded data
 if [[ "${STORES}" == "DE" ]]; then
     cp /etc/spryker/stores.php config/Shared/stores.php
 fi
-
-
 
 # Clean all Redis data
 redis-cli -h $REDIS_HOST flushall
@@ -119,6 +93,9 @@ redis-cli -h $REDIS_HOST flushall
 # Delete all indexes of the Elasticsearch
 curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
+# Hack for config_default.php and REDIS_HOST/PORT
+sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
+sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
 
 #Prepare [production|staging|development].yml only if it doesn't exist
 if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then
@@ -129,10 +106,6 @@ if [ ! -f config/install/restore_spryker_state.yml ]; then
     j2 /etc/spryker/restore_spryker_state.yml.j2 /etc/spryker/stores.yml -o config/install/restore_spryker_state.yml
 fi
 
-# Hack for config_default.php and REDIS_HOST/PORT
-sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
-sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
-
 #npm cache clean --force
 
 #vendor/bin/console propel:install
@@ -140,18 +113,34 @@ sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/
 # Full app install
 vendor/bin/install -vvv
 
-sudo chown -R www-data:www-data $APPLICATION_PATH
-sudo chmod -R g+w $APPLICATION_PATH/data
+# Post build script
+
 OLD_APPLICATION_VERSION=$(readlink /data)
+
+# Put robots.txt file for avoiding indexing
+cp /etc/nginx/robots.txt public/Yves/robots.txt
+cp /etc/nginx/robots.txt public/Zed/robots.txt
+cp /etc/nginx/robots.txt public/Glue/robots.txt
+
+# Swift Mailer AWS configuration
+if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/Mailer.patch ]; then
+      patch -p0  ./src/Pyz/Zed/Mail/MailDependencyProvider.php < /etc/spryker/Mailer.patch
+fi
+
+chmod -R g+w $APPLICATION_PATH/data
+sudo chown -R www-data:www-data $APPLICATION_PATH
 sudo rm -rf /data
-ln -s $APPLICATION_PATH /data
+sudo ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
-sudo chown www-data /versions
 
 echo $APPLICATION_PATH > /versions/latest_successful_build
 
 # Disable maintenance mode
-rm /maintenance_on.flag
+sudo supervisorctl restart php-fpm
+rm /tmp/maintenance_on.flag
 
 # Print output text with the setup results
 j2 /etc/spryker/setup_output.j2 /etc/spryker/stores.yml
+
+# Remove time stamp
+rm -rf /tmp/curdate
