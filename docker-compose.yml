@@ -21,7 +21,8 @@ services:
     environment:
       ENV_NAME: spryker21
       DOMAIN_NAME: demoshop.local
-      STORES: DE,AT,US
+      STORES: DE
+      SINGLE_STORE: 'yes'
       APPLICATION_ENV: staging
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
@@ -62,7 +63,7 @@ services:
     image: postgres:9.6
     environment:
       # POSTGRES_DB consists of the ENV_NAME and the first STORE name
-      POSTGRES_DB: spryker21_DE
+      POSTGRES_DB: spryker21
       POSTGRES_USER: spryker
       POSTGRES_PASSWORD: secret
 

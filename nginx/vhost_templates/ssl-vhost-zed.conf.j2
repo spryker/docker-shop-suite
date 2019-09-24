@@ -4,7 +4,6 @@ upstream backend-zed {
 
 server {
     listen 80;
-##    server_name ~^zed\\.de\\..+\\.local$;
     server_name {{ myDomain }};
     keepalive_timeout 0;
     access_log /dev/stdout extended;
