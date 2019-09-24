@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #Create the current build folder in the /versions
-echo $(date +%Y-%m-%d_%H-%M) > /tmp/curdate
+echo $(date +%Y-%m-%d_%H-%M) | sudo -u jenkins tee /tmp/curdate
 export APPLICATION_PATH=/versions/$(cat /tmp/curdate)
 mkdir -p  -m775 ${APPLICATION_PATH}
 cd $APPLICATION_PATH
@@ -133,7 +133,7 @@ sudo rm -rf /data
 sudo ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
 
-sudo -u jenkins echo $APPLICATION_PATH > /versions/latest_successful_build
+echo $APPLICATION_PATH | sudo -u jenkins tee /versions/latest_successful_build
 
 # Disable maintenance mode
 sudo supervisorctl restart php-fpm

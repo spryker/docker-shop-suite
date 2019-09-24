@@ -193,8 +193,9 @@ COPY spryker/ssh_config /etc/ssh/ssh_config
 RUN chmod +x /setup_suite.sh
 
 # Add jenkins authorized_keys
-RUN mkdir -p /etc/spryker/{www-data,jenkins}/.ssh
-COPY jenkins/id_rsa.pub /etc/spryker/www-data/.ssh/authorized_keys
+RUN mkdir -p /etc/spryker/www-data/.ssh \
+ && mkdir -p /etc/spryker/jenkins/.ssh
+COPY jenkins/id_rsa.pub /etc/spryker/www-data/.ssh/authorized_keys 
 COPY jenkins/id_rsa.pub /etc/spryker/jenkins/.ssh/authorized_keys
 RUN sed -i '/^#AuthorizedKeysFile/aAuthorizedKeysFile      .ssh/authorized_keys /etc/spryker/%u/.ssh/authorized_keys\nPort 222 ' /etc/ssh/sshd_config  \
  && chmod 600 /etc/spryker/www-data/.ssh/authorized_keys \
