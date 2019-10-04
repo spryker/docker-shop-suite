@@ -113,6 +113,9 @@ fi
 # Full app install
 vendor/bin/install -vvv
 
+#Optimize autoloader which creates a map with all classes and their locations
+composer dumpautoload -o
+
 # Post build script
 
 OLD_APPLICATION_VERSION=$(readlink /data)
@@ -129,6 +132,7 @@ fi
 
 chmod -R g+w $APPLICATION_PATH/data
 sudo chown -R www-data:www-data $APPLICATION_PATH
+sudo chmod 600 config/Zed/*.key
 sudo rm -rf /data
 sudo ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
