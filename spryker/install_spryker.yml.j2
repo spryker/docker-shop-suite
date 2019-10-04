@@ -57,6 +57,10 @@ sections:
 #        generate-ide-auto-completion:
 #            command: "vendor/bin/console dev:ide:generate-auto-completion"
 
+    validation-cache:
+        build-validation-cache:
+            command: "vendor/bin/console glue:rest:build-request-validation-cache"
+
     jenkins-down:
         jenkins-stop:
             command: "vendor/bin/console scheduler:suspend"
