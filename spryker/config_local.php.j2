@@ -112,6 +112,10 @@ $config[SchedulerJenkinsConstants::JENKINS_TEMPLATE_PATH] = '/etc/spryker/jenkin
 /** Debugging **/
 $config[EventConstants::LOGGER_ACTIVE] = true;
 
+/** Add Glue API auth parameters **/
+$config[OauthConstants::PRIVATE_KEY_PATH] = 'file://' . APPLICATION_ROOT_DIR . '/config/Zed/dev_only_private.key';
+$config[OauthConstants::PUBLIC_KEY_PATH] = 'file://' . APPLICATION_ROOT_DIR . '/config/Zed/dev_only_public.key';
+
 /** Optimizing **/
 /** Deactivate All Debug Functions And the Symfony Toolbar **/
 $config[ApplicationConstants::ENABLE_APPLICATION_DEBUG] = false;

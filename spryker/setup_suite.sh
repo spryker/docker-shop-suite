@@ -129,6 +129,7 @@ fi
 
 chmod -R g+w $APPLICATION_PATH/data
 sudo chown -R www-data:www-data $APPLICATION_PATH
+sudo chmod 600 config/Zed/dev_only_*
 sudo rm -rf /data
 sudo ln -s $APPLICATION_PATH /data
 sudo rm -rf $OLD_APPLICATION_VERSION
