@@ -113,6 +113,9 @@ fi
 # Full app install
 vendor/bin/install -vvv
 
+#Optimize autoloader which creates a map with all classes and their locations
+composer dumpautoload -o
+
 # Post build script
 
 OLD_APPLICATION_VERSION=$(readlink /data)
