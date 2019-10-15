@@ -54,6 +54,7 @@ services:
       YVES_HTTP_TO_HTTPS: 0
       GLUE_HTTPS_ON: 0
       GLUE_HTTP_TO_HTTPS: 0
+      SPRYKER_SSL_ENABLE: 0
     volumes:
         - versions-sync:/versions:rw
         - static-sync:/static:rw

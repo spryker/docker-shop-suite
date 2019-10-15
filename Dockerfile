@@ -90,6 +90,8 @@ RUN \
     zip                 \
     openssh-server      \
     newrelic-php5       \
+    dnsutils            \
+    certbot             \
 
   && test -d /var/run/sshd || mkdir /var/run/sshd           \
   && usermod --home /data www-data                          \

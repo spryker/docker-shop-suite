@@ -46,27 +46,8 @@ for i in "${STORE[@]}"; do
     echo "  - ${XX}" >> /etc/spryker/stores.yml
 done
 
-#Create the Nginx virtualhost for each store
-for i in "${STORE[@]}"; do
-    export XX=$i
-    export xx=$(echo $i | tr [A-Z] [a-z])
-
-    if [ ${SINGLE_STORE} == "yes" ]; then
-        mainDomain=${DOMAIN_NAME}
-        echo "127.0.0.1   os.${DOMAIN_NAME}" >> /etc/hosts
-    else
-        mainDomain=${xx}.${DOMAIN_NAME}
-    fi
-
-    bash /usr/local/bin/setup_vhosts.sh ${mainDomain} $(getMyAddr public) &
-    # Put Zed host IP to /etc/hosts file
-    echo "127.0.0.1   os.${xx}.${DOMAIN_NAME}" >> /etc/hosts
-
-done
 /usr/sbin/nginx -g 'daemon on;' &
-
-# Enable maintenance mode
-sudo -u jenkins touch /tmp/maintenance_on.flag
+bash /usr/local/bin/setup_vhosts.sh $(getMyAddr public) &
 
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
 export PGPASSWORD=${POSTGRES_PASSWORD}

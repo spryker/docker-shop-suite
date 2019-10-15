@@ -1,7 +1,3 @@
-upstream backend-zed {
-        server unix:/tmp/.fpm.zed.sock;
-}
-
 server {
     listen 80;
     server_name {{ myDomain }};
@@ -11,7 +7,11 @@ server {
     # Redirect all HTTP requests to HTTPS
     rewrite ^(.*)$ https://{{ myDomain }}$1 redirect;
     {% endif %}{% endif %}
+
     root /data/public/Zed;
+
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store {{XX}};
 
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
@@ -40,25 +40,20 @@ server {
     # PHP application gets all other requests
     location / {
         add_header X-Server $hostname;
-        fastcgi_pass backend-zed;
+        fastcgi_pass backend-$application_env-zed;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
 }
 
 
 server {
-    listen 80;
-##    server_name ~^zed\\.de\\..+\\.local$;
-    server_name {{ myDomain }};
-    rewrite ^(.*)$ https://{{ myDomain }}$1 redirect;
-}
-
-server {
     listen 443 ssl http2;
-##    server_name ~^zed\\.de\\..+\\.local$;
     server_name {{ myDomain }};
 
     ssl on;
@@ -80,6 +75,9 @@ server {
 
     root /data/public/Zed;
 
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store {{XX}};
+
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
 
@@ -107,12 +105,13 @@ server {
     # PHP application gets all other requests
     location / {
         add_header X-Server $hostname;
-        fastcgi_pass backend-zed;
+        fastcgi_pass backend-$application_env-zed;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
-        fastcgi_param X-Forwarded-For $proxy_add_x_forwarded_for;
-        fastcgi_param X-Forwarded-Proto $scheme;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
 }

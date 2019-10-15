@@ -8,12 +8,13 @@ server {
     keepalive_timeout 0;
     access_log /dev/stdout extended;
 
-    #{% if GLUE_HTTP_TO_HTTPS is defined %}{% if GLUE_HTTP_TO_HTTPS == "1" %}
+    {% if GLUE_HTTP_TO_HTTPS is defined %}{% if GLUE_HTTP_TO_HTTPS == "1" %}
     ## Redirect all HTTP requests to HTTPS
-    #rewrite ^(.*)$ https://{{ myDomain }}$1 redirect;
-    #{% endif %}{% endif %}
+    rewrite ^(.*)$ https://{{ myDomain }}$1 redirect;
+    {% endif %}{% endif %}
 
     root /data/public/Glue;
+
     set $application_env {{APPLICATION_ENV}};
     set $application_store {{XX}};
 
@@ -52,15 +53,12 @@ server {
         fastcgi_param APPLICATION_STORE $application_store;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
         more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
-        fastcgi_param APPLICATION_ENV $application_env;
-        fastcgi_param APPLICATION_STORE $application_store;
-        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
 
 }
 
 server {
-    listen 443 default ssl http2;
+    listen 443 ssl http2;
     server_name {{ myDomain }};
 
     ssl on;
@@ -81,6 +79,7 @@ server {
     access_log  /dev/stdout extended;
 
     root /data/public/Glue;
+    
     set $application_env {{APPLICATION_ENV}};
     set $application_store {{XX}};
 
@@ -115,10 +114,7 @@ server {
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
-        fastcgi_param APPLICATION_ENV $application_env;
-        fastcgi_param APPLICATION_STORE $application_store;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
-        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
         fastcgi_param APPLICATION_ENV $application_env;
         fastcgi_param APPLICATION_STORE $application_store;
         more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
