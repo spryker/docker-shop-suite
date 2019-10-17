@@ -1,22 +1,21 @@
 #!/bin/bash
 
-myIp=$2
+set -x
+
+#Parse string STORES to the array of country names STORE
+IFS=',' read -ra STORE <<< "${STORES}"
+
+myIp=$1
 ZED_HTTPS=0
 YVES_HTTPS=0
 GLUE_HTTPS=0
+ZED_VARIABLES='zed:os'
+YVES_VARIABLES='yves:www'
+GLUE_VARIABLES='glue:glue'
 
 test -n "${ZED_HTTPS_ON}" && test "${ZED_HTTPS_ON}" -eq 1 && ZED_HTTPS=1
 test -n "${YVES_HTTPS_ON}" && test "${YVES_HTTPS_ON}" -eq 1 && YVES_HTTPS=1
 test -n "${GLUE_HTTPS_ON}" && test "${GLUE_HTTPS_ON}" -eq 1 && GLUE_HTTPS=1
-
-# Checking the first input parameter with the domain
-mainDomain=$1
-test -z ${mainDomain} && echo "No domain specified. Exiting" && exit 1
-
-# Install Dig if it doesn't installed yet
-function checkDig(){
-  test -z "$(which dig)" && (apt-get update && apt-get install -y dnsutils)
-}
 
 # Function which return the IP address of the domain name input as the first parameter of the function
 function resolveDomain(){
@@ -29,7 +28,6 @@ function resolveDomain(){
 #Checking that domain resolves with correct IP
 function checkDomain(){
   domain=$1
-  checkDig
   echo -n "Resolving ${domain}, got \""
   domainIp=$(resolveDomain ${domain})
   echo "${domainIp}\""
@@ -44,17 +42,15 @@ function checkDomain(){
 
 function getCertificates(){
   domains="$1"
-  cd /tmp
-  repoDir=/tmp/certbot
-  # Get certbot sources
-  if [ -d ${repoDir}/.git ]; then
-      cd ${repoDir}
-      git pull
-  else
-      git clone https://github.com/certbot/certbot.git ${repoDir}
-  fi
+  # Wait for nginx
+  until curl -s "${domains}:80" > /dev/null; do
+    echo "Awaiting for nginx"
+    sleep 2
+  done
+  # Check if maintenance enabled
+  [ -f  /tmp/maintenance_on.flag ] && rm -f  /tmp/maintenance_on.flag
 
-  ${repoDir}/letsencrypt-auto certonly --webroot -w /usr/share/nginx/html -d $(echo "${domains}"|sed "s/ / -d /g") -m admin@${mainDomain} --agree-tos -n --expand
+  letsencrypt certonly --webroot -w /usr/share/nginx/html -d $(echo "${domains}"|sed "s/ / -d /g") -m admin@${mainDomain} --agree-tos -n --expand
 }
 
 function checkCertificates(){
@@ -78,7 +74,6 @@ createVhost(){
   if [ ! -L /etc/nginx/sites-enabled/vhost-${myDomain}.conf ]; then
     ln -s /etc/nginx/sites-available/vhost-${myDomain}.conf /etc/nginx/sites-enabled/vhost-${myDomain}.conf
   fi
-  unset myDomain
 }
 
 processingDomain(){
@@ -87,7 +82,6 @@ processingDomain(){
   mainDomain=$3
   myDomain="${subDomain}.${mainDomain}"
 
-  checkDig
   checkDomain ${myDomain}
 
   getCertificates "${myDomain}"
@@ -100,31 +94,46 @@ processingDomain(){
   unset myDomain
 }
 
-# Processing ZED domain(s)
-if [ ${ZED_HTTPS} -eq 1 -a ${myIp} != "app" ];then
-  # Create tmp vhost conf
-  createVhost xx zed os.${mainDomain}
-  processingDomain zed os ${mainDomain}
-else
-  createVhost xx zed os.${mainDomain}
-fi
 
-# Processing YVES domain(s)
-if [ ${YVES_HTTPS} -eq 1 -a ${myIp} != "app" ];then
-  # Create tmp vhost conf
-  createVhost xx yves www.${mainDomain}
-  processingDomain yves www ${mainDomain}
-else
-  createVhost xx yves www.${mainDomain}
-fi
+#Create the Nginx virtualhost for each store
+for i in "${STORE[@]}"; do
+    export XX=$i
+    export xx=$(echo $i | tr [A-Z] [a-z])
 
-# Processing GLUE domain(s)
-if [ ${GLUE_HTTPS} -eq 1 -a ${myIp} != "app" ];then
-  # Create tmp vhost conf
-  createVhost xx glue glue.${mainDomain}
-  processingDomain glue glue ${mainDomain}
-else
-  createVhost xx glue glue.${mainDomain}
-fi
+    if [ ${SINGLE_STORE} == "yes" ]; then
+        mainDomain=${DOMAIN_NAME}
+        echo "127.0.0.1   os.${DOMAIN_NAME}" >> /etc/hosts
+    else
+        mainDomain=${xx}.${DOMAIN_NAME}
+    fi
+
+  # Processing domain(s)
+  for APP in ZED YVES GLUE; do
+    appConfig=${APP}_VARIABLES
+    appHttps=${APP}_HTTPS
+
+    if [ ${!appHttps} -eq 1 -a ${myIp} != "app" ];then
+      # Create tmp vhost conf
+      createVhost xx ${!appConfig%:*} ${!appConfig#*:*}.${mainDomain}
+      # Start nginx or reload if it already running
+      if [ $(ps auxf| grep "[n]ginx" | wc -l ) -gt 0 ]; then
+        /usr/sbin/nginx -s reload
+      else
+        /usr/sbin/nginx -g 'daemon on;' &
+      fi
+      # Get certificate and create vhost conf if https enabled
+      processingDomain ${!appConfig%:*} ${!appConfig#*:*} ${mainDomain}
+    else
+      # Create vhost conf if https disabled
+      createVhost xx ${!appConfig%:*} ${!appConfig#*:*}.${mainDomain}
+    fi
+  done
+    # Put Zed host IP to /etc/hosts file
+    echo "127.0.0.1   os.${xx}.${DOMAIN_NAME}" >> /etc/hosts
+
+done
+
+# Enable maintenance mode
+sudo -u jenkins touch /tmp/maintenance_on.flag
 
 supervisorctl restart nginx

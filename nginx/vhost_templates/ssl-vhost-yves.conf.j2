@@ -1,7 +1,3 @@
-upstream backend-yves {
-        server unix:/tmp/.fpm.yves.sock;
-}
-
 server {
     listen 80;
     server_name {{ myDomain }};
@@ -12,7 +8,11 @@ server {
     # Redirect all HTTP requests to HTTPS
     rewrite ^(.*)$ https://{{ myDomain }}$1 redirect;
     {% endif %}{% endif %}
+
     root /data/public/Yves;
+
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store {{XX}};
 
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
@@ -58,18 +58,20 @@ server {
         }
 
         add_header X-Server $hostname;
-        fastcgi_pass backend-yves;
+        fastcgi_pass backend-$application_env-yves;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
 
 }
 
 server {
-    listen 443 default ssl http2;
-##    server_name ~^www\\.de\\..+\\.local$;
+    listen 443 ssl http2;
     server_name {{ myDomain }};
 
     ssl on;
@@ -90,6 +92,9 @@ server {
     access_log  /dev/stdout extended;
 
     root /data/public/Yves;
+
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store {{XX}};
 
     # Location for Letsencrypt validation
     include /etc/nginx/conf.d/ssl/letsencrypt.conf;
@@ -135,13 +140,14 @@ server {
         }
 
         add_header X-Server $hostname;
-        fastcgi_pass backend-yves;
+        fastcgi_pass backend-$application_env-yves;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
-        fastcgi_param X-Forwarded-For $proxy_add_x_forwarded_for;
-        fastcgi_param X-Forwarded-Proto $scheme;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
 
 }
