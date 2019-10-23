@@ -131,21 +131,19 @@ if [ -f /versions/latest_successful_build ]; then
      cd /data
      j2 /etc/spryker/restore_spryker_state.yml.j2 /etc/spryker/stores.yml -o config/install/${APPLICATION_ENV:-staging}.yml
      vendor/bin/install -vvv
+     # Unset maintenance flag
+     test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
+elif [ -z ${INITIAL_SPRYKER_REPOSITORY} ]; then
+     [ ! -f /tmp/maintenance_on.flag ] && sudo -u jenkins touch /tmp/maintenance_on.flag
 else
-     #Deploy Spryker Shop
+    #Deploy Spryker Shop
      /setup_suite.sh
      # Disable maintenance mode to validate LetsEncrypt certificates
      test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
+     chown -R www-data:www-data /data
 fi
 
 killall -9 nginx
-supervisorctl restart php-fpm
-supervisorctl restart nginx
-
-# Unset maintenance flag
-test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
-
-chown -R www-data:www-data /data
 
 # Call command...
 exec $*
