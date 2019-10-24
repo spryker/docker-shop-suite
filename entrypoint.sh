@@ -135,6 +135,7 @@ if [ -f /versions/latest_successful_build ]; then
      test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
 elif [ -z ${INITIAL_SPRYKER_REPOSITORY} ]; then
      [ ! -f /tmp/maintenance_on.flag ] && sudo -u jenkins touch /tmp/maintenance_on.flag
+     chown jenkins:jenkins /data
 else
     #Deploy Spryker Shop
      /setup_suite.sh
