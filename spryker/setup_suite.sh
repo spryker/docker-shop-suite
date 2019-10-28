@@ -13,8 +13,8 @@ mkdir -p /data/.composer
 # Get Spryker shop suite from the official github repo
 ##curl -H 'Authorization: token $GITHUB_TOKEN' https://github.com/spryker/suite-nonsplit.git
 #git clone https://sprykerbot:$GITHUB_TOKEN@github.com/spryker/suite.git ./
-git clone https://github.com/spryker-shop/b2c-demo-shop.git ./
-git checkout tags/201907.0
+git clone  ${INITIAL_SPRYKER_REPOSITORY} ./
+git checkout ${INITIAL_SPRYKER_BRANCH}
 
 # Copy maintenance page
 rm -rf /maintenance
@@ -86,12 +86,6 @@ j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/
 if [[ "${STORES}" == "DE" ]]; then
     cp /etc/spryker/stores.php config/Shared/stores.php
 fi
-
-# Clean all Redis data
-redis-cli -h $REDIS_HOST flushall
-
-# Delete all indexes of the Elasticsearch
-curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
 
 # Hack for config_default.php and REDIS_HOST/PORT
 sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php

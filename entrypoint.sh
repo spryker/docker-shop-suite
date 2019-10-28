@@ -87,13 +87,36 @@ fi
 j2 /usr/local/etc/php/php.ini.j2 > /usr/local/etc/php/php.ini
 
 # Getting template for Jenkins jobs
-sed -i -e "s/@appHost@/$(getMyAddr local)/g" /etc/spryker/jenkins-job.default.xml.twig
+if [ -z ${SPRYKER_PRIVATE_DNS_ZONE} ]; then
+  sed -i -e "s/@appHost@/$(getMyAddr local)/g" /etc/spryker/jenkins-job.default.xml.twig
+else
+  sed -i -e "s/@appHost@/${ENV_NAME}.${SPRYKER_PRIVATE_DNS_ZONE}/g" /etc/spryker/jenkins-job.default.xml.twig
+fi
 
 if [ ! -f /versions/id_rsa ]; then
   echo -e $(curl -s -H "X-Vault-Token: ${SSH_KEY_TOKEN}" -X GET https://vault.spryker.systems:8200/v1/AWS_instances_common_storage/data/github_ssh_key | jq .data.data.id_rsa | tr -d '\"') > /versions/id_rsa
   chmod 600 /versions/id_rsa
   chown 1000 /versions/id_rsa
 fi
+
+# Clean all Redis data
+redis-cli -h $REDIS_HOST flushall
+
+# Delete all indexes of the Elasticsearch
+curl -XDELETE $ELASTICSEARCH_HOST:$ELASTICSEARCH_PORT/*
+
+#Parse string STORES to the array of country names STORE
+IFS=',' read -ra STORE <<< "${STORES}"
+#Create the RabbitMQ virtualhost for each store
+for i in "${STORE[@]}"; do
+  export XX=$i
+  curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2F${XX}_staging_zed
+  echo "The RabbitMQ Vhost ${XX}_${APPLICATION_ENV}_zed has been created"
+  curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"password":"'"${RABBITMQ_PASSWORD}${XX}"'", "tags":"management"}' http://${RABBITMQ_HOST}:15672/api/users/${XX}_${APPLICATION_ENV}
+  echo "The RabbitMQ user ${XX}_${APPLICATION_ENV} has been created"
+  curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"configure":".*","write":".*","read":".*"}' http://${RABBITMQ_HOST}:15672/api/permissions/%2F${XX}_${APPLICATION_ENV}_zed/${XX}_${APPLICATION_ENV}
+  echo "The RabbitMQ user ${XX}_${APPLICATION_ENV} has got the access to the Vhost ${XX}_${APPLICATION_ENV}_zed"
+done
 
 #"To build or not to build"
 if [ -f /versions/latest_successful_build ]; then
@@ -106,36 +129,22 @@ if [ -f /versions/latest_successful_build ]; then
        ln -s ${APPLICATION_PATH} /data
      fi
      cd /data
-     cp config/install/restore_spryker_state.yml config/install/${APPLICATION_ENV:-staging}.yml
+     j2 /etc/spryker/restore_spryker_state.yml.j2 /etc/spryker/stores.yml -o config/install/${APPLICATION_ENV:-staging}.yml
      vendor/bin/install -vvv
+     # Unset maintenance flag
+     test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
+elif [ -z ${INITIAL_SPRYKER_REPOSITORY} ]; then
+     [ ! -f /tmp/maintenance_on.flag ] && sudo -u jenkins touch /tmp/maintenance_on.flag
+     chown jenkins:jenkins /data
 else
-     #Parse string STORES to the array of country names STORE
-     IFS=',' read -ra STORE <<< "${STORES}"
-     #Create the RabbitMQ virtualhost for each store
-     for i in "${STORE[@]}"; do
-       export XX=$i
-       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT http://${RABBITMQ_HOST}:15672/api/vhosts/%2F${XX}_staging_zed
-       echo "The RabbitMQ Vhost ${XX}_${APPLICATION_ENV}_zed has been created"
-       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"password":"'"${RABBITMQ_PASSWORD}${XX}"'", "tags":"management"}' http://${RABBITMQ_HOST}:15672/api/users/${XX}_${APPLICATION_ENV}
-       echo "The RabbitMQ user ${XX}_${APPLICATION_ENV} has been created"
-       curl -i -u ${RABBITMQ_USER}:${RABBITMQ_PASSWORD} -H "content-type:application/json" -XPUT -d '{"configure":".*","write":".*","read":".*"}' http://${RABBITMQ_HOST}:15672/api/permissions/%2F${XX}_${APPLICATION_ENV}_zed/${XX}_${APPLICATION_ENV}
-       echo "The RabbitMQ user ${XX}_${APPLICATION_ENV} has got the access to the Vhost ${XX}_${APPLICATION_ENV}_zed"
-     done
-
-     #Deploy Spryker Shop
+    #Deploy Spryker Shop
      /setup_suite.sh
      # Disable maintenance mode to validate LetsEncrypt certificates
      test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
+     chown -R www-data:www-data /data
 fi
 
 killall -9 nginx
-supervisorctl restart php-fpm
-supervisorctl restart nginx
-
-# Unset maintenance flag
-test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
-
-chown -R www-data:www-data /data
 
 # Call command...
 exec $*

@@ -2,6 +2,9 @@
 
 set -x
 
+# Change working directory
+cd /tmp/
+
 #Parse string STORES to the array of country names STORE
 IFS=',' read -ra STORE <<< "${STORES}"
 
@@ -70,7 +73,7 @@ createVhost(){
   confPrefix=$1
   vhostTmpl=$2
   export myDomain=$3
-  j2 /etc/nginx/vhost_templates/${confPrefix}-vhost-${vhostTmpl}.conf.j2 > /etc/nginx/sites-available/vhost-${myDomain}.conf
+  j2 /etc/nginx/vhost_templates/${confPrefix}-vhost-${vhostTmpl}.conf.j2 -o /etc/nginx/sites-available/vhost-${myDomain}.conf
   if [ ! -L /etc/nginx/sites-enabled/vhost-${myDomain}.conf ]; then
     ln -s /etc/nginx/sites-available/vhost-${myDomain}.conf /etc/nginx/sites-enabled/vhost-${myDomain}.conf
   fi
