@@ -93,8 +93,8 @@ else
   sed -i -e "s/@appHost@/${ENV_NAME}.${SPRYKER_PRIVATE_DNS_ZONE}/g" /etc/spryker/jenkins-job.default.xml.twig
 fi
 
-if [ ! -f /versions/id_rsa ]; then
-  echo -e $(curl -s -H "X-Vault-Token: ${SSH_KEY_TOKEN}" -X GET https://vault.spryker.systems:8200/v1/AWS_instances_common_storage/data/github_ssh_key | jq .data.data.id_rsa | tr -d '\"') > /versions/id_rsa
+if [ ! -f /versions/id_rsa -a ! -z ${GITHUB_SSH_KEY} ]; then
+  echo ${GITHUB_SSH_KEY} | base64 --decode > /versions/id_rsa
   chmod 600 /versions/id_rsa
   chown 1000 /versions/id_rsa
 fi

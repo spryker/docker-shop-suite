@@ -55,7 +55,7 @@ for i in "${STORE[@]}"; do
     export XX=$i
     export xx=$(echo $i | tr [A-Z] [a-z])
     # Kill all others connections/sessions to the PostgreSQL DB for avoiding an error in the next command
-    psql --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${ENV_NAME}_${XX} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();'
+    psql --username=${POSTGRES_USER} --host=${POSTGRES_HOST} postgres -c "SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = '${ENV_NAME}_${XX}' AND pid <> pg_backend_pid();"
     # Drop the current PostgreSQL DB and create the empty one
     dropdb --if-exists --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${ENV_NAME}_${XX}
     createdb --username=${POSTGRES_USER} --host=${POSTGRES_HOST} ${ENV_NAME}_${XX}
