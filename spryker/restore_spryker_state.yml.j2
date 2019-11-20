@@ -70,17 +70,13 @@ sections:
             groups:
                 - elastic
 
-        queue-worker-start:
-            command: "vendor/bin/console queue:worker:start"
-            stores: true
-
-        update-product-labels:
-            command: "vendor/bin/console product-label:relations:update"
-            stores: true
-
         sync-data:
             command: "vendor/bin/console sync:data"
 
+        event-trigger:
+            command: "vendor/bin/console event:trigger"
+
         jenkins-enable:
             command: "vendor/bin/console scheduler:resume"
+            stores: true
 
