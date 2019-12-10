@@ -13,6 +13,8 @@ use Spryker\Shared\PropelQueryBuilder\PropelQueryBuilderConstants;
 use Spryker\Shared\Propel\PropelConstants;
 use Spryker\Shared\RabbitMq\RabbitMqEnv;
 use Spryker\Shared\Router\RouterConstants;
+use Spryker\Shared\Search\SearchConstants;
+use Spryker\Shared\SearchElasticsearch\SearchElasticsearchConstants;
 use Spryker\Shared\Scheduler\SchedulerConstants;
 use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConfig;
 use Spryker\Shared\SchedulerJenkins\SchedulerJenkinsConstants;
@@ -68,6 +70,16 @@ $ELASTICA_PARAMETER__EXTRA = [
 ];
 $config[ApplicationConstants::ELASTICA_PARAMETER__EXTRA] = $ELASTICA_PARAMETER__EXTRA;
 $config[SearchConstants::ELASTICA_PARAMETER__EXTRA] = $ELASTICA_PARAMETER__EXTRA;
+
+$config[SearchConstants::ELASTICA_PARAMETER__HOST]
+    = $config[SearchElasticsearchConstants::HOST] = getenv('ELASTICSEARCH_HOST');
+$config[SearchConstants::ELASTICA_PARAMETER__PORT]
+    = $config[SearchElasticsearchConstants::PORT] = getenv('ELASTICSEARCH_PORT');
+
+unset($config[SearchElasticsearchConstants::ELASTICA_PARAMETER__AUTH_HEADER]);
+
+$config[SearchConstants::ELASTICA_PARAMETER__EXTRA]
+    = $config[SearchElasticsearchConstants::EXTRA] = $ELASTICA_PARAMETER__EXTRA;
 
 // ---------- Scheduler
 $config[SchedulerConstants::ENABLED_SCHEDULERS] = [
