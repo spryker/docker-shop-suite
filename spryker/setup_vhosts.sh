@@ -16,6 +16,7 @@ DRIVER_HTTPS=0
 ZED_VARIABLES='zed:os'
 YVES_VARIABLES='yves:www'
 GLUE_VARIABLES='glue:glue'
+DRIVER_VARIABLES='driver:driver'
 
 test -n "${ZED_HTTPS_ON}" && test "${ZED_HTTPS_ON}" -eq 1 && ZED_HTTPS=1
 test -n "${YVES_HTTPS_ON}" && test "${YVES_HTTPS_ON}" -eq 1 && YVES_HTTPS=1
