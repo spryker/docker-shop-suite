@@ -55,6 +55,8 @@ services:
       YVES_HTTP_TO_HTTPS: 0
       GLUE_HTTPS_ON: 0
       GLUE_HTTP_TO_HTTPS: 0
+      DRIVER_HTTPS_ON: 0
+      DRIVER_HTTP_TO_HTTPS: 0
       SPRYKER_SSL_ENABLE: 0
       INITIAL_SPRYKER_REPOSITORY: 'https://github.com/spryker-shop/b2c-demo-shop.git'
       INITIAL_SPRYKER_BRANCH: 'tags/201907.7'

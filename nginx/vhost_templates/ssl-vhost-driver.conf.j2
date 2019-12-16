@@ -1,0 +1,117 @@
+server {
+    listen 80;
+    server_name {{ myDomain }};
+    keepalive_timeout 0;
+    access_log /dev/stdout extended;
+    {% if ZED_HTTP_TO_HTTPS is defined %}{% if ZED_HTTP_TO_HTTPS == "1" %}
+    # Redirect all HTTP requests to HTTPS
+    rewrite ^(.*)$ https://{{ myDomain }}$1 redirect;
+    {% endif %}{% endif %}
+
+    root /data/public/Driver;
+
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store {{XX}};
+
+    # Location for Letsencrypt validation
+    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
+
+    # Maintenance mode
+    include /etc/nginx/maintenance.conf;
+
+    # Timeout for ZED requests - 10 minutes
+    # (longer requests should be converted to jobs and executed via jenkins)
+    proxy_read_timeout 600s;
+    proxy_send_timeout 600s;
+    fastcgi_read_timeout 600s;
+    client_body_timeout 600s;
+    client_header_timeout 600s;
+    send_timeout 600s;
+
+    # Static files can be delivered directly
+    location ~ (/assets/|/favicon.ico|/robots.txt) {
+        access_log        off;
+        expires           30d;
+        add_header Pragma public;
+        add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+        try_files $uri =404;
+    }
+
+    # PHP application gets all other requests
+    location / {
+        add_header X-Server $hostname;
+        fastcgi_pass backend-$application_env-zed;
+        fastcgi_index index.php;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+    }
+}
+
+
+server {
+    listen 443 ssl http2;
+    server_name {{ myDomain }};
+
+    ssl on;
+    ssl_certificate /etc/letsencrypt/live/{{ myDomain }}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{ myDomain }}/privkey.pem;
+    ssl_ciphers "ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:DHE-RSA-AES256-SHA !RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !EECDH+aRSA+RC4";
+#    ssl_dhparam /etc/dhparams.pem;
+    ssl_prefer_server_ciphers on;
+    ssl_protocols TLSv1.2;
+    ssl_session_cache builtin:1000 shared:SSL:10m;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout  10m;
+    ssl_stapling on;
+    ssl_stapling_verify on;
+    ssl_verify_depth 2;
+
+    keepalive_timeout 0;
+    access_log /dev/stdout extended;
+
+    root /data/public/Driver;
+
+    set $application_env {{APPLICATION_ENV}};
+    set $application_store {{XX}};
+
+    # Location for Letsencrypt validation
+    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
+
+    # Maintenance mode
+    include /etc/nginx/maintenance.conf;
+
+    # Timeout for ZED requests - 10 minutes
+    # (longer requests should be converted to jobs and executed via jenkins)
+    proxy_read_timeout 600s;
+    proxy_send_timeout 600s;
+    fastcgi_read_timeout 600s;
+    client_body_timeout 600s;
+    client_header_timeout 600s;
+    send_timeout 600s;
+
+    # Static files can be delivered directly
+    location ~ (/assets/|/favicon.ico|/robots.txt) {
+        access_log        off;
+        expires           30d;
+        add_header Pragma public;
+        add_header Cache-Control "public, must-revalidate, proxy-revalidate";
+        try_files $uri =404;
+    }
+
+    # PHP application gets all other requests
+    location / {
+        add_header X-Server $hostname;
+        fastcgi_pass backend-$application_env-zed;
+        fastcgi_index index.php;
+        include /etc/nginx/fastcgi_params;
+        fastcgi_param SCRIPT_NAME /index.php;
+        fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
+        fastcgi_param APPLICATION_ENV $application_env;
+        fastcgi_param APPLICATION_STORE $application_store;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+    }
+}

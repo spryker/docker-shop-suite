@@ -118,6 +118,7 @@ OLD_APPLICATION_VERSION=$(readlink /data)
 cp /etc/nginx/robots.txt public/Yves/robots.txt
 cp /etc/nginx/robots.txt public/Zed/robots.txt
 cp /etc/nginx/robots.txt public/Glue/robots.txt
+cp /etc/nginx/robots.txt public/Driver/robots.txt
 
 # Swift Mailer AWS configuration
 if [ -f ./src/Pyz/Zed/Mail/MailDependencyProvider.php -a -f /etc/spryker/Mailer.patch ]; then

@@ -12,6 +12,7 @@ myIp=$1
 ZED_HTTPS=0
 YVES_HTTPS=0
 GLUE_HTTPS=0
+DRIVER_HTTPS=0
 ZED_VARIABLES='zed:os'
 YVES_VARIABLES='yves:www'
 GLUE_VARIABLES='glue:glue'
@@ -19,6 +20,7 @@ GLUE_VARIABLES='glue:glue'
 test -n "${ZED_HTTPS_ON}" && test "${ZED_HTTPS_ON}" -eq 1 && ZED_HTTPS=1
 test -n "${YVES_HTTPS_ON}" && test "${YVES_HTTPS_ON}" -eq 1 && YVES_HTTPS=1
 test -n "${GLUE_HTTPS_ON}" && test "${GLUE_HTTPS_ON}" -eq 1 && GLUE_HTTPS=1
+test -n "${DRIVER_HTTPS_ON}" && test "${DRIVER_HTTPS_ON}" -eq 1 && DRIVER_HTTPS=1
 
 # Function which return the IP address of the domain name input as the first parameter of the function
 function resolveDomain(){
@@ -111,7 +113,7 @@ for i in "${STORE[@]}"; do
     fi
 
   # Processing domain(s)
-  for APP in ZED YVES GLUE; do
+  for APP in ZED YVES GLUE DRIVER; do
     appConfig=${APP}_VARIABLES
     appHttps=${APP}_HTTPS
 
