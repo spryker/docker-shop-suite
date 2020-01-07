@@ -36,7 +36,7 @@ server {
     # PHP application gets all other requests
     location / {
         add_header X-Server $hostname;
-        fastcgi_pass backend-$application_env-zed;
+        fastcgi_pass backend-$application_env;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;

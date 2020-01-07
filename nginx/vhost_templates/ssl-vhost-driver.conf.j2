@@ -40,7 +40,7 @@ server {
     # PHP application gets all other requests
     location / {
         add_header X-Server $hostname;
-        fastcgi_pass backend-$application_env-zed;
+        fastcgi_pass backend-$application_env;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
@@ -75,7 +75,7 @@ server {
 
     root /data/public/Driver;
 
-    set $application_env {{APPLICATION_ENV}};
+    set $application_env {{APPLICATION_ENV}}-driver;
     set $application_store {{XX}};
 
     # Location for Letsencrypt validation
@@ -105,7 +105,7 @@ server {
     # PHP application gets all other requests
     location / {
         add_header X-Server $hostname;
-        fastcgi_pass backend-$application_env-zed;
+        fastcgi_pass backend-$application_env;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
