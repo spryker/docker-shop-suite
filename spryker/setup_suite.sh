@@ -68,7 +68,7 @@ done
 for store in AT US DE; do
 if [[ "${STORES}" != *"${store}"* ]]; then
    echo -e "\nClean hardcoded ${store} import data\n"
-   for file in $(find ./ -type f -regex ".*/data/import/.*.csv" -exec grep -nEo "[\.\,\:\ ]${store}([\.\,\:\ ]|$)" {} + | cut -d: -f1-2| sort -Vru ); do sed -i -e ${file#*:*}d ${file%:*};done
+   for file in $(find ./ -type f -regex ".*/data/import/.*.csv" -exec grep -nEo "[\,\:\"\ ]${store}([\.\,\:\"]|$)" {} + | cut -d: -f1-2| sort -Vru ); do sed -i -e ${file#*:*}d ${file%:*};done
    rm config/Shared/*_${store}.php
 fi
 done
@@ -86,10 +86,6 @@ j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/
 if [[ "${STORES}" == "DE" ]]; then
     cp /etc/spryker/stores.php config/Shared/stores.php
 fi
-
-# Hack for config_default.php and REDIS_HOST/PORT
-sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_HOST\]\s*=\s*).*/\1getenv('REDIS_HOST');/g" config/Shared/config_default.php
-sed -r -i -e "s/($config\[StorageRedisConstants::STORAGE_REDIS_PORT\]\s*=\s*).*/\16379;/g" config/Shared/config_default.php
 
 #Prepare [production|staging|development].yml only if it doesn't exist
 if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then

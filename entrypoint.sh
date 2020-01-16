@@ -2,7 +2,7 @@
 
 # Priveous build mark check
 if [ -f /versions/latest_build_failed ]; then
-  rm /versions/latest_build_failed /versions/latest_successful_build
+  rm -f /versions/latest_build_failed /versions/latest_successful_build
   exit 1
 fi
 
