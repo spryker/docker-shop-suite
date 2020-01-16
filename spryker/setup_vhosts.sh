@@ -137,6 +137,6 @@ for i in "${STORE[@]}"; do
 done
 
 # Enable maintenance mode
-sudo -u jenkins touch /tmp/maintenance_on.flag
+[ ! -f /tmp/maintenance_on.flag ] && sudo -u jenkins touch /tmp/maintenance_on.flag
 
 supervisorctl restart nginx
