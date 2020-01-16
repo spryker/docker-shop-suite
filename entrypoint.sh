@@ -1,12 +1,12 @@
 #!/bin/bash -x
 
 # Priveous build mark check
-if [ -f /versions/restorestate_failure_mark ]; then
-  rm /versions/restorestate_failure_mark /versions/latest_successful_build
+if [ -f /versions/latest_build_failed ]; then
+  rm /versions/latest_build_failed /versions/latest_successful_build
   exit 1
 fi
 
-touch /versions/restorestate_failure_mark
+touch /versions/latest_build_failed
 
 # Update authorized_keys for users
 [[ ! -z "$WWWDATA_PUB_SSH_KEY" ]] && echo "$WWWDATA_PUB_SSH_KEY"  | base64 -d > /etc/spryker/www-data/.ssh/authorized_keys || echo "SSH key variable is not found. User www-data will use default SSH key."
@@ -157,8 +157,7 @@ until ! $(ps auxf| grep -q "[l]etsencrypt") ; do
 done
 killall -9 nginx
 
-
-rm  /versions/restorestate_failure_mark
+rm -f /versions/latest_build_failed
 
 # Call command...
 exec $*
