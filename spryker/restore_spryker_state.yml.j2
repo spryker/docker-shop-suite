@@ -78,8 +78,11 @@ sections:
             command: "vendor/bin/console product-label:relations:update"
             stores: true
 
-        sync-data:
-            command: "vendor/bin/console sync:data"
+       # sync-data:
+       #     command: "vendor/bin/console sync:data"
+
+        event-trigger:
+            command: "vendor/bin/console event:trigger"
 
         jenkins-enable:
             command: "vendor/bin/console scheduler:resume"

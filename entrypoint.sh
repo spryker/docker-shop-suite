@@ -1,5 +1,13 @@
 #!/bin/bash -x
 
+# Priveous build mark check
+if [ -f /versions/restorestate_failure_mark ]; then
+  rm /versions/restorestate_failure_mark /versions/latest_successful_build
+  exit 1
+fi
+
+touch /versions/restorestate_failure_mark
+
 # Update authorized_keys for users
 [[ ! -z "$WWWDATA_PUB_SSH_KEY" ]] && echo "$WWWDATA_PUB_SSH_KEY"  | base64 -d > /etc/spryker/www-data/.ssh/authorized_keys || echo "SSH key variable is not found. User www-data will use default SSH key."
 [[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY"  | base64 -d > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."
@@ -134,7 +142,6 @@ if [ -f /versions/latest_successful_build ]; then
      # Unset maintenance flag
      test -f /tmp/maintenance_on.flag && rm /tmp/maintenance_on.flag
 elif [ -z ${INITIAL_SPRYKER_REPOSITORY} ]; then
-     [ ! -f /tmp/maintenance_on.flag ] && sudo -u jenkins touch /tmp/maintenance_on.flag
      chown jenkins:jenkins /data
 else
     #Deploy Spryker Shop
@@ -144,7 +151,14 @@ else
      chown -R www-data:www-data /data
 fi
 
+until ! $(ps auxf| grep -q "[l]etsencrypt") ; do
+ sleep 5
+ echo "Letsencrypt running... Awaiting process finalization..."
+done
 killall -9 nginx
+
+
+rm  /versions/restorestate_failure_mark
 
 # Call command...
 exec $*
