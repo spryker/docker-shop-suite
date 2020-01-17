@@ -181,8 +181,6 @@ WORKDIR /data
 COPY entrypoint.sh /entrypoint.sh
 COPY spryker/config_local.php.j2 /etc/spryker/config_local.php.j2
 COPY spryker/config_local_XX.php.j2 /etc/spryker/config_local_XX.php.j2
-COPY spryker/config_local_nonsplit.php.j2 /etc/spryker/config_local_nonsplit.php.j2
-COPY spryker/config_local_XX_nonsplit.php.j2 /etc/spryker/config_local_XX_nonsplit.php.j2
 COPY spryker/stores.php /etc/spryker/stores.php
 COPY spryker/StockConfig.php.j2 /etc/spryker/StockConfig.php.j2
 COPY spryker/frontend-build-config.json.j2 /etc/spryker/frontend-build-config.json.j2
