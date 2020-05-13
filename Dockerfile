@@ -64,6 +64,8 @@ RUN \
     git-core            \
     graphviz            \
     libedit2            \
+    libgpgme11          \
+    libgpgme11-dev      \
 #    libmysqlclient18    \
     libpq5              \
     libsqlite3-0        \
@@ -126,6 +128,10 @@ RUN \
         xmlrpc      \
         xsl         \
         zip         \
+
+# Install PHP gnupg extension
+  && pecl install -o -f gnupg \
+  && docker-php-ext-enable gnupg \
 
 # Install PHP redis extension
   && pecl install -o -f redis \
