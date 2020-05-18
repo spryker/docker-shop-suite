@@ -40,6 +40,7 @@ fi
 ##sudo touch ~/.composer/auth.json
 ##sudo echo '{ "http-basic": {}, ' >  ~/.composer/auth.json
 ##sudo echo "\"github-oauth\": { \"github.com\": \"$GITHUB_TOKEN\"}}" >>  ~/.composer/auth.json
+composer config -g github-oauth.github.com $GITHUB_TOKEN
 export COMPOSER_MEMORY_LIMIT=-1
 composer global require hirak/prestissimo
 composer install
@@ -77,7 +78,11 @@ done
 j2 /etc/spryker/config_local.php.j2 /etc/spryker/stores.yml -o config/Shared/config_local.php
 
 # Create the frontend config frontend-build-config.json from the jinja2 template
-j2 /etc/spryker/frontend-build-config.json.j2 /etc/spryker/stores.yml -o config/Yves/frontend-build-config.json
+if [[ ${INITIAL_SPRYKER_REPOSITORY} == *"suite-nonsplit"* ]]; then
+    j2 /etc/spryker/frontend-build-config-nonsplit.json.j2 /etc/spryker/stores.yml -o config/Yves/frontend-build-config.json
+else
+    j2 /etc/spryker/frontend-build-config.json.j2 /etc/spryker/stores.yml -o config/Yves/frontend-build-config.json
+fi
 
 # Create the Stock config StockConfig.php from the jinja2 template
 j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/StockConfig.php
@@ -89,7 +94,11 @@ fi
 
 #Prepare [production|staging|development].yml only if it doesn't exist
 if [ ! -f config/install/${APPLICATION_ENV:-staging}.yml ]; then
-    j2 /etc/spryker/install_spryker.yml.j2 /etc/spryker/stores.yml -o config/install/${APPLICATION_ENV:-staging}.yml
+    if [[ ${INITIAL_SPRYKER_REPOSITORY} == *"suite-nonsplit"* ]]; then
+        j2 /etc/spryker/install_spryker_nonsplit.yml.j2 /etc/spryker/stores.yml -o config/install/${APPLICATION_ENV:-staging}.yml
+    else
+        j2 /etc/spryker/install_spryker.yml.j2 /etc/spryker/stores.yml -o config/install/${APPLICATION_ENV:-staging}.yml
+    fi
 fi
 #Prepare restore_spryker_state.yml (only if it doesn't exist) for future restoring shop after the container restart
 if [ ! -f config/install/restore_spryker_state.yml ]; then

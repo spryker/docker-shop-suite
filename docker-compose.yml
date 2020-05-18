@@ -21,8 +21,8 @@ services:
     environment:
       ENV_NAME: spryker21
       DOMAIN_NAME: demoshop.local
-      STORES: DE
-      SINGLE_STORE: 'yes'
+      STORES: 'DE,AT,US'
+      SINGLE_STORE: 'no'
       APPLICATION_ENV: staging
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
@@ -93,9 +93,11 @@ services:
 
   jenkins:
 #    restart: always
-    build:
-      context: .
-      dockerfile: jenkins/Dockerfile
+##    build:
+##      context: .
+##      dockerfile: jenkins/Dockerfile
+    image:
+      spryker/docker-jenkins:5
     environment:
       JAVA_OPTS: '-Djenkins.install.runSetupWizard=false'
       ZED_HOST: app

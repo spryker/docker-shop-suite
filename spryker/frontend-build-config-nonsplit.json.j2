@@ -1,0 +1,13 @@
+{
+  "path": "assets/%theme%%namespace%",
+  "namespaces": [
+{% for store in stores %}
+    {
+      "codeBucket": "{{ store }}",
+      "namespace": "{{ store }}",
+      "themes": [],
+      "defaultTheme": "default"
+{% if loop.last %}    } {% else %}    }, {% endif %}
+{% endfor %}
+  ]
+}
