@@ -41,7 +41,7 @@ services:
       JENKINS_HOST: jenkins
       JENKINS_PORT: 8080
       NEWRELIC_KEY:
-      GITHUB_TOKEN: 8888yourgithubtoken8888
+      GITHUB_TOKEN: ""
       GITHUB_SSH_KEY: ""
       PHP_CLI_RAM: 2048
       SMTP_HOST: mailhog

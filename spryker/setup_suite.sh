@@ -40,7 +40,10 @@ fi
 ##sudo touch ~/.composer/auth.json
 ##sudo echo '{ "http-basic": {}, ' >  ~/.composer/auth.json
 ##sudo echo "\"github-oauth\": { \"github.com\": \"$GITHUB_TOKEN\"}}" >>  ~/.composer/auth.json
-composer config -g github-oauth.github.com $GITHUB_TOKEN
+if [[ -z "$GITHUB_TOKEN" ]]; then
+	composer config -g github-oauth.github.com $GITHUB_TOKEN
+fi
+
 export COMPOSER_MEMORY_LIMIT=-1
 composer global require hirak/prestissimo
 composer install
