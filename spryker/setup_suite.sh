@@ -110,7 +110,7 @@ fi
 
 #npm cache clean --force
 
-#vendor/bin/console propel:install
+vendor/bin/console propel:install
 
 # Full app install
 vendor/bin/install -vvv
