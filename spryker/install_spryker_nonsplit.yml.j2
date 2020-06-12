@@ -233,9 +233,9 @@ sections:
             command: "vendor/bin/console data:import --config=data/import/config/merchandising_import_config.yml"
             stores: true
 
-#        import-navigation-setup:
-#            command: "vendor/bin/console data:import --config=data/import/config/navigation_import_config.yml"
-#            stores: true
+        import-navigation-setup:
+            command: "vendor/bin/console data:import:navigation"
+            stores: true
 
         import-content-management-setup:
             command: "vendor/bin/console data:import --config=data/import/config/content_management_import_config.yml"
