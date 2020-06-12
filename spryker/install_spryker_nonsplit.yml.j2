@@ -233,9 +233,9 @@ sections:
             command: "vendor/bin/console data:import --config=data/import/config/merchandising_import_config.yml"
             stores: true
 
-        import-navigation-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/navigation_import_config.yml"
-            stores: true
+#        import-navigation-setup:
+#            command: "vendor/bin/console data:import --config=data/import/config/navigation_import_config.yml"
+#            stores: true
 
         import-content-management-setup:
             command: "vendor/bin/console data:import --config=data/import/config/content_management_import_config.yml"
@@ -243,6 +243,10 @@ sections:
 
         import-b2b-setup:
             command: "vendor/bin/console data:import --config=data/import/config/b2b_setup_import_config.yml"
+            stores: true
+
+        import-marketplace-setup:
+            command: "vendor/bin/console data:import --config=data/import/config/marketplace_import_config.yml"
             stores: true
 
         import-miscellaneous-setup:
