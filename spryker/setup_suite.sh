@@ -12,9 +12,10 @@ mkdir -p /data/.composer
 
 # Get Spryker shop suite from the official github repo
 ##curl -H 'Authorization: token $GITHUB_TOKEN' https://github.com/spryker/suite-nonsplit.git
-#git clone https://sprykerbot:$GITHUB_TOKEN@github.com/spryker/suite.git ./
+#git clone https://sprykerbot:${GITHUB_TOKEN}@github.com/spryker/suite-nonsplit.git ./
 git clone  ${INITIAL_SPRYKER_REPOSITORY} ./
 git checkout ${INITIAL_SPRYKER_BRANCH}
+
 
 # Copy maintenance page
 rm -rf /maintenance
@@ -40,7 +41,7 @@ fi
 ##sudo touch ~/.composer/auth.json
 ##sudo echo '{ "http-basic": {}, ' >  ~/.composer/auth.json
 ##sudo echo "\"github-oauth\": { \"github.com\": \"$GITHUB_TOKEN\"}}" >>  ~/.composer/auth.json
-if [[ -z "$GITHUB_TOKEN" ]]; then
+if [[ ! -z "${GITHUB_TOKEN}" ]]; then
 	composer config -g github-oauth.github.com $GITHUB_TOKEN
 fi
 

@@ -141,6 +141,11 @@ RUN \
 # Install nmp (after the issue when installation just nodejs is not enough)
   && curl -L https://npmjs.org/install.sh | sudo sh \
 
+# Install yarn
+  && npm install yarn -g \
+  && mkdir /var/cache/yarn \
+  && chown -R jenkins /var/cache/yarn \
+
 # Remove build requirements for php modules
   && apt-get -qy autoremove \
   && apt-get -qy purge $PHPIZE_DEPS \
