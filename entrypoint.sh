@@ -60,7 +60,7 @@ bash /usr/local/bin/setup_vhosts.sh $(getMyAddr public) &
 # Enable PGPASSWORD for non-interactive working with PostgreSQL if PGPASSWORD is not set
 export PGPASSWORD=${POSTGRES_PASSWORD}
 # Waiting for PostgreSQL database starting
-until psql -h ${POSTGRES_HOST} -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" ${ENV_NAME} -c '\l'; do
+until psql -h ${POSTGRES_HOST} -p "${POSTGRES_PORT}" -U "${POSTGRES_USER}" postgres -c '\l'; do
   echo "Waiting for PostgreSQL..."
   sleep 3
 done
