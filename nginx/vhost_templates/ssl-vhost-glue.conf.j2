@@ -113,6 +113,7 @@ server {
         fastcgi_pass backend-$application_env-glue;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
+        fastcgi_param HTTPS on;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
         fastcgi_param APPLICATION_ENV $application_env;
