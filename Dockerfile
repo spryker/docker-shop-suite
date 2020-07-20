@@ -214,6 +214,7 @@ RUN sed -i '/^#AuthorizedKeysFile/aAuthorizedKeysFile      .ssh/authorized_keys 
 # Add SwiftMailer AWS configuration
 COPY application/app_files/MailDependencyProvider.php /etc/spryker/
 COPY application/app_files/Mailer.patch /etc/spryker/
+COPY application/app_files/Mailer.nonsplit.patch /etc/spryker/
 COPY application/app_files/localMailer.patch /etc/spryker/
 COPY application/app_files/jenkins-job.default.xml.twig /etc/spryker/
 
