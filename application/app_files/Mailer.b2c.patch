@@ -1,0 +1,32 @@
+--- ./src/Pyz/Zed/Mail/MailDependencyProvider.php	2020-07-21 07:43:06.733562743 +0000
++++ ./src/Pyz/Zed/Mail/MailDependencyProvider.php.orig	2020-07-21 07:44:57.713408212 +0000
+@@ -35,29 +35,6 @@
+      *
+      * @return \Spryker\Zed\Kernel\Container
+      */
+-
+-    protected function addMailer(Container $container)
+-    {
+-         $container[static::MAILER] = function () {
+-            $message = new Swift_Message();
+-            $transport = new Swift_SmtpTransport(
+-                $this->getConfig()->getSmtpHost(),
+-                $this->getConfig()->getSmtpPort()
+-            );
+-            $transport->setHost(getenv('SMTP_HOST'));
+-            $transport->setPort(getenv('SMTP_PORT'));
+-            $transport->setUsername(getenv('SMTP_USER'));
+-            $transport->setPassword(getenv('SMTP_PASS'));
+-            $transport->setEncryption("ssl");
+-
+-            $mailer = new Swift_Mailer($transport);
+-
+-            return new MailToMailerBridge($message, $mailer);
+-        };
+-
+-        return $container;
+-    }
+-
+     public function provideBusinessLayerDependencies(Container $container)
+     {
+         $container = parent::provideBusinessLayerDependencies($container);
