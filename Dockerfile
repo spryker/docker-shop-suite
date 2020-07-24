@@ -192,6 +192,7 @@ COPY spryker/frontend-build-config.json.j2 /etc/spryker/frontend-build-config.js
 COPY spryker/frontend-build-config-nonsplit.json.j2 /etc/spryker/frontend-build-config-nonsplit.json.j2
 COPY spryker/install_spryker.yml.j2 /etc/spryker/install_spryker.yml.j2
 COPY spryker/install_spryker_nonsplit.yml.j2 /etc/spryker/install_spryker_nonsplit.yml.j2
+COPY spryker/install_spryker_b2c.yml.j2 /etc/spryker/install_spryker_b2c.yml.j2
 COPY spryker/restore_spryker_state.yml.j2 /etc/spryker/restore_spryker_state.yml.j2
 COPY spryker/setup_suite.sh /setup_suite.sh
 COPY spryker/setup_vhosts.sh /usr/local/bin/setup_vhosts.sh
@@ -215,6 +216,7 @@ RUN sed -i '/^#AuthorizedKeysFile/aAuthorizedKeysFile      .ssh/authorized_keys 
 COPY application/app_files/MailDependencyProvider.php /etc/spryker/
 COPY application/app_files/Mailer.patch /etc/spryker/
 COPY application/app_files/Mailer.nonsplit.patch /etc/spryker/
+COPY application/app_files/Mailer.b2c.patch /etc/spryker/
 COPY application/app_files/localMailer.patch /etc/spryker/
 COPY application/app_files/jenkins-job.default.xml.twig /etc/spryker/
 
