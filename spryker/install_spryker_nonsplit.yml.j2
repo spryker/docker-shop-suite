@@ -217,45 +217,15 @@ sections:
                 - elastic
 
     demodata:
-        import-commerce-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/commerce_setup_import_config.yml"
-            stores: true
+        import-eu-region-demodata:
+            command: "vendor/bin/console data:import --config=data/import/local/full_EU.yml"
+            stores:
+                - DE
 
-        import-catalog-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/catalog_setup_import_config.yml"
-            stores: true
-
-        import-special-product-types-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/special_product_types_import_config.yml"
-            stores: true
-
-        import-merchandising-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/merchandising_import_config.yml"
-            stores: true
-
-#        import-navigation-setup:
-#            command: "vendor/bin/console data:import --config=data/import/config/navigation_import_config.yml"
-#            stores: true
-
-        import-content-management-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/content_management_import_config.yml"
-            stores: true
-
-        import-b2b-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/b2b_setup_import_config.yml"
-            stores: true
-
-        import-marketplace-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/marketplace_import_config.yml"
-            stores: true
-
-        import-miscellaneous-setup:
-            command: "vendor/bin/console data:import --config=data/import/config/miscellaneous_import_config.yml"
-            stores: true
-
-        update-product-labels:
-            command: "vendor/bin/console product-label:relations:update"
-            stores: true
+        import-us-region-demodata:
+            command: "vendor/bin/console data:import --config=data/import/local/full_US.yml"
+            stores:
+                - US
 
     jenkins-up:
         jenkins-generate:
