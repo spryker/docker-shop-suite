@@ -12,8 +12,6 @@ ENV PHPIZE_DEPS \
   autoconf            \
   build-essential     \
   file                \
-  g++                 \
-  gcc                 \
   libbz2-dev          \
   libc-client-dev     \
   libc-dev            \
@@ -31,7 +29,6 @@ ENV PHPIZE_DEPS \
   libssh2-1-dev       \
   libxml2-dev         \
   libxslt1-dev        \
-  make                \
   pkg-config          \
   re2c
 
@@ -59,6 +56,9 @@ RUN \
     curl                \
     debconf             \
     debconf-utils       \
+    g++                 \
+    gcc                 \
+    make                \
 #    gettext-base        \
     git                 \
     git-core            \
