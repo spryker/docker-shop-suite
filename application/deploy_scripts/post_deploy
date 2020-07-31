@@ -1,0 +1,7 @@
+export DEBUG_ENABLED=1
+export APPLICATION_PATH=/versions/$(cat /tmp/curdate)
+
+#check if build completed
+[ -f  /tmp/build_completed.flag ] || { rm -f /tmp/build_completed.flag; rm -rf $APPLICATION_PATH; exit 1; }
+
+/versions/docker-shop-suite-build.sh postDeploy

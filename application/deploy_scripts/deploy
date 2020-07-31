@@ -1,0 +1,107 @@
+####################
+
+export SPRYKER_REPOSITORY="git@github.com:spryker/b2b-demo-shop-internal.git"
+export SPRYKER_BRANCH="feature/b2b-all-integrations-stage-2"
+
+#export DEBUG_ENABLED=1
+#####################
+##### ENV CONFIG ####
+
+. /versions/vars
+export APPLICATION_PATH=/versions/$(cat /tmp/curdate)
+export COMPOSER_MEMORY_LIMIT=-1
+export PGPASSWORD=$POSTGRES_PASSWORD
+export RESET_REDIS=true
+export RESET_ES=true
+export RESET_DB=true
+[ -z $DEBUG_ENABLED ] && set -e || set -ex
+export S3_BUCKET="https://docker-shop-suite.s3.eu-central-1.amazonaws.com"
+export SPRYKER_JENKINS_TEMPLATE_PATH=$APPLICATION_PATH/config/Zed/cronjobs/jenkins.docker.xml.twig
+export PER_STORE_VAR="SPRYKER_ZED_HOST SPRYKER_BE_HOST SPRYKER_FE_HOST SPRYKER_API_HOST SPRYKER_DB_DATABASE SPRYKER_BROKER_NAMESPACE SPRYKER_BROKER_CONNECTIONS SPRYKER_SEARCH_NAMESPACE"
+IFS=',' read -ra STORE <<< "${STORES}"
+
+#####################
+
+/versions/docker-shop-suite-build.sh startDeploy
+
+stores_apply(){
+  COMMAND=$1
+  for i in "${STORE[@]}"; do 
+      APPLICATION_STORE=$i ${COMMAND}
+  done
+}
+
+# Reset storages (db,redis,es)
+/versions/docker-shop-suite-build.sh resetStorages
+
+cd ${APPLICATION_PATH}
+
+git clone ${SPRYKER_REPOSITORY} ./
+git checkout ${SPRYKER_BRANCH}
+git pull
+
+ulimit -n 30000
+
+mkdir -p ~/.composer
+composer config -g github-oauth.github.com $GITHUB_TOKEN
+
+composer global require hirak/prestissimo
+composer install -o
+composer require --no-update aws/aws-sdk-php
+
+# Clean multistore demodata
+/versions/docker-shop-suite-build.sh cleanDemodata
+
+#Copy stores.php which fixed the multistore hardcoded data
+if [[ "${STORES}" == "DE" ]]; then
+    cp /etc/spryker/stores.php config/Shared/stores.php
+fi
+
+# Create the Stock config StockConfig.php from the jinja2 template
+j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/StockConfig.php
+
+# Update the staging jenkins conf
+cp /etc/spryker/jenkins-job.default.xml.twig $APPLICATION_PATH/config/Zed/cronjobs/jenkins.docker.xml.twig
+
+# Download the staging jenkins conf
+wget  $S3_BUCKET/common_files/jenkins/jenkins-job.default.xml.twig -O  $APPLICATION_PATH/config/Zed/cronjobs/jenkins.docker.xml.twig
+
+
+# Create config_default-staging_STORE and staging.yml
+/versions/docker-shop-suite-build.sh createConfigs
+
+stores_apply "vendor/bin/console transfer:generate"
+stores_apply "vendor/bin/console maintenance:enable"
+
+stores_apply "vendor/bin/console scheduler:suspend -vvv"
+#stores_apply "vendor/bin/console scheduler:clean -vvv"
+stores_apply "vendor/bin/install -r staging_add -s database-flush -vvv"
+stores_apply "vendor/bin/install -r staging_add -s  queue-flush -vvv"
+
+stores_apply "vendor/bin/install -r staging -s build -vvv"
+stores_apply "vendor/bin/install -r staging -s init-storages-per-store"
+stores_apply "vendor/bin/install -r staging -s init-storages-per-region -vvv"
+
+vendor/bin/install -r staging -s build-static -vvv
+
+### TMP latest suite-nonsplit
+grep -q build-static-development config/install/staging.yml && stores_apply "vendor/bin/install -r staging -s build-static-development -vvv"
+
+if [ -d data/import/local ]; then
+   export SPRYKER_REGIONS=$(cat deploy.yml | awk '$1 ~ "region:" {print $2}')
+   for i in $SPRYKER_REGIONS; do
+      SPRYKER_REGION=$i vendor/bin/install -r staging -s demodata -vvv
+   done
+else 
+   stores_apply "vendor/bin/install -r staging -s demodata -vvv"
+fi
+###
+
+stores_apply "vendor/bin/console scheduler:setup"
+stores_apply "vendor/bin/console scheduler:resume"
+stores_apply "vendor/bin/console maintenance:disable"
+
+#Optimize autoloader which creates a map with all classes and their locations
+composer dumpautoload -o
+
+/versions/docker-shop-suite-build.sh endDeploy
