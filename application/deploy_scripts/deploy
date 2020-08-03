@@ -60,11 +60,14 @@ fi
 # Create the Stock config StockConfig.php from the jinja2 template
 j2 /etc/spryker/StockConfig.php.j2 /etc/spryker/stores.yml -o src/Pyz/Zed/Stock/StockConfig.php
 
+# Download the staging additional installation file (tmp)
+wget  $S3_BUCKET/202001.6/spryker/staging_add.yml -O  $APPLICATION_PATH/config/install/staging_add.yml
+
+# Download config_default-staging
+wget  $S3_BUCKET/common_files/build/config_default-staging.php -O  $APPLICATION_PATH/config/Shared/config_default-staging.php
+
 # Update the staging jenkins conf
 cp /etc/spryker/jenkins-job.default.xml.twig $APPLICATION_PATH/config/Zed/cronjobs/jenkins.docker.xml.twig
-
-# Download the staging jenkins conf
-wget  $S3_BUCKET/common_files/jenkins/jenkins-job.default.xml.twig -O  $APPLICATION_PATH/config/Zed/cronjobs/jenkins.docker.xml.twig
 
 
 # Create config_default-staging_STORE and staging.yml
