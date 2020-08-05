@@ -5,7 +5,7 @@
 IFS=',' read -ra STORE <<< "${STORES}"
 
 help(){
-    echo "You need to run the script with one of the options: pre_deploy or post_deploy resetStorages startDeploy endDeploy "
+    echo "You need to run the script with one of the options: pre_deploy or post_deploy resetStorages startDeploy endDeploy"
     echo "Example: $0 pre_deploy"
 }
 
@@ -76,8 +76,8 @@ cleanDemodata(){
   for store in AT US DE; do
   if [[ "${STORES}" != *"${store}"* ]]; then
     echo -e "\nClean hardcoded ${store} import data\n" 
-     for file in $(find ./ -type f -regex ".*/data/import/.*.csv" -exec grep -nEo "[\,\:\"\ ]${store}([\.\,\:\"]|$)" {} + | cut -d: -f1-2| sort -Vru ); do sed -i -e ${file#*:*}d ${file%:*};done
-    rm config/Shared/*_${store}.php
+    for file in $(find ./ -type f -regex ".*/data/import/.*.csv" -exec grep -nEo "[\,\:\"\ ]${store}([\.\,\:\"]|$)" {} + | cut -d: -f1-2| sort -Vru ); do sed -i -e ${file#*:*}d ${file%:*};done
+    rm -f config/Shared/*_${store}.php
   fi
   done
 }
@@ -87,7 +87,14 @@ createConfigs(){
   sed -i -e 's/APPLICATION_ENV: docker/APPLICATION_ENV: staging/g' config/install/staging.yml
 
   for store in "${STORE[@]}"; do
-    cp config/Shared/config_default-docker.php config/Shared/config_default-staging_$store.php
+    if [ -f config/Shared/config_default-docker.php ]; then
+      cp config/Shared/config_default-docker.php config/Shared/config_default-staging_$store.php
+    else
+      cp config/Shared/config_default.php config/Shared/config_default-staging_$store.php
+      # tmp
+      echo "require 'common/config_oauth-development.php';" >> config/Shared/config_default-staging_$store.php
+      echo "require 'common/config_logs-files.php';" >> config/Shared/config_default-staging_$store.php
+    fi
     for storeVar in $PER_STORE_VAR ; do
       sed -i -e "s/${storeVar}/${storeVar}_${store}/g" config/Shared/config_default-staging_${store}.php
     done
