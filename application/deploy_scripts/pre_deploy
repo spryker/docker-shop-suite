@@ -1,0 +1,4 @@
+export DEBUG_ENABLED=1
+wget https://docker-shop-suite.s3.eu-central-1.amazonaws.com/common_files/build/docker-shop-suite-build.sh -O /versions/docker-shop-suite-build.sh
+chmod +x /versions/docker-shop-suite-build.sh
+/versions/docker-shop-suite-build.sh preDeploy

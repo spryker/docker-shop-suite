@@ -8,6 +8,16 @@ fi
 
 touch /versions/latest_build_failed
 
+# Put env variables to /versions/vars file for using it in Jenkins jobs
+j2 /etc/spryker/vars.j2 > /versions/vars
+
+# Download and run init_env script
+if [ ! -z ${INIT_ENV_SCRIPT} ]; then
+  wget ${INIT_ENV_SCRIPT} -O /init_env.sh
+  chmod +x /init_env.sh
+  /init_env.sh
+fi
+
 # Update authorized_keys for users
 [[ ! -z "$WWWDATA_PUB_SSH_KEY" ]] && echo "$WWWDATA_PUB_SSH_KEY"  | base64 -d > /etc/spryker/www-data/.ssh/authorized_keys || echo "SSH key variable is not found. User www-data will use default SSH key."
 [[ ! -z "$JENKINS_PUB_SSH_KEY" ]] && echo "$JENKINS_PUB_SSH_KEY"  | base64 -d > /etc/spryker/jenkins/.ssh/authorized_keys || echo "SSH key variable is not found. User Jenkins will use default SSH key."
@@ -82,9 +92,6 @@ echo "RabbitMQ is available now. Good."
 
 # Become more verbose
 set -xe
-
-# Put env variables to /versions/vars file for using it in Jenkins jobs
-j2 /etc/spryker/vars.j2 > /versions/vars
 
 # Install NewRelic php app monitoring
 if [ ! -z ${NEWRELIC_KEY} ]; then
