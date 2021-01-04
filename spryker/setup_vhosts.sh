@@ -12,13 +12,18 @@ myIp=$1
 ZED_HTTPS=0
 YVES_HTTPS=0
 GLUE_HTTPS=0
+CONFIGURATOR_HTTPS=0
 ZED_VARIABLES='zed:os'
 YVES_VARIABLES='yves:www'
 GLUE_VARIABLES='glue:glue'
+CONFIGURATOR_VARIABLES='configurator:configurator'
+
 
 test -n "${ZED_HTTPS_ON}" && test "${ZED_HTTPS_ON}" -eq 1 && ZED_HTTPS=1
 test -n "${YVES_HTTPS_ON}" && test "${YVES_HTTPS_ON}" -eq 1 && YVES_HTTPS=1
 test -n "${GLUE_HTTPS_ON}" && test "${GLUE_HTTPS_ON}" -eq 1 && GLUE_HTTPS=1
+test -n "${CONFIGURATOR_HTTPS_ON}" && test "${CONFIGURATOR_HTTPS_ON}" -eq 1 && CONFIGURATOR_HTTPS=1
+
 
 # Function which return the IP address of the domain name input as the first parameter of the function
 function resolveDomain(){
@@ -133,8 +138,24 @@ for i in "${STORE[@]}"; do
   done
     # Put Zed host IP to /etc/hosts file
     echo "127.0.0.1   os.${xx}.${DOMAIN_NAME}" >> /etc/hosts
-
 done
+
+#Create the Nginx virtualhost for Cofigurator
+if [ ${CONFIGURATOR_HTTPS} -eq 1 -a ${myIp} != "app" ];then
+  # Create tmp vhost conf
+  createVhost xx configurator ${CONFIGURATOR_DOMAIN_NAME}
+  # Start nginx or reload if it already running
+  if [ $(ps auxf| grep "[n]ginx" | wc -l ) -gt 0 ]; then
+    /usr/sbin/nginx -s reload
+  else
+    /usr/sbin/nginx -g 'daemon on;' &
+  fi
+  # Get certificate and create vhost conf if https enabled
+  processingDomain configurator configurator ${DOMAIN_NAME}
+else
+  # Create vhost conf if https disabled
+  createVhost xx configurator ${CONFIGURATOR_DOMAIN_NAME}
+fi
 
 # Enable maintenance mode
 [ ! -f /tmp/maintenance_on.flag ] && sudo -u jenkins touch /tmp/maintenance_on.flag

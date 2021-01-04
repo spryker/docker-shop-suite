@@ -7,3 +7,6 @@ upstream backend-{{APPLICATION_ENV}}-zed {
 upstream backend-{{APPLICATION_ENV}}-glue {
   server unix:/tmp/.fpm.{{APPLICATION_ENV}}-glue.sock;
 }
+upstream backend-{{APPLICATION_ENV}}-configurator {
+  server unix:/tmp/.fpm.{{APPLICATION_ENV}}-configurator.sock;
+}
