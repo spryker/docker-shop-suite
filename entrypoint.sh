@@ -27,6 +27,7 @@ j2 /etc/nginx/conf.d/backends.conf.j2 > /etc/nginx/conf.d/backends.conf
 j2 /usr/local/etc/php-fpm.d/yves.conf.j2 > /usr/local/etc/php-fpm.d/yves.conf
 j2 /usr/local/etc/php-fpm.d/zed.conf.j2 > /usr/local/etc/php-fpm.d/zed.conf
 j2 /usr/local/etc/php-fpm.d/glue.conf.j2 > /usr/local/etc/php-fpm.d/glue.conf
+j2 /usr/local/etc/php-fpm.d/configurator.conf.j2 > /usr/local/etc/php-fpm.d/configurator.conf
 j2 /etc/nginx/conf.d/backends.conf.j2 > /etc/nginx/conf.d/backends.conf
 #Parse string STORES to the array of country names STORE
 IFS=',' read -ra STORE <<< "${STORES}"

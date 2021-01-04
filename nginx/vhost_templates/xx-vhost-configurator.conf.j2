@@ -1,21 +1,22 @@
 server {
+    # Listener for testing/development - one host only, doesn't require external LoadBalancer
     listen 80;
-    server_name {{ myDomain }};
+    server_name {{ CONFIGURATOR_DOMAIN_NAME }};
     keepalive_timeout 0;
-    access_log  /dev/stdout extended;
+    access_log /dev/stdout extended;
 
-    root /data/public/Zed;
+    root /data/public/Configurator;
 
     set $application_env {{APPLICATION_ENV}};
     set $application_store {{XX}};
 
-    # Location for Letsencrypt validation
-    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
-
     # Maintenance mode
     include /etc/nginx/maintenance.conf;
 
-    # Timeout for ZED requests - 10 minutes
+    # Location for Letsencrypt validation
+    include /etc/nginx/conf.d/ssl/letsencrypt.conf;
+
+    # Timeout for Api requests - 10 minutes
     # (longer requests should be converted to jobs and executed via jenkins)
     proxy_read_timeout 600s;
     proxy_send_timeout 600s;
@@ -25,7 +26,7 @@ server {
     send_timeout 600s;
 
     # Static files can be delivered directly
-    location ~ (/assets/|/favicon.ico|/robots.txt) {
+    location ~ (/favicon.ico|/robots.txt) {
         access_log        off;
         expires           30d;
         add_header Pragma public;
@@ -33,20 +34,29 @@ server {
         try_files $uri =404;
     }
 
+    location ~ \.(jpg|gif|png|css|js|html|xml|ico|txt|csv|map|json)$ {
+        access_log off;
+        expires 30d;
+        add_header Pragma public;
+        add_header Cache-Control "public";
+        try_files $uri /index.php?$args;
+        more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
+    }
+
     # PHP application gets all other requests
     location / {
         add_header X-Server $hostname;
-        fastcgi_pass backend-$application_env-zed;
+        fastcgi_pass backend-$application_env-configurator;
         fastcgi_index index.php;
         include /etc/nginx/fastcgi_params;
         fastcgi_param SCRIPT_NAME /index.php;
         fastcgi_param SCRIPT_FILENAME  $document_root/index.php;
         fastcgi_param APPLICATION_ENV $application_env;
-        fastcgi_param APPLICATION_STORE $application_store;
         fastcgi_param SPRYKER_PRODUCT_CONFIGURATOR_HOST {{ CONFIGURATOR_DOMAIN_NAME }};
         fastcgi_param SPRYKER_PRODUCT_CONFIGURATOR_PORT 80;
         fastcgi_param SPRYKER_PRODUCT_CONFIGURATOR_ENCRYPTION_KEY change123;
         fastcgi_param SPRYKER_PRODUCT_CONFIGURATOR_HEX_INITIALIZATION_VECTOR 0c1ffefeebdab4a3d839d0e52590c9a2;
         more_clear_headers 'X-Powered-By' 'X-Store' 'X-Locale' 'X-Env' 'Server';
     }
+
 }

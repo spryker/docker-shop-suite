@@ -21,6 +21,7 @@ services:
     environment:
       ENV_NAME: spryker21
       DOMAIN_NAME: demoshop.local
+      CONFIGURATOR_DOMAIN_NAME: configurator.demoshop.local
       STORES: 'DE,AT,US'
       SINGLE_STORE: 'no'
       APPLICATION_ENV: staging
@@ -55,6 +56,8 @@ services:
       YVES_HTTP_TO_HTTPS: 0
       GLUE_HTTPS_ON: 0
       GLUE_HTTP_TO_HTTPS: 0
+      CONFIGURATOR_HTTPS_ON: 0
+      CONFIGURATOR_HTTP_TO_HTTPS: 0
       SPRYKER_SSL_ENABLE: 0
       INITIAL_SPRYKER_REPOSITORY: 'https://github.com/spryker-shop/b2c-demo-shop.git'
       INITIAL_SPRYKER_BRANCH: 'tags/202001.0'
@@ -73,7 +76,7 @@ services:
 
   elasticsearch:
 #    restart: always
-    image: elasticsearch:5.6
+    image: elasticsearch:6.8.11
     environment:
       ES_JAVA_OPTS: "-Xms1g -Xmx1g"
 
