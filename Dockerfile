@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:7.4-fpm
 
 # Install tini (init handler)
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /tini
@@ -23,12 +23,14 @@ ENV PHPIZE_DEPS \
   libjpeg62-turbo-dev \
   libkrb5-dev         \
   libmcrypt-dev       \
+  libonig-dev         \
   libpng-dev          \
   libpq-dev           \
   libsqlite3-dev      \
   libssh2-1-dev       \
   libxml2-dev         \
   libxslt1-dev        \
+  libzip-dev          \
   pkg-config          \
   re2c
 
@@ -43,7 +45,7 @@ RUN \
   wget                \
   gnupg               \
   apt-transport-https \
-&& echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/node.list       \
+&& echo "deb https://deb.nodesource.com/node_12.x stretch main" > /etc/apt/sources.list.d/node.list       \
 && wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -                \
 && echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' > /etc/apt/sources.list.d/newrelic.list  \
 && wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - \
@@ -104,7 +106,7 @@ RUN \
   && echo 'jenkins ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers  \
 
 # Install PHP extensions
-  && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+  && docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/ \
   && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
   && docker-php-ext-install -j$(nproc) \
         bcmath      \
@@ -133,7 +135,7 @@ RUN \
   && echo "extension=redis.so" > $PHP_INI_DIR/conf.d/docker-php-ext-redis.ini \
 
 # Install jinja2 cli
-  && pip install pyaml j2cli jinja2-cli \
+  && pip install pyaml j2cli jinja2-cli wheel \
 
 # Install composerrm -rf /var/lib/apt/lists/
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer \
