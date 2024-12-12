@@ -1,7 +1,6 @@
 ####################
-
-export SPRYKER_REPOSITORY="git@github.com:spryker/b2b-demo-shop-internal.git"
-export SPRYKER_BRANCH="feature/b2b-all-integrations-stage-2"
+export SPRYKER_REPOSITORY="git@github.com:spryker/suite-nonsplit.git"
+export SPRYKER_BRANCH="master"
 
 #export DEBUG_ENABLED=1
 #####################
@@ -26,7 +25,7 @@ IFS=',' read -ra STORE <<< "${STORES}"
 
 stores_apply(){
   COMMAND=$1
-  for i in "${STORE[@]}"; do 
+  for i in "${STORE[@]}"; do
       APPLICATION_STORE=$i ${COMMAND}
   done
 }
@@ -55,6 +54,7 @@ composer require --no-update aws/aws-sdk-php
 #Copy stores.php which fixed the multistore hardcoded data
 if [[ "${STORES}" == "DE" ]]; then
     cp /etc/spryker/stores.php config/Shared/stores.php
+    export SPRYKER_REGIONS=EU
 fi
 
 # Create the Stock config StockConfig.php from the jinja2 template
@@ -91,11 +91,11 @@ vendor/bin/install -r staging -s build-static -vvv
 grep -q build-static-development config/install/staging.yml && stores_apply "vendor/bin/install -r staging -s build-static-development -vvv"
 
 if [ -d data/import/local ]; then
-   export SPRYKER_REGIONS=$(cat deploy.yml | awk '$1 ~ "region:" {print $2}')
+   [ -z $SPRYKER_REGIONS ] && export SPRYKER_REGIONS=$(cat deploy.yml | awk '$1 ~ "region:" {print $2}')
    for i in $SPRYKER_REGIONS; do
       SPRYKER_REGION=$i vendor/bin/install -r staging -s demodata -vvv
    done
-else 
+else
    stores_apply "vendor/bin/install -r staging -s demodata -vvv"
 fi
 ###
